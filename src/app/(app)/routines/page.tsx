@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { PageHeader } from "@/components/page-header";
 import { Icons } from "@/components/icons";
+import { ExerciseInfoDialog } from "@/components/exercise-info-dialog";
 import { getRotinas, deletarRotina } from "@/lib/storage";
 import { useEffect, useState } from "react";
 import type { RotinaDeTreino } from "@/lib/types";
@@ -179,7 +180,14 @@ export default function RoutinesPage() {
                     >
                       <div className="flex items-center gap-2 truncate">
                         <Icons.Exercises className="size-3 flex-shrink-0" />
-                        <span className="truncate">{ex.nomeExercicio}</span>
+                        <ExerciseInfoDialog
+                          exerciseName={ex.nomeExercicio}
+                          className="truncate"
+                        >
+                          <span className="truncate hover:text-primary cursor-pointer transition-colors">
+                            {ex.nomeExercicio}
+                          </span>
+                        </ExerciseInfoDialog>
                       </div>
                       <span className="font-mono text-xs text-foreground/80 flex-shrink-0">
                         {ex.seriesAlvo}x{ex.repeticoesAlvo}
