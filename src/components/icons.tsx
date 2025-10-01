@@ -15,6 +15,7 @@ import {
   Zap,
   PartyPopper,
   Award,
+  Trophy,
 } from 'lucide-react';
 
 export const Icons = {
@@ -33,4 +34,5 @@ export const Icons = {
   Zap,
   PartyPopper,
   Award,
+  Trophy,
 };

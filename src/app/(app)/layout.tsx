@@ -28,6 +28,7 @@ const navItems = [
   { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
   { href: '/history', icon: Icons.History, label: 'Histórico' },
   { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
+  { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
   { href: '/exercises', icon: Icons.Exercises, label: 'Exercícios' },
 ];
 
@@ -36,7 +37,7 @@ const mobileNavItems = [
     { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
     { href: '/session', icon: Icons.Add, label: 'Iniciar' }, // Ação Central
     { href: '/history', icon: Icons.History, label: 'Histórico' },
-    { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
+    { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
