@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -26,7 +27,6 @@ import { Wand2, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const navItems = [
-  { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
   { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
   { href: '/evolution', icon: Wand2, label: 'Evoluir' },
   { href: '/history', icon: Icons.History, label: 'Histórico' },
@@ -38,6 +38,7 @@ const navItems = [
 const mobileBottomNavItems = [
     { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
     { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
+    { href: '/session', icon: Icons.Add, label: 'Adicionar' },
     { href: '/history', icon: Icons.History, label: 'Histórico' },
 ];
 
@@ -87,6 +88,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/dashboard'}
+                tooltip={{ children: 'Painel', side: 'right' }}
+              >
+                <Link href="/dashboard">
+                  <Icons.Dashboard />
+                  <span>Painel</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
@@ -123,18 +136,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         
         {/* Mobile Navigation */}
         <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-sm md:hidden">
-            <div className="grid grid-cols-5 items-center h-16">
+            <div className="grid h-16 grid-cols-5 items-center">
                 {mobileBottomNavItems.map((item) => {
-                  const isActive = pathname.startsWith(item.href) && item.href !== '/';
+                  const isActive = item.href === '/session' ? false : pathname.startsWith(item.href);
                   return (
                     <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
-                            "flex flex-col items-center justify-center gap-1 text-xs w-full h-full",
+                            "flex h-full w-full flex-col items-center justify-center gap-1 text-xs",
                             isActive
                                 ? "text-primary"
-                                : "text-muted-foreground"
+                                : "text-muted-foreground",
+                             item.href === '/session' && 'rounded-full bg-primary/20 text-primary'
                         )}
                     >
                         <item.icon className="size-5" />
@@ -143,21 +157,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   )
                 })}
 
-                {/* Central Action Button */}
-                <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
-                    <Button asChild size="lg" className="rounded-full h-16 w-16 shadow-lg bg-primary hover:bg-primary/90 border-4 border-background">
-                       <Link href="/session">
-                            <Icons.Add className="size-8" />
-                            <span className="sr-only">Iniciar Treino</span>
-                        </Link>
-                    </Button>
-                </div>
-
                 {/* More Menu */}
                 <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                     <SheetTrigger asChild>
                         <button
-                            className="flex flex-col items-center justify-center gap-1 text-xs w-full h-full text-muted-foreground"
+                            className="flex h-full w-full flex-col items-center justify-center gap-1 text-xs text-muted-foreground"
                         >
                             <Menu className="size-5" />
                             <span>Mais</span>
