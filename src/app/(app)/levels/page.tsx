@@ -25,7 +25,7 @@ export default function LevelsPage() {
     return (
         <>
             <PageHeader
-                title="Meu Legado Maromba"
+                title="Meu Legado"
                 description="Veja sua evolução, desbloqueie níveis e torne-se uma lenda."
             />
 
