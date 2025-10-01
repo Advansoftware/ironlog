@@ -9,10 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getRotinas, getNomeExercicio, salvarSessao, getRecordesPessoais } from '@/lib/storage';
-import { Check, Dumbbell, X, PartyPopper } from 'lucide-react';
+import { Check, Dumbbell, X, PartyPopper, Zap } from 'lucide-react';
 import type { RotinaDeTreino, SerieRegistrada, ExercicioRegistrado, RecordePessoal } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
+import { levelNames } from '@/lib/gamification';
 
 type SerieState = SerieRegistrada & { id: number };
 
@@ -93,7 +94,6 @@ function SessionContent() {
     }
     
     const novaSessao = {
-        id: uuidv4(),
         rotinaId: routine.id,
         nome: routine.nome,
         data: new Date().toISOString(),
@@ -118,12 +118,20 @@ function SessionContent() {
       }
     });
 
-    salvarSessao(novaSessao, novosRecordes);
+    const { levelUpInfo, xpGanho } = salvarSessao(novaSessao, novosRecordes);
     
     toast({
         title: "Treino Finalizado!",
-        description: `Bom trabalho! Sessão de ${duracao} minutos salva.`,
+        description: `Bom trabalho! Você ganhou ${xpGanho.toLocaleString()} XP.`,
     });
+
+    if (levelUpInfo.didLevelUp) {
+       toast({
+         title: "BIIIRL! Subiu de Nível!",
+         description: `Você alcançou o Nível ${levelUpInfo.newLevel}: ${levelNames[levelUpInfo.newLevel]}`,
+         action: <Zap className="text-yellow-400" />,
+       });
+    }
 
     if (novosRecordes.length > 0) {
         toast({
@@ -151,7 +159,7 @@ function SessionContent() {
             <div className="text-center text-muted-foreground">
                 <p>Parece que você não tem nenhuma rotina de treino ainda.</p>
                 <Button asChild className="mt-4">
-                    <Link href="/routines/create">Criar Rotina com IA</Link>
+                    <a href="/routines/create">Criar Rotina com IA</a>
                 </Button>
             </div>
         </>

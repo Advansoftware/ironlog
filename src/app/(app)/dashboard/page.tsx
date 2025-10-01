@@ -2,16 +2,18 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { PageHeader } from '@/components/page-header';
 import { Icons } from '@/components/icons';
-import { getHistorico, getRecordesPessoais, getNomeExercicio } from '@/lib/storage';
+import { getHistorico, getRecordesPessoais, getGamification } from '@/lib/storage';
 import { format, parseISO, isThisMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
-import type { SessaoDeTreino, RecordePessoal } from '@/lib/types';
-import { Lightbulb, Loader2 } from 'lucide-react';
+import type { SessaoDeTreino, RecordePessoal, Gamification } from '@/lib/types';
+import { Lightbulb, Loader2, Award } from 'lucide-react';
 import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
+import { Progress } from '@/components/ui/progress';
+import { levelNames, getLevelProgress } from '@/lib/gamification';
 
 
 export default function DashboardPage() {
@@ -19,11 +21,13 @@ export default function DashboardPage() {
   const [recordes, setRecordes] = useState<RecordePessoal[]>([]);
   const [dailyTip, setDailyTip] = useState<string | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState(true);
+  const [gamification, setGamification] = useState<Gamification>({ xp: 0, level: 1 });
 
   useEffect(() => {
     const allHistorico = getHistorico();
     setHistorico(allHistorico);
     setRecordes(getRecordesPessoais());
+    setGamification(getGamification());
     
     async function fetchTip() {
       setIsLoadingTip(true);
@@ -62,7 +66,9 @@ export default function DashboardPage() {
   const totalWorkouts = historico.length;
   const workoutsThisMonth = historico.filter(s => isThisMonth(parseISO(s.data))).length;
   const totalPrs = recordes.length;
-  const latestPr = recordes.length > 0 ? recordes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())[0] : null;
+  
+  const { progressPercentage, xpToNextLevel, currentLevelXp } = getLevelProgress(gamification.xp);
+  const currentLevelName = levelNames[gamification.level] || "Nível Desconhecido";
 
   return (
     <>
@@ -75,7 +81,26 @@ export default function DashboardPage() {
         </Button>
       </PageHeader>
       
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50 col-span-1 md:col-span-2">
+           <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+                <Award className="size-5 text-primary" />
+                Nível: {currentLevelName}
+            </CardTitle>
+            <CardDescription>
+                XP Total: {gamification.xp.toLocaleString()}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Progress value={progressPercentage} className="h-2" />
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                <span>{currentLevelXp.toLocaleString()} XP</span>
+                <span>{xpToNextLevel.toLocaleString()} XP para o próximo nível</span>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
@@ -92,25 +117,9 @@ export default function DashboardPage() {
         <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>Sessões este Mês</span>
-              <Icons.Progress className="size-5 text-muted-foreground" />
+              <span>Recordes Batidos</span>
+              <Icons.Star className="size-5 text-yellow-400" />
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">{workoutsThisMonth}</p>
-            <p className="text-xs text-muted-foreground">treinos mensais</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-                <span>Recordes Batidos</span>
-                <Icons.Star className="size-5 text-yellow-400" />
-            </CardTitle>
-             <CardDescription>
-                {latestPr ? `Último em ${format(new Date(latestPr.data), 'dd/MM')}` : 'Nenhum recorde ainda'}
-            </CardDescription>
           </CardHeader>
           <CardContent>
              <p className="text-4xl font-bold">{totalPrs}</p>
@@ -154,7 +163,7 @@ export default function DashboardPage() {
                         <div key={session.id} className="p-4 flex justify-between items-center hover:bg-secondary/50 transition-colors">
                             <div>
                                 <p className="font-semibold">{session.nome}</p>
-                                <p className="text-sm text-muted-foreground">{session.exercicios.length} exercícios</p>
+                                <p className="text-sm text-muted-foreground">{session.exercicios.length} exercícios &bull; +{session.xpGanho} XP</p>
                             </div>
                             <p className="text-sm text-muted-foreground">{format(parseISO(session.data), 'd MMM, yyyy', { locale: ptBR })}</p>
                         </div>

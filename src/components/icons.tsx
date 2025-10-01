@@ -14,6 +14,7 @@ import {
   Star,
   Zap,
   PartyPopper,
+  Award,
 } from 'lucide-react';
 
 export const Icons = {
@@ -31,4 +32,5 @@ export const Icons = {
   Star,
   Zap,
   PartyPopper,
+  Award,
 };

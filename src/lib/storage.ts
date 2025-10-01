@@ -1,8 +1,9 @@
 
 'use client';
 
-import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular } from '@/lib/types';
+import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular, Gamification } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
+import { calculateXP, checkForLevelUp } from './gamification';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -71,6 +72,8 @@ const initialRoutines: RotinaDeTreino[] = [
   },
 ];
 
+const initialGamification: Gamification = { xp: 0, level: 1 };
+
 
 // Inicializa os dados se não existirem
 if (isBrowser && !localStorage.getItem('bibliotecaDeExercicios')) {
@@ -85,12 +88,16 @@ if (isBrowser && !localStorage.getItem('historico')) {
 if (isBrowser && !localStorage.getItem('recordesPessoais')) {
     saveToStorage('recordesPessoais', []);
 }
+if (isBrowser && !localStorage.getItem('gamification')) {
+    saveToStorage('gamification', initialGamification);
+}
 
 
 export const getBibliotecaDeExercicios = () => getFromStorage<Exercicio[]>('bibliotecaDeExercicios', []);
 export const getRotinas = () => getFromStorage<RotinaDeTreino[]>('rotinas', []);
 export const getHistorico = () => getFromStorage<SessaoDeTreino[]>('historico', []);
 export const getRecordesPessoais = () => getFromStorage<RecordePessoal[]>('recordesPessoais', []);
+export const getGamification = () => getFromStorage<Gamification>('gamification', initialGamification);
 
 export const salvarRotinas = (rotinas: RotinaDeTreino[]) => saveToStorage('rotinas', rotinas);
 export const salvarRotina = (rotina: RotinaDeTreino) => {
@@ -99,9 +106,23 @@ export const salvarRotina = (rotina: RotinaDeTreino) => {
 };
 
 
-export const salvarSessao = (sessao: SessaoDeTreino, novosRecordes: RecordePessoal[]) => {
+export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, novosRecordes: RecordePessoal[]) => {
     const historico = getHistorico();
-    saveToStorage('historico', [sessao, ...historico]);
+    const gamification = getGamification();
+
+    const xpGanho = calculateXP(sessao.exercicios);
+    const newTotalXp = gamification.xp + xpGanho;
+    
+    const sessaoCompleta: SessaoDeTreino = {
+      ...sessao,
+      id: uuidv4(),
+      xpGanho,
+    };
+
+    saveToStorage('historico', [sessaoCompleta, ...historico]);
+
+    const levelUpInfo = checkForLevelUp(gamification.xp, newTotalXp);
+    saveToStorage('gamification', { xp: newTotalXp, level: levelUpInfo.newLevel });
 
     if (novosRecordes.length > 0) {
         const recordesAtuais = getRecordesPessoais();
@@ -118,6 +139,7 @@ export const salvarSessao = (sessao: SessaoDeTreino, novosRecordes: RecordePesso
 
         saveToStorage('recordesPessoais', recordesAtualizados);
     }
+    return { levelUpInfo, xpGanho };
 };
 
 export const salvarRecordesPessoais = (recordes: RecordePessoal[]) => saveToStorage('recordesPessoais', recordes);

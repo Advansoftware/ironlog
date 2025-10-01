@@ -38,6 +38,7 @@ export type SessaoDeTreino = {
   data: string; // ISO string
   exercicios: ExercicioRegistrado[];
   duracao: number; // in minutes
+  xpGanho: number; // XP ganho nesta sessão
 };
 
 export type RecordePessoal = {
@@ -45,4 +46,9 @@ export type RecordePessoal = {
   peso: number;
   reps: number;
   data: string;
+};
+
+export type Gamification = {
+  xp: number;
+  level: number;
 };
