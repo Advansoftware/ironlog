@@ -11,14 +11,14 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateProgressVisualizationsInputSchema = z.object({
-  workoutData: z.string().describe('Workout data in JSON format, including exercise name, sets, reps, weight, and date.'),
-  personalRecords: z.string().describe('Personal records data in JSON format, including exercise name and record value.'),
-  workoutHistory: z.string().describe('Workout history data in JSON format, including exercise name, date, sets, reps and weight.'),
+  workoutData: z.string().describe('Dados de treino em formato JSON, incluindo nome do exercício, séries, repetições, peso e data.'),
+  personalRecords: z.string().describe('Dados de recordes pessoais em formato JSON, incluindo nome do exercício e valor do recorde.'),
+  workoutHistory: z.string().describe('Dados do histórico de treinos em formato JSON, incluindo nome do exercício, data, séries, repetições e peso.'),
 });
 export type GenerateProgressVisualizationsInput = z.infer<typeof GenerateProgressVisualizationsInputSchema>;
 
 const GenerateProgressVisualizationsOutputSchema = z.object({
-  progressVisualization: z.string().describe('A description of the progress visualization, including suggested incremental load increases.'),
+  progressVisualization: z.string().describe('Uma descrição da visualização do progresso, incluindo sugestões de aumentos incrementais de carga.'),
 });
 export type GenerateProgressVisualizationsOutput = z.infer<typeof GenerateProgressVisualizationsOutputSchema>;
 
@@ -32,11 +32,11 @@ const prompt = ai.definePrompt({
   name: 'generateProgressVisualizationsPrompt',
   input: {schema: GenerateProgressVisualizationsInputSchema},
   output: {schema: GenerateProgressVisualizationsOutputSchema},
-  prompt: `You are an expert fitness coach. You will generate a visual representation and analysis of the user's workout data to show progress over time. Based on their personal records and workout history, you will also suggest incremental load increases.
+  prompt: `Você é um personal trainer especialista. Você irá gerar uma representação visual e análise dos dados de treino do usuário para mostrar o progresso ao longo do tempo. Com base em seus recordes pessoais e histórico de treinos, você também sugerirá aumentos incrementais de carga. A resposta deve ser em português do Brasil.
 
-Workout Data: {{{workoutData}}}
-Personal Records: {{{personalRecords}}}
-Workout History: {{{workoutHistory}}}`,
+Dados de Treino: {{{workoutData}}}
+Recordes Pessoais: {{{personalRecords}}}
+Histórico de Treinos: {{{workoutHistory}}}`,
 });
 
 const generateProgressVisualizationsFlow = ai.defineFlow(

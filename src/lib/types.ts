@@ -1,47 +1,47 @@
-export type MuscleGroup = 'Chest' | 'Back' | 'Legs' | 'Shoulders' | 'Arms' | 'Core';
+export type GrupoMuscular = 'Peito' | 'Costas' | 'Pernas' | 'Ombros' | 'Braços' | 'Core';
 
-export type Exercise = {
+export type Exercicio = {
   id: string;
-  name: string;
-  muscleGroup: MuscleGroup;
+  nome: string;
+  grupoMuscular: GrupoMuscular;
 };
 
-export type RoutineExercise = {
-  exerciseId: string;
-  targetSets: number;
-  targetReps: number;
-  targetWeight?: number;
+export type ExercicioDeRotina = {
+  exercicioId: string;
+  seriesAlvo: number;
+  repeticoesAlvo: number;
+  pesoAlvo?: number;
 };
 
-export type WorkoutRoutine = {
+export type RotinaDeTreino = {
   id: string;
-  name: string;
-  exercises: RoutineExercise[];
+  nome: string;
+  exercicios: ExercicioDeRotina[];
 };
 
-export type LoggedSet = {
+export type SerieRegistrada = {
   reps: number;
-  weight: number;
-  completed: boolean;
+  peso: number;
+  concluido: boolean;
 };
 
-export type LoggedExercise = {
-  exerciseId: string;
-  sets: LoggedSet[];
+export type ExercicioRegistrado = {
+  exercicioId: string;
+  series: SerieRegistrada[];
 };
 
-export type WorkoutSession = {
+export type SessaoDeTreino = {
   id: string;
-  routineId?: string;
-  name: string;
-  date: string; // ISO string
-  exercises: LoggedExercise[];
-  duration: number; // in minutes
+  rotinaId?: string;
+  nome: string;
+  data: string; // ISO string
+  exercicios: ExercicioRegistrado[];
+  duracao: number; // in minutes
 };
 
-export type PersonalRecord = {
-  exerciseId: string;
-  weight: number;
+export type RecordePessoal = {
+  exercicioId: string;
+  peso: number;
   reps: number;
-  date: string;
+  data: string;
 };

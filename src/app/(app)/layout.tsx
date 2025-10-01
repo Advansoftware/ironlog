@@ -17,11 +17,11 @@ import {
 } from '@/components/ui/sidebar';
 
 const navItems = [
-  { href: '/dashboard', icon: Icons.Dashboard, label: 'Dashboard' },
-  { href: '/routines', icon: Icons.Routines, label: 'Routines' },
-  { href: '/history', icon: Icons.History, label: 'History' },
-  { href: '/progress', icon: Icons.Progress, label: 'Progress' },
-  { href: '/exercises', icon: Icons.Exercises, label: 'Exercises' },
+  { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
+  { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
+  { href: '/history', icon: Icons.History, label: 'Histórico' },
+  { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
+  { href: '/exercises', icon: Icons.Exercises, label: 'Exercícios' },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -57,10 +57,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter className="p-4">
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip={{ children: 'Settings', side: 'right' }}>
+                    <SidebarMenuButton asChild tooltip={{ children: 'Configurações', side: 'right' }}>
                         <Link href="#">
                             <Icons.Settings />
-                            <span>Settings</span>
+                            <span>Configurações</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

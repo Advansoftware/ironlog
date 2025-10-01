@@ -5,8 +5,8 @@ export default function ProgressPage() {
   return (
     <>
       <PageHeader
-        title="Progress"
-        description="Visualize your progress and get AI-powered insights."
+        title="Progresso"
+        description="Visualize seu progresso e obtenha insights com IA."
       />
       <ProgressClient />
     </>
