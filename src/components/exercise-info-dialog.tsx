@@ -116,8 +116,8 @@ export function ExerciseInfoDialog({
         )}
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl max-h-[80vh]">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Target className="size-5" />
             {exerciseData?.name || exerciseName}
@@ -127,7 +127,7 @@ export function ExerciseInfoDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 pr-4">
+        <ScrollArea className="flex-1 pr-4 max-h-[calc(80vh-8rem)]">
           {isLoading && (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
