@@ -4,6 +4,7 @@ export type Exercicio = {
   id: string;
   nome: string;
   grupoMuscular: GrupoMuscular;
+  equipamento?: string; // Adicionado para categorizar
 };
 
 export type ExercicioDeRotina = {

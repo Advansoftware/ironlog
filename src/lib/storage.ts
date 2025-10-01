@@ -35,32 +35,74 @@ function saveToStorage<T>(key: string, value: T) {
 }
 
 const initialExercises: Exercicio[] = [
-    { id: 'ex1', nome: 'Supino Reto', grupoMuscular: 'Peito' },
-    { id: 'ex2', nome: 'Supino Inclinado com Halteres', grupoMuscular: 'Peito' },
-    { id: 'ex3', nome: 'Crucifixo com Halteres', grupoMuscular: 'Peito' },
-    { id: 'ex4', nome: 'Barra Fixa', grupoMuscular: 'Costas' },
-    { id: 'ex5', nome: 'Remada Curvada', grupoMuscular: 'Costas' },
-    { id: 'ex6', nome: 'Levantamento Terra', grupoMuscular: 'Costas' },
-    { id: 'ex7', nome: 'Agachamento', grupoMuscular: 'Pernas' },
-    { id: 'ex8', nome: 'Leg Press', grupoMuscular: 'Pernas' },
-    { id: 'ex9', nome: 'Afundo', grupoMuscular: 'Pernas' },
-    { id: 'ex10', nome: 'Desenvolvimento com Barra', grupoMuscular: 'Ombros' },
-    { id: 'ex11', nome: 'Elevação Lateral', grupoMuscular: 'Ombros' },
-    { id: 'ex12', nome: 'Rosca Direta', grupoMuscular: 'Braços' },
-    { id: 'ex13', nome: 'Tríceps Pulley', grupoMuscular: 'Braços' },
-    { id: 'ex14', nome: 'Prancha', grupoMuscular: 'Core' },
-    { id: 'ex15', nome: 'Abdominal', grupoMuscular: 'Core' },
+    // Peito
+    { id: 'ex1', nome: 'Supino Reto com Barra', grupoMuscular: 'Peito', equipamento: 'Barra' },
+    { id: 'ex2', nome: 'Supino Inclinado com Halteres', grupoMuscular: 'Peito', equipamento: 'Halteres' },
+    { id: 'ex3', nome: 'Crucifixo com Halteres', grupoMuscular: 'Peito', equipamento: 'Halteres' },
+    { id: 'ex16', nome: 'Flexão de Braço', grupoMuscular: 'Peito', equipamento: 'Peso do Corpo' },
+    { id: 'ex17', nome: 'Supino Declinado com Barra', grupoMuscular: 'Peito', equipamento: 'Barra' },
+    { id: 'ex18', nome: 'Peck Deck (Voador)', grupoMuscular: 'Peito', equipamento: 'Máquina' },
+    { id: 'ex19', nome: 'Crossover (Polia)', grupoMuscular: 'Peito', equipamento: 'Polia' },
+
+    // Costas
+    { id: 'ex4', nome: 'Barra Fixa', grupoMuscular: 'Costas', equipamento: 'Peso do Corpo' },
+    { id: 'ex5', nome: 'Remada Curvada com Barra', grupoMuscular: 'Costas', equipamento: 'Barra' },
+    { id: 'ex6', nome: 'Levantamento Terra', grupoMuscular: 'Costas', equipamento: 'Barra' },
+    { id: 'ex20', nome: 'Puxada Frontal (Pulley)', grupoMuscular: 'Costas', equipamento: 'Polia' },
+    { id: 'ex21', nome: 'Remada Sentada (Máquina)', grupoMuscular: 'Costas', equipamento: 'Máquina' },
+    { id: 'ex22', nome: 'Remada Cavalinho', grupoMuscular: 'Costas', equipamento: 'Máquina' },
+    { id: 'ex23', nome: 'Remada Unilateral com Halter (Serrote)', grupoMuscular: 'Costas', equipamento: 'Halteres' },
+    { id: 'ex24', nome: 'Pull-over com Halter', grupoMuscular: 'Costas', equipamento: 'Halteres' },
+
+    // Pernas
+    { id: 'ex7', nome: 'Agachamento Livre com Barra', grupoMuscular: 'Pernas', equipamento: 'Barra' },
+    { id: 'ex8', nome: 'Leg Press 45', grupoMuscular: 'Pernas', equipamento: 'Máquina' },
+    { id: 'ex9', nome: 'Afundo com Halteres', grupoMuscular: 'Pernas', equipamento: 'Halteres' },
+    { id: 'ex25', nome: 'Cadeira Extensora', grupoMuscular: 'Pernas', equipamento: 'Máquina' },
+    { id: 'ex26', nome: 'Mesa Flexora', grupoMuscular: 'Pernas', equipamento: 'Máquina' },
+    { id: 'ex27', nome: 'Agachamento Búlgaro com Halteres', grupoMuscular: 'Pernas', equipamento: 'Halteres' },
+    { id: 'ex28', nome: 'Levantamento Terra Romeno (Stiff)', grupoMuscular: 'Pernas', equipamento: 'Barra' },
+    { id: 'ex29', nome: 'Cadeira Adutora', grupoMuscular: 'Pernas', equipamento: 'Máquina' },
+    { id: 'ex30', nome: 'Cadeira Abdutora', grupoMuscular: 'Pernas', equipamento: 'Máquina' },
+    { id: 'ex31', nome: 'Elevação de Panturrilha em Pé', grupoMuscular: 'Pernas', equipamento: 'Máquina' },
+    { id: 'ex32', nome: 'Agachamento com Peso do Corpo', grupoMuscular: 'Pernas', equipamento: 'Peso do Corpo' },
+
+    // Ombros
+    { id: 'ex10', nome: 'Desenvolvimento com Barra', grupoMuscular: 'Ombros', equipamento: 'Barra' },
+    { id: 'ex11', nome: 'Elevação Lateral com Halteres', grupoMuscular: 'Ombros', equipamento: 'Halteres' },
+    { id: 'ex33', nome: 'Desenvolvimento Arnold com Halteres', grupoMuscular: 'Ombros', equipamento: 'Halteres' },
+    { id: 'ex34', nome: 'Elevação Frontal com Halteres', grupoMuscular: 'Ombros', equipamento: 'Halteres' },
+    { id: 'ex35', nome: 'Remada Alta', grupoMuscular: 'Ombros', equipamento: 'Barra' },
+    { id: 'ex36', nome: 'Crucifixo Invertido (Máquina ou Halteres)', grupoMuscular: 'Ombros', equipamento: 'Máquina' },
+
+    // Braços
+    { id: 'ex12', nome: 'Rosca Direta com Barra', grupoMuscular: 'Braços', equipamento: 'Barra' },
+    { id: 'ex13', nome: 'Tríceps Pulley com Corda', grupoMuscular: 'Braços', equipamento: 'Polia' },
+    { id: 'ex37', nome: 'Rosca Alternada com Halteres', grupoMuscular: 'Braços', equipamento: 'Halteres' },
+    { id: 'ex38', nome: 'Tríceps Testa com Barra', grupoMuscular: 'Braços', equipamento: 'Barra' },
+    { id: 'ex39', nome: 'Rosca Martelo com Halteres', grupoMuscular: 'Braços', equipamento: 'Halteres' },
+    { id: 'ex40', nome: 'Tríceps Francês com Halter', grupoMuscular: 'Braços', equipamento: 'Halteres' },
+    { id: 'ex41', nome: 'Rosca Concentrada', grupoMuscular: 'Braços', equipamento: 'Halteres' },
+    { id: 'ex42', nome: 'Mergulho no Banco', grupoMuscular: 'Braços', equipamento: 'Peso do Corpo' },
+
+    // Core
+    { id: 'ex14', nome: 'Prancha Abdominal', grupoMuscular: 'Core', equipamento: 'Peso do Corpo' },
+    { id: 'ex15', nome: 'Abdominal Crunch', grupoMuscular: 'Core', equipamento: 'Peso do Corpo' },
+    { id: 'ex43', nome: 'Elevação de Pernas', grupoMuscular: 'Core', equipamento: 'Peso do Corpo' },
+    { id: 'ex44', nome: 'Abdominal Russo com Peso', grupoMuscular: 'Core', equipamento: 'Halteres' },
+    { id: 'ex45', nome: 'Prancha Lateral', grupoMuscular: 'Core', equipamento: 'Peso do Corpo' }
 ];
+
 
 const initialRoutines: RotinaDeTreino[] = [
   {
     id: 'rt1',
     nome: 'Dia de Empurrar (Exemplo)',
     exercicios: [
-      { exercicioId: 'ex1', nomeExercicio: "Supino Reto", seriesAlvo: 3, repeticoesAlvo: 5, pesoAlvo: 100 },
+      { exercicioId: 'ex1', nomeExercicio: "Supino Reto com Barra", seriesAlvo: 3, repeticoesAlvo: 5, pesoAlvo: 100 },
       { exercicioId: 'ex2', nomeExercicio: "Supino Inclinado com Halteres", seriesAlvo: 3, repeticoesAlvo: 8, pesoAlvo: 30 },
       { exercicioId: 'ex10', nomeExercicio: "Desenvolvimento com Barra", seriesAlvo: 3, repeticoesAlvo: 8, pesoAlvo: 60 },
-      { exercicioId: 'ex13', nomeExercicio: "Tríceps Pulley", seriesAlvo: 3, repeticoesAlvo: 12, pesoAlvo: 20 },
+      { exercicioId: 'ex13', nomeExercicio: "Tríceps Pulley com Corda", seriesAlvo: 3, repeticoesAlvo: 12, pesoAlvo: 20 },
     ],
   },
   {
@@ -68,8 +110,18 @@ const initialRoutines: RotinaDeTreino[] = [
     nome: 'Dia de Puxar (Exemplo)',
     exercicios: [
       { exercicioId: 'ex4', nomeExercicio: "Barra Fixa", seriesAlvo: 3, repeticoesAlvo: 8 },
-      { exercicioId: 'ex5', nomeExercicio: "Remada Curvada", seriesAlvo: 3, repeticoesAlvo: 8 },
-      { exercicioId: 'ex12', nomeExercicio: "Rosca Direta", seriesAlvo: 3, repeticoesAlvo: 12 },
+      { exercicioId: 'ex5', nomeExercicio: "Remada Curvada com Barra", seriesAlvo: 3, repeticoesAlvo: 8 },
+      { exercicioId: 'ex12', nomeExercicio: "Rosca Direta com Barra", seriesAlvo: 3, repeticoesAlvo: 12 },
+    ],
+  },
+   {
+    id: 'rt3',
+    nome: 'Dia de Pernas (Exemplo)',
+    exercicios: [
+      { exercicioId: 'ex7', nomeExercicio: "Agachamento Livre com Barra", seriesAlvo: 4, repeticoesAlvo: 6 },
+      { exercicioId: 'ex8', nomeExercicio: "Leg Press 45", seriesAlvo: 3, repeticoesAlvo: 10 },
+      { exercicioId: 'ex26', nomeExercicio: "Mesa Flexora", seriesAlvo: 3, repeticoesAlvo: 12 },
+      { exercicioId: 'ex31', nomeExercicio: "Elevação de Panturrilha em Pé", seriesAlvo: 4, repeticoesAlvo: 15 },
     ],
   },
 ];
@@ -78,7 +130,7 @@ const initialGamification: Gamification = { xp: 0, level: 1 };
 
 function initializeStorage() {
     if (!isBrowser) return;
-    if (localStorage.getItem('appDataInitialized')) return;
+    if (localStorage.getItem('appDataInitialized_v2')) return; // Chave de versão para forçar reinicialização
 
     saveToStorage('bibliotecaDeExercicios', initialExercises);
     saveToStorage('rotinas', initialRoutines);
@@ -86,13 +138,20 @@ function initializeStorage() {
     saveToStorage('recordesPessoais', []);
     saveToStorage('gamification', initialGamification);
     saveToStorage('dbConnections', []);
-    localStorage.setItem('appDataInitialized', 'true');
+    localStorage.setItem('appDataInitialized_v2', 'true');
 }
 
 initializeStorage();
 
 
 export const getBibliotecaDeExercicios = () => getFromStorage<Exercicio[]>('bibliotecaDeExercicios', []);
+
+export const salvarExercicio = (exercicio: Omit<Exercicio, 'id'>) => {
+    const biblioteca = getBibliotecaDeExercicios();
+    const novoExercicio: Exercicio = { ...exercicio, id: uuidv4() };
+    saveToStorage('bibliotecaDeExercicios', [...biblioteca, novoExercicio]);
+};
+
 export const getRotinas = () => getFromStorage<RotinaDeTreino[]>('rotinas', []);
 export const getHistorico = () => getFromStorage<SessaoDeTreino[]>('historico', []);
 export const getRecordesPessoais = () => getFromStorage<RecordePessoal[]>('recordesPessoais', []);
@@ -183,7 +242,7 @@ export function resetAllData() {
     localStorage.removeItem('recordesPessoais');
     localStorage.removeItem('gamification');
     localStorage.removeItem('dbConnections');
-    localStorage.removeItem('appDataInitialized');
+    localStorage.removeItem('appDataInitialized_v2');
 
     initializeStorage();
     window.dispatchEvent(new Event('storage'));
