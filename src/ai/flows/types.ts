@@ -90,8 +90,8 @@ export const PlanoDeAcaoSchema = z.object({
   mensagemDeAcompanhamento: z.string().describe("Uma mensagem para o usuário explicando as mudanças ou fazendo a próxima pergunta."),
   xpInicial: z.number().optional().describe("XP inicial a ser concedido ao usuário com base no nível de experiência avaliado."),
   correcaoCompleta: z.boolean().optional().describe("Indica se é uma correção completa do perfil (true) ou apenas evolução normal (false)."),
-  novoXp: z.number().optional().describe("Novo XP a ser definido quando houver correção de nível incorreto do onboarding inicial."),
-  motivoCorrecao: z.string().optional().describe("Explicação do motivo da correção quando correcaoCompleta=true.")
+  novoXp: z.number().optional().describe("Novo XP a ser definido quando houver correção de nível incorreto do onboarding inicial. Omitir se correcaoCompleta=false."),
+  motivoCorrecao: z.string().optional().describe("Explicação do motivo da correção quando correcaoCompleta=true. Omitir se correcaoCompleta=false.")
 });
 export type PlanoDeAcao = z.infer<typeof PlanoDeAcaoSchema>;
 

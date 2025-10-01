@@ -119,6 +119,8 @@ Se no histórico você vê:
 - SEMPRE incluir 'xpInicial' quando criar o plano: 0 (iniciante), 1000 (intermediário), 2500 (avançado)
 - Faça apenas UMA pergunta por vez até ter tudo
 - NUNCA pule a criação do plano quando tiver todas as informações
+- Defina 'correcaoCompleta' como false para onboarding inicial
+- NÃO INCLUA os campos 'novoXp' e 'motivoCorrecao' no onboarding inicial (use apenas 'xpInicial')
 
 Responda SEMPRE com um JSON válido que siga o schema de saída.`,
 });
