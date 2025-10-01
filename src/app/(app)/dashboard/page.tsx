@@ -13,7 +13,7 @@ import type { SessaoDeTreino, RecordePessoal, Gamification } from '@/lib/types';
 import { Lightbulb, Loader2 } from 'lucide-react';
 import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
 import { Progress } from '@/components/ui/progress';
-import { levelNames, getLevelProgress } from '@/lib/gamification';
+import { levelData, getLevelProgress } from '@/lib/gamification';
 
 
 export default function DashboardPage() {
@@ -68,8 +68,8 @@ export default function DashboardPage() {
   const totalPrs = recordes.length;
   
   const { progressPercentage, xpToNextLevel, currentLevelXp } = gamification ? getLevelProgress(gamification.xp) : { progressPercentage: 0, xpToNextLevel: 0, currentLevelXp: 0 };
-  const currentLevelName = gamification ? levelNames[gamification.level] : "Carregando...";
   const currentLevel = gamification?.level ?? 1;
+  const { name: currentLevelName, Icon: LevelIcon } = levelData[currentLevel] || levelData[1];
 
   return (
     <>
@@ -86,12 +86,12 @@ export default function DashboardPage() {
         <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50 col-span-1 md:col-span-2 lg:col-span-3">
            <CardHeader>
             <CardTitle className="flex items-center gap-2">
-                <Icons.Award className="size-5 text-primary" />
+                <LevelIcon className="size-6 text-primary" />
                 Nível {currentLevel}: {currentLevelName}
             </CardTitle>
-             {gamification && (
+             {gamification !== null && (
                 <CardDescription>
-                    XP Total: {gamification.xp.toLocaleString()}
+                    XP Total: {gamification.xp.toLocaleString('pt-BR')}
                 </CardDescription>
             )}
           </CardHeader>
@@ -99,8 +99,8 @@ export default function DashboardPage() {
             <CardContent>
               <Progress value={progressPercentage} className="h-3" />
               <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
-                  <span>{currentLevelXp.toLocaleString()} XP</span>
-                  <span>{xpToNextLevel > 0 ? `${xpToNextLevel.toLocaleString()} XP para o próximo nível` : 'Nível Máximo!'}</span>
+                  <span>{currentLevelXp.toLocaleString('pt-BR')} XP</span>
+                  <span>{xpToNextLevel > 0 ? `${xpToNextLevel.toLocaleString('pt-BR')} XP para o próximo nível` : 'Nível Máximo!'}</span>
               </div>
             </CardContent>
           ) : (

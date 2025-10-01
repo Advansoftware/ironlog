@@ -13,7 +13,7 @@ import { Check, Dumbbell, X, PartyPopper, Zap } from 'lucide-react';
 import type { RotinaDeTreino, SerieRegistrada, ExercicioRegistrado, RecordePessoal } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
-import { levelNames } from '@/lib/gamification';
+import { levelData } from '@/lib/gamification';
 
 type SerieState = SerieRegistrada & { id: number };
 
@@ -122,13 +122,13 @@ function SessionContent() {
     
     toast({
         title: "Treino Finalizado!",
-        description: `Bom trabalho! Você ganhou ${xpGanho.toLocaleString()} XP.`,
+        description: `Bom trabalho! Você ganhou ${xpGanho.toLocaleString('pt-BR')} XP.`,
     });
 
     if (levelUpInfo.didLevelUp) {
        toast({
          title: "BIIIRL! Subiu de Nível!",
-         description: `Você alcançou o Nível ${levelUpInfo.newLevel}: ${levelNames[levelUpInfo.newLevel]}`,
+         description: `Você alcançou o Nível ${levelUpInfo.newLevel}: ${levelData[levelUpInfo.newLevel].name}`,
          action: <Zap className="text-yellow-400" />,
        });
     }

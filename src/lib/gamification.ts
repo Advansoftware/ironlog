@@ -3,6 +3,9 @@
  */
 
 import type { ExercicioRegistrado } from './types';
+import { Icons } from '@/components/icons';
+import type { LucideProps } from 'lucide-react';
+import type { FunctionComponent } from 'react';
 
 // Cada 10kg de volume = 1 XP
 const XP_PER_VOLUME = 0.1;
@@ -20,6 +23,22 @@ export const levelThresholds: Record<number, number> = {
   10: 300000,
 };
 
+export const levelData: Record<number, { name: string; Icon: FunctionComponent<LucideProps> }> = {
+  1: { name: 'Frango em Crescimento', Icon: Icons.Level1 },
+  2: { name: 'Tá Saindo da Jaula', Icon: Icons.Level2 },
+  3: { name: 'Muleque Zica', Icon: Icons.Level3 },
+  4: { name: 'Corpo em Construção', Icon: Icons.Level4 },
+  5: { name: 'Vem Monstro!', Icon: Icons.Level5 },
+  6: { name: 'Fábrica de Monstros', Icon: Icons.Level6 },
+  7: { name: 'Monstrão', Icon: Icons.Level7 },
+  8: { name: 'BIIIRL!', Icon: Icons.Level8 },
+  9: { name: 'Aberração da Maromba', Icon: Icons.Level9 },
+  10: { name: 'Lenda da Maromba', Icon: Icons.Level10 },
+};
+
+/**
+ * @deprecated Use levelData[level].name instead.
+ */
 export const levelNames: Record<number, string> = {
   1: 'Frango em Crescimento',
   2: 'Tá Saindo da Jaula',
@@ -32,6 +51,7 @@ export const levelNames: Record<number, string> = {
   9: 'Aberração da Maromba',
   10: 'Lenda da Maromba',
 };
+
 
 /**
  * Calcula o XP ganho em uma sessão de treino com base no volume.

@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import type { Gamification } from '@/lib/types';
 import { getGamification } from '@/lib/storage';
-import { levelNames } from '@/lib/gamification';
+import { levelData } from '@/lib/gamification';
 import { Badge } from '@/components/ui/badge';
 
 const navItems = [
@@ -59,7 +59,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     };
   }, [pathname]);
 
-  const currentLevelName = gamification ? levelNames[gamification.level] : "Carregando...";
+  const currentLevel = gamification?.level ?? 1;
+  const currentLevelName = levelData[currentLevel]?.name ?? 'Carregando...';
 
 
   return (
