@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { PageHeader } from '@/components/page-header';
 import { Icons } from '@/components/icons';
 import { getHistorico, getRecordesPessoais, getGamification } from '@/lib/storage';
@@ -10,8 +10,9 @@ import { format, parseISO, isThisMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
 import type { SessaoDeTreino, RecordePessoal, Gamification } from '@/lib/types';
-import { Lightbulb, Loader2 } from 'lucide-react';
+import { Lightbulb, Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
+import { suggestRoutineEvolution } from '@/ai/flows/suggest-routine-evolution';
 import { Progress } from '@/components/ui/progress';
 import { levelData, getLevelProgress } from '@/lib/gamification';
 
@@ -23,11 +24,16 @@ export default function DashboardPage() {
   const [isLoadingTip, setIsLoadingTip] = useState(true);
   const [gamification, setGamification] = useState<Gamification | null>(null);
 
+  const [routineSuggestion, setRoutineSuggestion] = useState<string | null>(null);
+  const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
+
   useEffect(() => {
     const allHistorico = getHistorico();
     setHistorico(allHistorico);
-    setRecordes(getRecordesPessoais());
-    setGamification(getGamification());
+    const allRecordes = getRecordesPessoais();
+    setRecordes(allRecordes);
+    const currentGamification = getGamification();
+    setGamification(currentGamification);
     
     async function fetchTip() {
       setIsLoadingTip(true);
@@ -43,10 +49,14 @@ export default function DashboardPage() {
           oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
           const recentHistory = allHistorico.filter(s => new Date(s.data) > oneMonthAgo);
           
-          const result = await generateDailyTip({ workoutHistory: JSON.stringify(recentHistory) });
-          setDailyTip(result.tip);
-          sessionStorage.setItem('dailyTip', result.tip);
-          sessionStorage.setItem('dailyTipDate', today);
+          if (recentHistory.length > 0) {
+            const result = await generateDailyTip({ workoutHistory: JSON.stringify(recentHistory) });
+            setDailyTip(result.tip);
+            sessionStorage.setItem('dailyTip', result.tip);
+            sessionStorage.setItem('dailyTipDate', today);
+          } else {
+             setDailyTip("Registre seu primeiro treino para começar a receber dicas personalizadas!");
+          }
         } else if (cachedTip) {
            setDailyTip(cachedTip); // Use cached tip if offline
         } else {
@@ -60,7 +70,32 @@ export default function DashboardPage() {
       }
     }
 
+    async function fetchRoutineSuggestion() {
+        const justLeveledUp = sessionStorage.getItem('justLeveledUp');
+        if (justLeveledUp && navigator.onLine) {
+            setIsLoadingSuggestion(true);
+            try {
+                const oneMonthAgo = new Date();
+                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 2); // 2 meses para ter mais dados
+                const recentHistory = allHistorico.filter(s => new Date(s.data) > oneMonthAgo);
+
+                const result = await suggestRoutineEvolution({
+                    newLevel: currentGamification.level,
+                    workoutHistory: JSON.stringify(recentHistory),
+                    personalRecords: JSON.stringify(allRecordes)
+                });
+                setRoutineSuggestion(result.suggestion);
+                sessionStorage.removeItem('justLeveledUp'); // Sugestão foi mostrada
+            } catch (error) {
+                console.error("Failed to fetch routine suggestion:", error);
+            } finally {
+                setIsLoadingSuggestion(false);
+            }
+        }
+    }
+
     fetchTip();
+    fetchRoutineSuggestion();
   }, []);
 
   const totalWorkouts = historico.length;
@@ -82,6 +117,40 @@ export default function DashboardPage() {
         </Button>
       </PageHeader>
       
+      {(isLoadingSuggestion || routineSuggestion) && (
+         <Card className="mb-8 border-primary/50 bg-gradient-to-r from-primary/10 via-background to-background">
+             <CardHeader>
+                 <CardTitle className="flex items-center gap-2">
+                     <Wand2 className="text-primary" />
+                     Evolução de Treino Sugerida
+                 </CardTitle>
+                 <CardDescription>Parabéns por subir de nível! Sua dedicação está dando resultado.</CardDescription>
+             </CardHeader>
+             <CardContent>
+                  {isLoadingSuggestion ? (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Loader2 className="size-4 animate-spin" />
+                      <span>Analisando seu progresso para sugerir o próximo passo...</span>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground leading-relaxed">
+                      {routineSuggestion}
+                    </p>
+                  )}
+             </CardContent>
+             {!isLoadingSuggestion && routineSuggestion && (
+                <CardFooter>
+                    <Button asChild>
+                        <Link href="/routines/create">
+                            <Sparkles className="mr-2" />
+                            Criar Nova Rotina com IA
+                        </Link>
+                    </Button>
+                </CardFooter>
+             )}
+         </Card>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50 col-span-1 md:col-span-2 lg:col-span-3">
            <CardHeader>

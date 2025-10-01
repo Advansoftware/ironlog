@@ -27,6 +27,8 @@ function saveToStorage<T>(key: string, value: T) {
   try {
     const item = JSON.stringify(value);
     window.localStorage.setItem(key, item);
+    // Dispara um evento para notificar outras abas/componentes
+    window.dispatchEvent(new Event('storage'));
   } catch (error) {
     console.error(`Erro ao salvar no localStorage [${key}]:`, error);
   }
@@ -139,6 +141,10 @@ export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, nov
 
     const levelUpInfo = checkForLevelUp(gamification.xp, newTotalXp);
     saveToStorage('gamification', { xp: newTotalXp, level: levelUpInfo.newLevel });
+    
+    if (levelUpInfo.didLevelUp && isBrowser) {
+        sessionStorage.setItem('justLeveledUp', 'true');
+    }
 
     if (novosRecordes.length > 0) {
         const recordesAtuais = getRecordesPessoais();

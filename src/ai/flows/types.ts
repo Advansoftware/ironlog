@@ -51,3 +51,17 @@ export const GenerateRoutineOutputSchema = z.object({
   exercicios: z.array(ExercicioDeRotinaSchema).describe('A lista de exercícios que compõem a rotina.'),
 });
 export type GenerateRoutineOutput = z.infer<typeof GenerateRoutineOutputSchema>;
+
+
+// Tipos para suggestRoutineEvolution
+export const SuggestRoutineEvolutionInputSchema = z.object({
+    newLevel: z.number().describe("O novo nível que o usuário alcançou."),
+    workoutHistory: z.string().describe("O histórico de treinos do usuário nos últimos 30-60 dias, em formato JSON."),
+    personalRecords: z.string().describe('Dados de recordes pessoais em formato JSON, incluindo nome do exercício e valor do recorde.'),
+});
+export type SuggestRoutineEvolutionInput = z.infer<typeof SuggestRoutineEvolutionInputSchema>;
+
+export const SuggestRoutineEvolutionOutputSchema = z.object({
+    suggestion: z.string().describe('Uma sugestão curta e motivadora para a próxima fase do treinamento, terminando com uma pergunta para engajar o usuário.'),
+});
+export type SuggestRoutineEvolutionOutput = z.infer<typeof SuggestRoutineEvolutionOutputSchema>;
