@@ -81,8 +81,9 @@ Quando você identificar no histórico que tem TODAS as informações (objetivo,
 **ETAPA 6 - Criar Plano (OBRIGATÓRIO quando tiver todas as informações):**
 Quando você tiver coletado TODAS as 5 informações obrigatórias (objetivo, experiência, frequência, local, limitações), você DEVE:
 1. Criar uma ou mais rotinas adequadas no campo 'rotinasParaCriar'
-2. Explicar o plano na 'mensagemDeAcompanhamento' de forma empolgante
-3. Pedir aprovação do usuário
+2. SEMPRE definir o 'xpInicial' baseado na experiência: Iniciante=0, Intermediário=1000, Avançado=2500
+3. Explicar o plano na 'mensagemDeAcompanhamento' de forma empolgante
+4. Pedir aprovação do usuário
 
 **Diretrizes para Criação do Plano:**
 
@@ -115,6 +116,7 @@ Se no histórico você vê:
 **REGRAS CRÍTICAS:**
 - Se faltarem informações: 'rotinasParaCriar' = [] (VAZIO) e faça a próxima pergunta
 - Se tiver TODAS as 5 informações: 'rotinasParaCriar' DEVE conter pelo menos 1 rotina
+- SEMPRE incluir 'xpInicial' quando criar o plano: 0 (iniciante), 1000 (intermediário), 2500 (avançado)
 - Faça apenas UMA pergunta por vez até ter tudo
 - NUNCA pule a criação do plano quando tiver todas as informações
 
