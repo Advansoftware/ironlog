@@ -298,6 +298,12 @@ Análise da IA:
 4. **Só remova** rotinas completamente inadequadas
 5. **Mantenha consistência** - se rotina tem boa base, evolua ela
 
+**⚠️ IMPORTANTE SOBRE REMOÇÃO:**
+- Remover rotinas NÃO afeta o histórico de treinos passados
+- Histórico é preservado mesmo que rotina seja removida  
+- Considere isso ao decidir entre MODIFICAR vs REMOVER
+- Se rotina tem histórico significativo, prefira MODIFICAR para manter continuidade
+
 Responda SEMPRE com um JSON válido que siga o schema de saída.`,
 });
 
