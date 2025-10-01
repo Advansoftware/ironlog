@@ -1,7 +1,36 @@
 
 'use server';
 /**
- * @fileOverview Um agente de IA conversacional que ajuda os usuários a evoluir seu plano de treino.
+ * @fileOverview Um age**Sua Missão Específica:**
+Esta página serve para CORREÇÕES e REALINHAMENTOS completos do perfil do usuário. Você pode:
+- **Corrigir nível/XP incorreto** (apenas se foi erro do onboarding inicial, NÃO se foi conquistado treinando)
+- **Remover TODAS as rotinas inadequadas**
+- **Criar novo plano completo alinhado ao nível correto**
+- **Fazer ajustes quando usuário não aguenta o treino atual**
+
+**Sua Tarefa:**
+1.  **DETECÇÃO DE PROBLEMAS:** Analise se há desalinhamento entre nível atual e capacidade real do usuário:
+   - Usuário reclama que treino está muito difícil/fácil
+   - Mudança drástica de contexto (ex: academia → casa, iniciante → experiente)
+   - Nível não condiz com histórico de treinos
+
+2.  **CORREÇÃO COMPLETA:** Quando detectar problema grave, faça correção total:
+   - Remova TODAS as rotinas inadequadas (rotinasParaRemover)
+   - Corrija XP/nível se necessário (apenas erros de onboarding, não conquistas)
+   - Crie novo plano completo (rotinasParaCriar)
+   - Explique a correção na mensagem
+
+3.  **EVOLUÇÃO NORMAL:** Para ajustes menores, use modificações parciais:
+   - Adicione exercícios (rotinasParaModificar)
+   - Crie rotinas complementares (rotinasParaCriar)
+   - Mantenha o que funciona
+
+4.  **PERGUNTAS INTELIGENTES:** Faça perguntas para entender melhor:
+   - "Seu treino atual está muito fácil ou difícil?"
+   - "Mudou alguma coisa no seu contexto (local, tempo, experiência)?"
+   - "Quais exercícios você sente dificuldade?"
+
+5.  **PROPOR PLANO:** Baseado na análise, proponha correção apropriada seguindo as REGRAS DE QUALIDADE:e IA conversacional que ajuda os usuários a evoluir seu plano de treino.
  * Este fluxo recebe o contexto do usuário (nível, rotinas, histórico) e o histórico da conversa
  * para conduzir um diálogo e, ao final, propor um plano de ação para criar, modificar ou remover
  * rotinas de treino.
@@ -54,8 +83,18 @@ const prompt = ai.definePrompt({
    - **Exercícios Compostos**: Supino, agachamento, remada, desenvolvimento sempre prioritários
    
    Preencha os campos 'rotinasParaCriar', 'rotinasParaModificar' e/ou 'rotinasParaRemover'. Assegure-se de que os IDs dos exercícios ('exercicioId') e os nomes ('nomeExercicio') correspondam exatamente aos da lista de 'exerciciosDisponiveis'.
-   
-5.  **Comunicar o Plano:** Use a 'mensagemDeAcompanhamento' para explicar as mudanças propostas e perguntar se o usuário aprova o plano. Ex: "Com base na nossa conversa, criei uma nova rotina focada em hipertrofia para o peito, modifiquei sua rotina de pernas para adicionar mais volume e removi a rotina antiga que não usávamos mais. Podemos aplicar este novo plano?".
+
+**CAMPOS ESPECIAIS PARA CORREÇÕES:**
+- **correcaoCompleta: true** - Use quando detectar desalinhamento grave (nível errado, contexto mudou drasticamente)
+- **novoXp** - Defina novo XP apenas para correções de erro de onboarding inicial: Iniciante=0, Intermediário=1000, Avançado=2500
+- **motivoCorrecao** - Explique por que a correção é necessária
+- **rotinasParaRemover: [todos os IDs]** - Remova TODAS as rotinas inadequadas na correção completa
+
+**EXEMPLOS DE CORREÇÃO COMPLETA:**
+- Usuário nível 3 mas quer "treinar em casa desde o início" → correcaoCompleta=true, novoXp=0, remove todas rotinas, cria plano iniciante
+- Usuário reclama que treino está impossível → correcaoCompleta=true, ajusta nível, recria plano adequado
+
+5.  **Comunicar o Plano:** Use a 'mensagemDeAcompanhamento' para explicar as mudanças propostas. Para correções: "Detectei que seu nível não condiz com sua capacidade atual. Vou fazer uma correção completa...". Para evoluções normais: "Com base na conversa, vou ajustar seu treino...".
 
 Responda SEMPRE com um JSON válido que siga o schema de saída.`,
 });

@@ -23,6 +23,7 @@ import {
   atualizarRotina,
   deletarRotina,
   getBibliotecaDeExercicios,
+  salvarGamification,
 } from "@/lib/storage";
 import { evolveRoutinePlan } from "@/ai/flows/evolve-routine-plan";
 import { suggestRoutineEvolution } from "@/ai/flows/suggest-routine-evolution";
@@ -144,6 +145,25 @@ export default function EvolutionPage() {
 
   const applyPlan = (plan: PlanoDeAcao) => {
     try {
+      // Se for uma correção completa, ajustar XP/nível primeiro
+      if (plan.correcaoCompleta && plan.novoXp !== undefined) {
+        const gamificationAtual = getGamification();
+        const novoNivel = plan.novoXp === 0 ? 1 : plan.novoXp >= 2500 ? 3 : 2;
+
+        salvarGamification({
+          ...gamificationAtual,
+          xp: plan.novoXp,
+          level: novoNivel,
+        });
+
+        toast({
+          title: "Perfil Corrigido!",
+          description: `Seu nível foi ajustado para ${novoNivel}. ${plan.motivoCorrecao}`,
+          duration: 5000,
+        });
+      }
+
+      // Aplicar mudanças nas rotinas
       plan.rotinasParaCriar?.forEach((rotina) =>
         salvarRotina({ ...rotina, id: uuidv4() })
       );
@@ -152,13 +172,23 @@ export default function EvolutionPage() {
       );
       plan.rotinasParaRemover?.forEach((id) => deletarRotina(id));
 
+      const title = plan.correcaoCompleta
+        ? "Correção Completa Aplicada!"
+        : "Plano de Treino Atualizado!";
+
+      const description = plan.correcaoCompleta
+        ? "Seu perfil e rotinas foram corrigidos completamente."
+        : "Suas rotinas foram modificadas com sucesso.";
+
       toast({
-        title: "Plano de Treino Atualizado!",
-        description: "Suas rotinas foram modificadas com sucesso.",
+        title,
+        description,
       });
 
-      const confirmationMessage =
-        "Plano aplicado com sucesso! Podemos fazer mais algum ajuste ou está tudo certo?";
+      const confirmationMessage = plan.correcaoCompleta
+        ? "Correção aplicada com sucesso! Agora seu plano está alinhado com seu nível real. Podemos fazer mais algum ajuste?"
+        : "Plano aplicado com sucesso! Podemos fazer mais algum ajuste ou está tudo certo?";
+
       setMessages((prev) => [
         ...prev,
         { role: "ia", content: confirmationMessage },

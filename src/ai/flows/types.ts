@@ -5,7 +5,7 @@
  * para garantir consistência e segurança de tipo entre os diferentes fluxos de IA
  * e os componentes que os consomem.
  */
-import {z} from 'genkit';
+import { z } from 'genkit';
 
 // Tipos para generateDailyTip
 export const GenerateDailyTipInputSchema = z.object({
@@ -35,11 +35,11 @@ export type GenerateProgressVisualizationsOutput = z.infer<typeof GenerateProgre
 
 // Tipos para generateRoutine
 export const ExercicioDeRotinaSchema = z.object({
-    exercicioId: z.string(),
-    nomeExercicio: z.string(),
-    seriesAlvo: z.number(),
-    repeticoesAlvo: z.number(),
-    pesoAlvo: z.number().optional(),
+  exercicioId: z.string(),
+  nomeExercicio: z.string(),
+  seriesAlvo: z.number(),
+  repeticoesAlvo: z.number(),
+  pesoAlvo: z.number().optional(),
 });
 export type ExercicioDeRotina = z.infer<typeof ExercicioDeRotinaSchema>;
 
@@ -62,44 +62,47 @@ export type GenerateRoutineOutput = z.infer<typeof GenerateRoutineOutputSchema>;
 
 // Tipos para suggestRoutineEvolution
 export const SuggestRoutineEvolutionInputSchema = z.object({
-    newLevel: z.number().describe("O novo nível que o usuário alcançou."),
-    workoutHistory: z.string().describe("O histórico de treinos do usuário nos últimos 30-60 dias, em formato JSON."),
-    personalRecords: z.string().describe('Dados de recordes pessoais em formato JSON, incluindo nome do exercício e valor do recorde.'),
+  newLevel: z.number().describe("O novo nível que o usuário alcançou."),
+  workoutHistory: z.string().describe("O histórico de treinos do usuário nos últimos 30-60 dias, em formato JSON."),
+  personalRecords: z.string().describe('Dados de recordes pessoais em formato JSON, incluindo nome do exercício e valor do recorde.'),
 });
 export type SuggestRoutineEvolutionInput = z.infer<typeof SuggestRoutineEvolutionInputSchema>;
 
 export const SuggestRoutineEvolutionOutputSchema = z.object({
-    suggestion: z.string().describe('Uma sugestão curta e motivadora para a próxima fase do treinamento, terminando com uma pergunta para engajar o usuário.'),
+  suggestion: z.string().describe('Uma sugestão curta e motivadora para a próxima fase do treinamento, terminando com uma pergunta para engajar o usuário.'),
 });
 export type SuggestRoutineEvolutionOutput = z.infer<typeof SuggestRoutineEvolutionOutputSchema>;
 
 // Tipos para EvolveRoutinePlan (e outros fluxos baseados em plano)
 
-export const RotinaParaModificarSchema = z.object({ 
-    id: z.string(), 
-    nome: z.string(), 
-    exercicios: z.array(ExercicioDeRotinaSchema) 
+export const RotinaParaModificarSchema = z.object({
+  id: z.string(),
+  nome: z.string(),
+  exercicios: z.array(ExercicioDeRotinaSchema)
 });
 export type RotinaParaModificar = z.infer<typeof RotinaParaModificarSchema>;
 
 
 export const PlanoDeAcaoSchema = z.object({
-    rotinasParaCriar: z.array(GenerateRoutineOutputSchema).optional().describe("Novas rotinas a serem criadas."),
-    rotinasParaModificar: z.array(RotinaParaModificarSchema).optional().describe("Rotinas existentes a serem modificadas."),
-    rotinasParaRemover: z.array(z.string()).optional().describe("IDs de rotinas existentes a serem removidas."),
-    mensagemDeAcompanhamento: z.string().describe("Uma mensagem para o usuário explicando as mudanças ou fazendo a próxima pergunta."),
-    xpInicial: z.number().optional().describe("XP inicial a ser concedido ao usuário com base no nível de experiência avaliado.")
+  rotinasParaCriar: z.array(GenerateRoutineOutputSchema).optional().describe("Novas rotinas a serem criadas."),
+  rotinasParaModificar: z.array(RotinaParaModificarSchema).optional().describe("Rotinas existentes a serem modificadas."),
+  rotinasParaRemover: z.array(z.string()).optional().describe("IDs de rotinas existentes a serem removidas."),
+  mensagemDeAcompanhamento: z.string().describe("Uma mensagem para o usuário explicando as mudanças ou fazendo a próxima pergunta."),
+  xpInicial: z.number().optional().describe("XP inicial a ser concedido ao usuário com base no nível de experiência avaliado."),
+  correcaoCompleta: z.boolean().optional().describe("Indica se é uma correção completa do perfil (true) ou apenas evolução normal (false)."),
+  novoXp: z.number().optional().describe("Novo XP a ser definido quando houver correção de nível incorreto do onboarding inicial."),
+  motivoCorrecao: z.string().optional().describe("Explicação do motivo da correção quando correcaoCompleta=true.")
 });
 export type PlanoDeAcao = z.infer<typeof PlanoDeAcaoSchema>;
 
 
 export const EvolveRoutinePlanInputSchema = z.object({
-    historicoConversa: z.string().describe("O histórico da conversa com o usuário, em formato JSON."),
-    rotinasAtuais: z.string().describe("As rotinas de treino atuais do usuário, em formato JSON."),
-    historicoTreinos: z.string().describe("O histórico de treinos do usuário, em formato JSON."),
-    recordesPessoais: z.string().describe("Os recordes pessoais do usuário, em formato JSON."),
-    exerciciosDisponiveis: z.string().describe('Uma lista em formato JSON de todos os exercícios disponíveis que podem ser incluídos na rotina.'),
-    nivelUsuario: z.number().describe("O nível atual do usuário."),
+  historicoConversa: z.string().describe("O histórico da conversa com o usuário, em formato JSON."),
+  rotinasAtuais: z.string().describe("As rotinas de treino atuais do usuário, em formato JSON."),
+  historicoTreinos: z.string().describe("O histórico de treinos do usuário, em formato JSON."),
+  recordesPessoais: z.string().describe("Os recordes pessoais do usuário, em formato JSON."),
+  exerciciosDisponiveis: z.string().describe('Uma lista em formato JSON de todos os exercícios disponíveis que podem ser incluídos na rotina.'),
+  nivelUsuario: z.number().describe("O nível atual do usuário."),
 });
 export type EvolveRoutinePlanInput = z.infer<typeof EvolveRoutinePlanInputSchema>;
 
@@ -109,8 +112,8 @@ export type EvolveRoutinePlanOutput = z.infer<typeof EvolveRoutinePlanOutputSche
 
 // Tipos para InitializeUserPlan
 export const InitializeUserPlanInputSchema = z.object({
-    historicoConversa: z.string().describe("O histórico da conversa com o novo usuário, em formato JSON."),
-    exerciciosDisponiveis: z.string().describe('Uma lista em formato JSON de todos os exercícios disponíveis que podem ser incluídos na rotina.'),
+  historicoConversa: z.string().describe("O histórico da conversa com o novo usuário, em formato JSON."),
+  exerciciosDisponiveis: z.string().describe('Uma lista em formato JSON de todos os exercícios disponíveis que podem ser incluídos na rotina.'),
 });
 export type InitializeUserPlanInput = z.infer<typeof InitializeUserPlanInputSchema>;
 
