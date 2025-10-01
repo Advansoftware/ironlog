@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -116,9 +115,7 @@ export default function WelcomePage() {
         description: "Amigo da IA",
       });
       
-      // Força um reload para que o client-layout detecte a mudança e redirecione
       router.push('/dashboard');
-      setTimeout(() => window.location.reload(), 300);
 
     } catch (error) {
       console.error('Erro ao aplicar plano inicial:', error);

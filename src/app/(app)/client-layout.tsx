@@ -60,10 +60,11 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-        if (!hasCompletedOnboarding()) {
-          router.replace('/welcome');
+        const onboardingComplete = hasCompletedOnboarding();
+        if (!onboardingComplete) {
+            router.replace('/welcome');
         } else {
-           setIsInitializing(false);
+            setIsInitializing(false);
         }
 
         setIsOnline(navigator.onLine);
@@ -288,5 +289,3 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-    
