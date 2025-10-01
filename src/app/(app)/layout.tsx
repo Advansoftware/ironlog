@@ -22,10 +22,12 @@ import type { Gamification } from '@/lib/types';
 import { getGamification } from '@/lib/storage';
 import { levelData } from '@/lib/gamification';
 import { Badge } from '@/components/ui/badge';
+import { Wand2 } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
   { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
+  { href: '/evolution', icon: Wand2, label: 'Evoluir' },
   { href: '/history', icon: Icons.History, label: 'Histórico' },
   { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
   { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },

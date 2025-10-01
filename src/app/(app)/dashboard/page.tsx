@@ -24,9 +24,8 @@ export default function DashboardPage() {
   const [isLoadingTip, setIsLoadingTip] = useState(true);
   const [gamification, setGamification] = useState<Gamification | null>(null);
 
-  const [routineSuggestion, setRoutineSuggestion] = useState<string | null>(null);
-  const [isLoadingSuggestion, setIsLoadingSuggestion] = useState(false);
-
+  const [showEvolutionCard, setShowEvolutionCard] = useState(false);
+  
   useEffect(() => {
     const allHistorico = getHistorico();
     setHistorico(allHistorico);
@@ -34,6 +33,12 @@ export default function DashboardPage() {
     setRecordes(allRecordes);
     const currentGamification = getGamification();
     setGamification(currentGamification);
+
+    const justLeveledUp = sessionStorage.getItem('justLeveledUp');
+    if (justLeveledUp) {
+      setShowEvolutionCard(true);
+      sessionStorage.removeItem('justLeveledUp');
+    }
     
     async function fetchTip() {
       setIsLoadingTip(true);
@@ -70,32 +75,7 @@ export default function DashboardPage() {
       }
     }
 
-    async function fetchRoutineSuggestion() {
-        const justLeveledUp = sessionStorage.getItem('justLeveledUp');
-        if (justLeveledUp && navigator.onLine) {
-            setIsLoadingSuggestion(true);
-            try {
-                const oneMonthAgo = new Date();
-                oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 2); // 2 meses para ter mais dados
-                const recentHistory = allHistorico.filter(s => new Date(s.data) > oneMonthAgo);
-
-                const result = await suggestRoutineEvolution({
-                    newLevel: currentGamification.level,
-                    workoutHistory: JSON.stringify(recentHistory),
-                    personalRecords: JSON.stringify(allRecordes)
-                });
-                setRoutineSuggestion(result.suggestion);
-                sessionStorage.removeItem('justLeveledUp'); // Sugestão foi mostrada
-            } catch (error) {
-                console.error("Failed to fetch routine suggestion:", error);
-            } finally {
-                setIsLoadingSuggestion(false);
-            }
-        }
-    }
-
     fetchTip();
-    fetchRoutineSuggestion();
   }, []);
 
   const totalWorkouts = historico.length;
@@ -117,37 +97,28 @@ export default function DashboardPage() {
         </Button>
       </PageHeader>
       
-      {(isLoadingSuggestion || routineSuggestion) && (
+      {showEvolutionCard && (
          <Card className="mb-8 border-primary/50 bg-gradient-to-r from-primary/10 via-background to-background">
              <CardHeader>
                  <CardTitle className="flex items-center gap-2">
                      <Wand2 className="text-primary" />
-                     Evolução de Treino Sugerida
+                     Hora de Evoluir seu Treino!
                  </CardTitle>
-                 <CardDescription>Parabéns por subir de nível! Sua dedicação está dando resultado.</CardDescription>
+                 <CardDescription>Parabéns por subir de nível! Você desbloqueou a chance de otimizar suas rotinas com nosso personal trainer de IA.</CardDescription>
              </CardHeader>
              <CardContent>
-                  {isLoadingSuggestion ? (
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Loader2 className="size-4 animate-spin" />
-                      <span>Analisando seu progresso para sugerir o próximo passo...</span>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground leading-relaxed">
-                      {routineSuggestion}
-                    </p>
-                  )}
+                <p className="text-muted-foreground leading-relaxed">
+                  Sua dedicação está dando resultados. Para continuar progredindo, é uma boa ideia ajustar seu plano. Vamos conversar sobre seus objetivos e criar a próxima fase do seu treinamento?
+                </p>
              </CardContent>
-             {!isLoadingSuggestion && routineSuggestion && (
-                <CardFooter>
-                    <Button asChild>
-                        <Link href="/routines/create">
-                            <Sparkles className="mr-2" />
-                            Criar Nova Rotina com IA
-                        </Link>
-                    </Button>
-                </CardFooter>
-             )}
+            <CardFooter>
+                <Button asChild>
+                    <Link href="/evolution">
+                        <Sparkles className="mr-2" />
+                        Conversar com a IA
+                    </Link>
+                </Button>
+            </CardFooter>
          </Card>
       )}
 
