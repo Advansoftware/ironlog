@@ -206,5 +206,4 @@ export function ProgressClient() {
         </Card>
     </div>
   )
-
-    
+}

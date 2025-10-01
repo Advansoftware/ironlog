@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Accordion,
@@ -41,7 +42,7 @@ export default function HistoryPage() {
                     <div className="flex flex-col md:flex-row md:items-center justify-between w-full text-left pr-4">
                       <span className="font-semibold text-lg">{session.nome}</span>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span>{format(parseISO(session.data), 'd \'de\' MMMM, yyyy', { locale: ptBR })}</span>
+                          <span>{format(parseISO(session.data), "d 'de' MMMM, yyyy", { locale: ptBR })}</span>
                           <div className="flex items-center gap-1">
                               <Clock className="size-4" />
                               <span>{session.duracao} min</span>
