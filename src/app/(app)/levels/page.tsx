@@ -25,8 +25,8 @@ export default function LevelsPage() {
     return (
         <>
             <PageHeader
-                title="Meu Legado"
-                description="Veja sua evolução, desbloqueie níveis e torne-se uma lenda."
+                title="BIIIRL!"
+                description="É hora do show! Veja sua evolução e o caminho pra se tornar uma lenda."
             />
 
             <Card className="mb-8">
