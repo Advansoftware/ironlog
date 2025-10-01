@@ -1,6 +1,7 @@
 'use client';
 
 import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular } from '@/lib/types';
+import { v4 as uuidv4 } from 'uuid';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -100,7 +101,28 @@ export const getHistorico = () => getFromStorage<SessaoDeTreino[]>('historico', 
 export const getRecordesPessoais = () => getFromStorage<RecordePessoal[]>('recordesPessoais', []);
 
 export const salvarRotinas = (rotinas: RotinaDeTreino[]) => saveToStorage('rotinas', rotinas);
-export const salvarHistorico = (historico: SessaoDeTreino[]) => saveToStorage('historico', historico);
+
+export const salvarSessao = (sessao: SessaoDeTreino, novosRecordes: RecordePessoal[]) => {
+    const historico = getHistorico();
+    saveToStorage('historico', [sessao, ...historico]);
+
+    if (novosRecordes.length > 0) {
+        const recordesAtuais = getRecordesPessoais();
+        const recordesAtualizados = [...recordesAtuais];
+
+        novosRecordes.forEach(novoPR => {
+            const index = recordesAtualizados.findIndex(pr => pr.exercicioId === novoPR.exercicioId);
+            if (index !== -1) {
+                recordesAtualizados[index] = novoPR;
+            } else {
+                recordesAtualizados.push(novoPR);
+            }
+        });
+
+        saveToStorage('recordesPessoais', recordesAtualizados);
+    }
+};
+
 export const salvarRecordesPessoais = (recordes: RecordePessoal[]) => saveToStorage('recordesPessoais', recordes);
 
 

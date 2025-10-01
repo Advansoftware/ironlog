@@ -10,18 +10,45 @@ import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
 import type { SessaoDeTreino, RecordePessoal, RotinaDeTreino } from '@/lib/types';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, Loader2 } from 'lucide-react';
+import { generateBeginnerTip } from '@/ai/flows/generate-beginner-tip';
 
 
 export default function DashboardPage() {
   const [historico, setHistorico] = useState<SessaoDeTreino[]>([]);
   const [recordes, setRecordes] = useState<RecordePessoal[]>([]);
   const [rotinas, setRotinas] = useState<RotinaDeTreino[]>([]);
+  const [beginnerTip, setBeginnerTip] = useState<string | null>(null);
+  const [isLoadingTip, setIsLoadingTip] = useState(true);
 
   useEffect(() => {
     setHistorico(getHistorico());
     setRecordes(getRecordesPessoais());
     setRotinas(getRotinas());
+    
+    async function fetchTip() {
+      try {
+        const cachedTip = sessionStorage.getItem('beginnerTip');
+        const cacheDate = sessionStorage.getItem('beginnerTipDate');
+        const today = new Date().toDateString();
+
+        if (cachedTip && cacheDate === today) {
+          setBeginnerTip(cachedTip);
+        } else {
+          const result = await generateBeginnerTip();
+          setBeginnerTip(result.tip);
+          sessionStorage.setItem('beginnerTip', result.tip);
+          sessionStorage.setItem('beginnerTipDate', today);
+        }
+      } catch (error) {
+        console.error("Failed to fetch beginner tip:", error);
+        setBeginnerTip("Consistência é mais importante que intensidade no início. Focar em aprender a forma correta dos exercícios previne lesões e garante um progresso sólido.");
+      } finally {
+        setIsLoadingTip(false);
+      }
+    }
+
+    fetchTip();
   }, []);
 
   const totalWorkouts = historico.length;
@@ -93,13 +120,20 @@ export default function DashboardPage() {
         <CardHeader>
             <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="text-yellow-400" />
-                Dica para Iniciantes
+                Dica do Dia
             </CardTitle>
         </CardHeader>
         <CardContent>
-            <p className="text-muted-foreground">
-                Consistência é mais importante que intensidade no início. Focar em aprender a forma correta dos exercícios previne lesões e garante um progresso sólido. Não tenha medo de começar com pesos mais leves!
-            </p>
+            {isLoadingTip ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" />
+                <span>Gerando uma nova dica para você...</span>
+              </div>
+            ) : (
+              <p className="text-muted-foreground">
+                {beginnerTip}
+              </p>
+            )}
         </CardContent>
       </Card>
 
