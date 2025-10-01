@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Suspense, useEffect, useState, useRef } from 'react';
@@ -130,6 +131,7 @@ function SessionContent() {
        toast({
          title: "BIIIRL! Subiu de Nível!",
          description: `Você alcançou o Nível ${levelUpInfo.newLevel}: ${levelData[levelUpInfo.newLevel].name}`,
+         duration: 5000,
          action: <Zap className="text-yellow-400" />,
        });
     }
@@ -138,6 +140,7 @@ function SessionContent() {
         toast({
             title: "Novo Recorde Pessoal!",
             description: `Você quebrou ${novosRecordes.length} recorde(s)!`,
+            duration: 5000,
             action: <PartyPopper className="text-yellow-400" />,
         });
     }

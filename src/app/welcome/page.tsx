@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -93,7 +94,7 @@ export default function WelcomePage() {
         throw new Error("O plano inicial não contém rotinas para criar.");
       }
 
-      // Salva as rotinas
+      // Salva as rotinas com um prefixo de IA
       plan.rotinasParaCriar.forEach(rotina => salvarRotina({ ...rotina, id: `rt-ai-${uuidv4()}` }));
 
       // Define o XP e nível inicial com base na avaliação da IA
@@ -102,10 +103,9 @@ export default function WelcomePage() {
       salvarGamification({ xp: initialXp, level: newLevel });
       
       // Desbloqueia as primeiras conquistas
-      const initialAchievements = [
+      salvarUnlockedAchievements([
         { id: 'first-ai-routine', date: new Date().toISOString() },
-      ];
-      salvarUnlockedAchievements(initialAchievements);
+      ]);
 
       toast({
         title: 'Plano de Treino Criado!',
@@ -116,6 +116,7 @@ export default function WelcomePage() {
         description: "Amigo da IA",
       });
       
+      // Redireciona para o dashboard, que agora vai carregar o estado correto.
       router.push('/dashboard');
 
     } catch (error) {
@@ -130,7 +131,7 @@ export default function WelcomePage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
+    <div className="flex flex-col h-screen bg-background relative overflow-hidden">
       {/* Animated Gradient Blobs */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full filter blur-3xl opacity-50 animated-gradient-blob-1"></div>
       <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-500/20 rounded-full filter blur-3xl opacity-50 animated-gradient-blob-2"></div>
@@ -144,7 +145,7 @@ export default function WelcomePage() {
         <p className="text-muted-foreground max-w-lg">Vamos construir seu plano de treino inicial juntos. Responda às perguntas para que eu possa criar a melhor estratégia para você.</p>
       </header>
 
-      <main className="flex-1 flex flex-col w-full max-w-2xl mx-auto p-4 pt-0 z-10">
+      <main className="flex-1 flex flex-col w-full max-w-2xl mx-auto p-4 pt-0 z-10 overflow-hidden">
         <div className="flex-1 overflow-y-auto p-2 md:p-6 space-y-6">
           {messages.map((msg, index) => (
             <div key={index} className={`flex items-start gap-4 ${msg.role === 'ia' ? '' : 'justify-end'}`}>
@@ -184,13 +185,13 @@ export default function WelcomePage() {
             )}
             <div ref={bottomRef} />
         </div>
-        <div className="p-4 bg-transparent border-t">
+        <div className="p-4 bg-background/50 border-t">
           <div className="flex items-center gap-2">
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Digite sua resposta..."
-              className="flex-1 resize-none bg-background/80 backdrop-blur-sm pr-14"
+              className="flex-1 resize-none bg-background/80 backdrop-blur-sm"
               rows={1}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {

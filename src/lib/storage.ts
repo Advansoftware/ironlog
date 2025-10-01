@@ -10,7 +10,7 @@
 import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular, Gamification, DbConnectionConfig, UnlockedAchievement, AchievementContext } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { calculateXP, checkForLevelUp, allAchievements } from './gamification';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -220,6 +220,7 @@ export const salvarUnlockedAchievements = (achievements: UnlockedAchievement[]) 
  * @returns Um objeto com informações sobre o level up e o XP ganho.
  */
 export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, novosRecordes: RecordePessoal[]) => {
+    const { toast } = useToast();
     const historicoAnterior = getHistorico();
     const gamificationAnterior = getGamification();
 
@@ -263,7 +264,7 @@ export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, nov
     }
     
     // Verifica por novas conquistas
-    checkForNewAchievements(sessaoCompleta);
+    checkForNewAchievements(sessaoCompleta, toast);
 
     return { levelUpInfo, xpGanho };
 };
@@ -272,7 +273,7 @@ export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, nov
  * Verifica se alguma nova conquista foi desbloqueada após uma sessão.
  * @param latestSession A sessão de treino que acabou de ser concluída.
  */
-function checkForNewAchievements(latestSession: SessaoDeTreino) {
+function checkForNewAchievements(latestSession: SessaoDeTreino, toast: ReturnType<typeof useToast>['toast']) {
     const unlocked = getUnlockedAchievements();
     const unlockedIds = new Set(unlocked.map(a => a.id));
 
@@ -343,10 +344,15 @@ export function resetAllData() {
         'unlockedAchievements',
         'dbConnections',
         'appDataInitialized_v3',
-        'appDataInitialized_v4'
+        'appDataInitialized_v4',
+        'dailyTip',
+        'dailyTipDate',
+        'justLeveledUp',
     ];
     
     keys.forEach(key => localStorage.removeItem(key));
+    // Limpa também a sessionStorage para garantir
+    sessionStorage.clear();
 
     initializeStorage();
     window.dispatchEvent(new Event('storage'));

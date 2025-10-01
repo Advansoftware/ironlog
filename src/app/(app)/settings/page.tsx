@@ -25,9 +25,10 @@ import { Input } from '@/components/ui/input';
 import { resetAllData, getDbConnections, saveDbConnections } from '@/lib/storage';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, Database, Trash2, Signal } from 'lucide-react';
+import { AlertTriangle, Database, Trash2, Signal, Download } from 'lucide-react';
 import type { DbConnectionConfig } from '@/lib/types';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { usePwaInstall } from '@/hooks/use-pwa-install';
 
 const dbConnectionSchema = z.object({
   name: z.string().min(1, "O nome da conexão é obrigatório."),
@@ -42,6 +43,7 @@ export default function SettingsPage() {
     const [connections, setConnections] = useState<DbConnectionConfig[]>([]);
     const [isResetDialogOpen, setResetDialogOpen] = useState(false);
     const [isDeleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null);
+    const { canInstall, promptInstall } = usePwaInstall();
 
     useEffect(() => {
         setConnections(getDbConnections());
@@ -86,8 +88,8 @@ export default function SettingsPage() {
                 title: 'Dados Resetados!',
                 description: 'Todos os seus dados foram apagados e o app foi restaurado para o estado inicial.',
             });
-            router.push('/dashboard');
-            setTimeout(() => window.location.reload(), 500);
+            // Não redirecionamos mais aqui, a página vai recarregar e o hook da raiz cuida do redirecionamento
+            window.location.reload();
         } catch (error) {
              toast({
                 variant: 'destructive',
@@ -107,11 +109,31 @@ export default function SettingsPage() {
         description="Gerencie as configurações e dados do seu aplicativo."
       />
 
+        {canInstall && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <Download className="text-primary"/>
+                Instalar Aplicativo
+              </CardTitle>
+              <CardDescription>
+                Instale o IronLog na tela inicial do seu dispositivo para ter uma experiência mais rápida e integrada, com acesso offline.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
+              <Button onClick={promptInstall}>
+                <Download className="mr-2"/>
+                Instalar no seu dispositivo
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
+
         <Card className="mb-8">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3">
                     <Database className="text-primary"/>
-                    Sincronização de Dados
+                    Sincronização de Dados (Em Breve)
                 </CardTitle>
                 <CardDescription>Adicione uma URL de banco de dados MongoDB para sincronizar seus dados entre dispositivos.</CardDescription>
             </CardHeader>
@@ -174,7 +196,16 @@ export default function SettingsPage() {
                         </div>
                     </CardContent>
                     <CardFooter>
-                        <Button type="submit">Adicionar Conexão</Button>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <span tabIndex={0}>
+                                    <Button type="submit" disabled>Adicionar Conexão</Button>
+                                </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>A funcionalidade de back-end ainda não foi implementada.</p>
+                            </TooltipContent>
+                        </Tooltip>
                     </CardFooter>
                 </form>
             </Form>
@@ -195,8 +226,6 @@ export default function SettingsPage() {
                         <div className="flex gap-2 w-full md:w-auto">
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    {/* O Tooltip precisa de um elemento real para se ancorar. 
-                                        Um span envolvendo o botão desabilitado funciona. */}
                                     <span tabIndex={0}>
                                         <Button variant="outline" disabled className="w-full">
                                             <Signal className="mr-2"/>
@@ -281,3 +310,4 @@ export default function SettingsPage() {
     </TooltipProvider>
   );
 }
+
