@@ -16,6 +16,7 @@ import {
   SidebarFooter,
   SidebarInset,
 } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
@@ -23,6 +24,14 @@ const navItems = [
   { href: '/history', icon: Icons.History, label: 'Histórico' },
   { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
   { href: '/exercises', icon: Icons.Exercises, label: 'Exercícios' },
+];
+
+const mobileNavItems = [
+    { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
+    { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
+    { href: '/session', icon: Icons.Add, label: 'Iniciar' }, // Ação Central
+    { href: '/history', icon: Icons.History, label: 'Histórico' },
+    { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -33,7 +42,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader className="p-4">
             <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center size-9 rounded-lg bg-gradient-to-br from-primary to-green-400 text-primary-foreground">
+                <div className="flex items-center justify-center size-9 rounded-lg bg-gradient-to-br from-primary to-lime-400 text-primary-foreground">
                     <Icons.Logo className="size-6" />
                 </div>
                 <h1 className="text-2xl font-bold">IronLog</h1>
@@ -71,18 +80,32 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <main className="flex-1 p-4 md:p-8 pb-20 md:pb-8">
+        <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
             {children}
         </main>
         <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-sm md:hidden">
             <div className="flex justify-around items-center h-16">
-                {navItems.map((item) => (
+                {mobileNavItems.map((item) => {
+                  const isActive = item.href === '/session' ? pathname === item.href : pathname.startsWith(item.href);
+                  if (item.href === '/session') {
+                    return (
+                        <div key={item.href} className="-mt-8">
+                            <Button asChild size="lg" className="rounded-full h-16 w-16 shadow-lg bg-primary hover:bg-primary/90 border-4 border-background">
+                               <Link href={item.href}>
+                                    <item.icon className="size-8" />
+                                    <span className="sr-only">{item.label}</span>
+                                </Link>
+                            </Button>
+                        </div>
+                    );
+                  }
+                  return (
                     <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
                             "flex flex-col items-center justify-center gap-1 text-xs w-full h-full",
-                            pathname.startsWith(item.href)
+                            isActive
                                 ? "text-primary"
                                 : "text-muted-foreground"
                         )}
@@ -90,7 +113,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <item.icon className="size-5" />
                         <span>{item.label}</span>
                     </Link>
-                ))}
+                  )
+                })}
             </div>
         </nav>
       </SidebarInset>

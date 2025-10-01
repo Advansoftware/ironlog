@@ -17,7 +17,14 @@ export default function RoutinesPage() {
 
   return (
     <>
-      <PageHeader title="Rotinas" description="Crie e gerencie suas rotinas de treino." />
+      <PageHeader title="Rotinas" description="Crie e gerencie suas rotinas de treino." >
+        <div className="hidden md:flex">
+          <Button>
+            <Icons.Add />
+            Criar Rotina
+          </Button>
+        </div>
+      </PageHeader>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pb-24">
         {rotinas.map((routine) => (
@@ -43,17 +50,6 @@ export default function RoutinesPage() {
         )}
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-sm border-t border-border md:hidden">
-        <Button className="w-full" size="lg">
-          <Icons.Add />
-          Criar Rotina
-        </Button>
-      </div>
-      <div className="hidden md:flex fixed bottom-8 right-8">
-         <Button size="lg" className="rounded-full h-14 w-14 shadow-lg">
-           <Icons.Add className="h-6 w-6" />
-        </Button>
-      </div>
     </>
   );
 }
