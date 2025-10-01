@@ -54,7 +54,7 @@ const prompt = ai.definePrompt({
     - **Importante:** Crie quantas rotinas forem necessárias para a semana (Ex: se o usuário treina 3 dias, pode ser um "Treino A", "Treino B", "Treino C", ou um "Full Body" para repetir). O nome das rotinas deve ser criativo e relevante (Ex: "Fundamentos da Força", "Operação Hipertrofia", "Queima Total em Casa").
     - O plano DEVE ser condizente com o nível de experiência avaliado. Não crie um plano de 5 dias para um iniciante.
     - Assegure-se de que os IDs dos exercícios ('exercicioId') e os nomes ('nomeExercicio') correspondam EXATAMENTE aos da lista 'exerciciosDisponiveis'.
-    - No campo 'xpInicial', atribua um valor com base na experiência: Iniciante = 1, Intermediário = 500, Avançado = 1500.
+    - No campo 'xpInicial', atribua um valor com base na experiência: Iniciante = 1, Intermediário = 1000, Avançado = 2500.
 6.  **Comunicar o Plano:** Use a 'mensagemDeAcompanhamento' para explicar o plano proposto de forma clara e motivadora e perguntar pela aprovação. Ex: "Fantástico! Com base no que conversamos, e por você ser um usuário intermediário, montei uma divisão de treino 'Push/Pull/Legs' com 3 rotinas para você alternar. Elas são perfeitas para seus objetivos de hipertrofia. Podemos aprovar este plano e começar sua jornada?".
 
 Responda SEMPRE com um JSON válido que siga o schema de saída. O plano deve estar exclusivamente em 'rotinasParaCriar'.`,
