@@ -76,7 +76,7 @@ export default function HistoryPage() {
     <>
       <PageHeader
         title="Histórico de Treinos"
-        description="Reveja suas sessões passadas e acompanhe a consistência."
+        description="Reveja suas sessões passadas. Use o calendário para filtrar por data."
       >
         <Button asChild variant="outline">
           <Link href="/progress">

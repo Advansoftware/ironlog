@@ -1,3 +1,4 @@
+
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -236,7 +237,7 @@ export default function CreateRoutinePage() {
         <Card>
           <CardHeader>
             <CardTitle>2. Resultado da IA</CardTitle>
-            <CardDescription>Aqui está a rotina sugerida. Você pode salvá-la ou gerar novamente.</CardDescription>
+            <CardDescription>Revise a rotina sugerida. Você pode salvá-la ou gerar uma nova.</CardDescription>
           </CardHeader>
           <CardContent className="min-h-[300px]">
             {isLoading && (

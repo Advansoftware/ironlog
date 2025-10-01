@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -124,7 +125,7 @@ export default function EvolutionPage() {
 
   return (
     <>
-      <PageHeader title="Personal Trainer IA" description="Converse com a IA para evoluir seu plano de treino." />
+      <PageHeader title="Personal Trainer IA" description="Converse com a IA para evoluir seu plano de treino de forma inteligente." />
       
       <div className="flex flex-col h-[75vh] bg-card rounded-lg border">
         <div className="flex-1 overflow-y-auto p-6 space-y-6">

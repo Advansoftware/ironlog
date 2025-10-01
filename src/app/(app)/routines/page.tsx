@@ -77,7 +77,7 @@ export default function RoutinesPage() {
 
   return (
     <>
-      <PageHeader title="Rotinas" description="Gerencie suas rotinas ou crie uma nova.">
+      <PageHeader title="Suas Rotinas de Treino" description="Aqui ficam seus planos de treino. Comece uma sessão a partir de uma rotina existente ou crie uma nova.">
         <div className="flex gap-2">
             <Button asChild>
               <Link href="/routines/create">
