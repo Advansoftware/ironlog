@@ -28,7 +28,7 @@ export const levelNames: Record<number, string> = {
   5: 'Vem Monstro!',
   6: 'Fábrica de Monstros',
   7: 'Monstrão',
-8: 'BIIIRL!',
+  8: 'BIIIRL!',
   9: 'Aberração da Maromba',
   10: 'Lenda da Maromba',
 };
@@ -81,6 +81,8 @@ export function checkForLevelUp(oldXp: number, newXp: number): { didLevelUp: boo
  */
 export function getLevelProgress(totalXp: number): { progressPercentage: number; xpToNextLevel: number; currentLevelXp: number, currentLevel: number } {
   let currentLevel = 1;
+  const maxLevel = Math.max(...Object.keys(levelThresholds).map(Number));
+
   for (const level in levelThresholds) {
     if (totalXp >= levelThresholds[level]) {
       currentLevel = parseInt(level, 10);
@@ -88,13 +90,16 @@ export function getLevelProgress(totalXp: number): { progressPercentage: number;
   }
 
   const currentLevelXpThreshold = levelThresholds[currentLevel];
-  const nextLevelXpThreshold = levelThresholds[currentLevel + 1] || totalXp;
+  // Se o nível atual for o máximo, o próximo threshold é o próprio XP total
+  const nextLevelXpThreshold = levelThresholds[currentLevel + 1] ?? levelThresholds[maxLevel];
 
-  if (currentLevelXpThreshold === nextLevelXpThreshold) {
+  // Se estiver no nível máximo e o threshold para o próximo não existir
+  if (currentLevel === maxLevel && !levelThresholds[currentLevel + 1]) {
+      const xpInCurrentLevel = totalXp - currentLevelXpThreshold;
       return {
           progressPercentage: 100,
-          xpToNextLevel: 0,
-          currentLevelXp: totalXp - currentLevelXpThreshold,
+          xpToNextLevel: 0, // Não há próximo nível
+          currentLevelXp: xpInCurrentLevel,
           currentLevel,
       }
   }
@@ -102,11 +107,13 @@ export function getLevelProgress(totalXp: number): { progressPercentage: number;
   const xpInCurrentLevel = totalXp - currentLevelXpThreshold;
   const xpForNextLevel = nextLevelXpThreshold - currentLevelXpThreshold;
 
-  const progressPercentage = Math.min(100, Math.floor((xpInCurrentLevel / xpForNextLevel) * 100));
+  const progressPercentage = xpForNextLevel > 0 
+    ? Math.min(100, Math.floor((xpInCurrentLevel / xpForNextLevel) * 100))
+    : 100;
 
   return {
     progressPercentage,
-    xpToNextLevel: nextLevelXpThreshold - totalXp,
+    xpToNextLevel: xpForNextLevel > 0 ? nextLevelXpThreshold - totalXp : 0,
     currentLevelXp: xpInCurrentLevel,
     currentLevel,
   };

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { PageHeader } from '@/components/page-header';
 import { Icons } from '@/components/icons';
 import { getHistorico, getRecordesPessoais, getGamification } from '@/lib/storage';
@@ -81,8 +81,8 @@ export default function DashboardPage() {
         </Button>
       </PageHeader>
       
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50 col-span-1 md:col-span-2">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50 col-span-1 md:col-span-2 lg:col-span-3">
            <CardHeader>
             <CardTitle className="flex items-center gap-2">
                 <Icons.Award className="size-5 text-primary" />
@@ -93,10 +93,10 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Progress value={progressPercentage} className="h-2" />
-            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+            <Progress value={progressPercentage} className="h-3" />
+            <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
                 <span>{currentLevelXp.toLocaleString()} XP</span>
-                <span>{xpToNextLevel.toLocaleString()} XP para o próximo nível</span>
+                <span>{xpToNextLevel > 0 ? `${xpToNextLevel.toLocaleString()} XP para o próximo nível` : 'Nível Máximo!'}</span>
             </div>
           </CardContent>
         </Card>
@@ -114,6 +114,19 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         
+        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>Treinos este Mês</span>
+              <Icons.History className="size-5 text-primary" />
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+             <p className="text-4xl font-bold">{workoutsThisMonth}</p>
+             <p className="text-xs text-muted-foreground">no mês atual</p>
+          </CardContent>
+        </Card>
+
         <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
