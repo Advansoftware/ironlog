@@ -17,7 +17,7 @@ export function LevelProgress({ gamification, levelData, levelProgress }: LevelP
   const { progressPercentage, xpToNextLevel, currentLevelXp } = levelProgress;
 
   return (
-    <Card className="col-span-1 md:col-span-2 lg:col-span-3">
+    <Card className="col-span-1 md:col-span-2 lg:col-span-4">
         <CardHeader>
         <CardTitle className="flex items-center gap-2">
             <LevelIcon className="size-6 text-primary" />

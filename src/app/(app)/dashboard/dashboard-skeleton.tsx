@@ -5,8 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 export function DashboardSkeleton() {
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="col-span-1 md:col-span-2 lg:col-span-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-4">
            <CardHeader>
             <Skeleton className="h-7 w-48" />
             <Skeleton className="h-5 w-32" />
@@ -40,6 +40,16 @@ export function DashboardSkeleton() {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+             <Skeleton className="h-6 w-3/4" />
+          </CardHeader>
+          <CardContent>
+             <Skeleton className="h-10 w-16 mb-2" />
+             <Skeleton className="h-4 w-28" />
+          </CardContent>
+        </Card>
+        
         <Card>
           <CardHeader>
              <Skeleton className="h-6 w-3/4" />

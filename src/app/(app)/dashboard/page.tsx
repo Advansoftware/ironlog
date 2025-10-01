@@ -43,7 +43,7 @@ export default function DashboardPage() {
       
       {showEvolutionCard && <EvolutionCard />}
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {gamification && levelData && (
             <LevelProgress 
                 gamification={gamification} 
@@ -72,6 +72,14 @@ export default function DashboardPage() {
             description="recordes pessoais totais"
             Icon={Icons.Star}
             iconClassName="text-yellow-400"
+        />
+
+        <StatCard
+          title="Conquistas"
+          value={stats.totalAchievements}
+          description="medalhas desbloqueadas"
+          Icon={Icons.Award}
+          iconClassName="text-orange-400"
         />
       </div>
 
