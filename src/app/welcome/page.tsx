@@ -132,14 +132,21 @@ export default function WelcomePage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background p-4 justify-center items-center">
+    <div className="flex flex-col h-screen bg-background p-4 justify-center items-center relative overflow-hidden">
+      {/* Animated Gradient Blobs */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full filter blur-3xl opacity-50 animated-gradient-blob-1"></div>
+      <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-500/20 rounded-full filter blur-3xl opacity-50 animated-gradient-blob-2"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full filter blur-3xl opacity-50 animated-gradient-blob-3"></div>
+
+      <div className="z-10 flex flex-col items-center">
        <div className="flex items-center gap-3 mb-4">
             <Icons.Logo className="size-8 text-primary" />
             <h1 className="text-3xl font-bold tracking-tight">Bem-vindo ao IronLog!</h1>
         </div>
         <p className="text-muted-foreground mb-8 text-center max-w-lg">Vamos construir seu plano de treino inicial juntos. Responda às perguntas para que eu possa criar a melhor estratégia para você.</p>
+      </div>
 
-      <div className="flex flex-col w-full max-w-2xl h-[60vh] bg-card rounded-lg border">
+      <div className="flex flex-col w-full max-w-2xl h-[60vh] bg-card/80 backdrop-blur-lg rounded-lg border z-10">
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {messages.map((msg, index) => (
             <div key={index} className={`flex items-start gap-4 ${msg.role === 'ia' ? '' : 'justify-end'}`}>
@@ -185,7 +192,7 @@ export default function WelcomePage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Digite sua resposta..."
-              className="flex-1 resize-none"
+              className="flex-1 resize-none bg-transparent"
               rows={1}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -195,7 +202,7 @@ export default function WelcomePage() {
               }}
               disabled={isLoading || isAwaitingPlanConfirmation}
             />
-            <Button onClick={() => handleSendMessage(input)} disabled={isLoading || isAwaitingPlanConfirmation}>
+            <Button onClick={() => handleSendMessage(input)} disabled={isLoading || isAwaitingPlanConfirmation} size="icon" className="rounded-full flex-shrink-0">
               <Send size={16} />
               <span className="sr-only">Enviar</span>
             </Button>

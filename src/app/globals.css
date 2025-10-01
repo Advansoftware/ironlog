@@ -86,3 +86,35 @@
     background-attachment: fixed;
   }
 }
+
+
+@layer utilities {
+  @keyframes blob-move-1 {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30vw, -15vh) scale(1.1); }
+    66% { transform: translate(-20vw, 10vh) scale(0.9); }
+    100% { transform: translate(0, 0) scale(1); }
+  }
+  @keyframes blob-move-2 {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-25vw, 10vh) scale(0.9); }
+    66% { transform: translate(20vw, -20vh) scale(1.2); }
+    100% { transform: translate(0, 0) scale(1); }
+  }
+  @keyframes blob-move-3 {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(15vw, 20vh) scale(1.2); }
+    66% { transform: translate(-10vw, -10vh) scale(0.8); }
+    100% { transform: translate(0, 0) scale(1); }
+  }
+
+  .animated-gradient-blob-1 {
+    animation: blob-move-1 25s ease-in-out infinite;
+  }
+  .animated-gradient-blob-2 {
+    animation: blob-move-2 30s ease-in-out infinite;
+  }
+  .animated-gradient-blob-3 {
+    animation: blob-move-3 20s ease-in-out infinite;
+  }
+}
