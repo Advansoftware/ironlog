@@ -17,20 +17,21 @@ const prompt = ai.definePrompt({
   output: { schema: GenerateRoutineOutputSchema },
   prompt: `Você é um personal trainer de elite e especialista em musculação. Sua tarefa é criar a melhor rotina de treino possível para um usuário, com base nas informações fornecidas. A resposta DEVE ser em formato JSON e aderir ao esquema de saída.
 
-A rotina deve ser estruturada, eficaz e segura, adequada ao nível de experiência do usuário.
+A rotina deve ser estruturada, eficaz e segura, adequada ao nível de experiência do usuário e aos equipamentos disponíveis.
 
 Informações do Usuário:
 - Objetivo Principal: {{{objetivo}}}
 - Nível de Experiência: {{{nivelExperiencia}}}
 - Dias por Semana: {{{diasPorSemana}}}
+- Local de Treino/Equipamentos: {{{localDeTreino}}}
 - Observações: {{{observacoes}}}
 
-Exercícios Disponíveis (use apenas exercícios desta lista):
+Exercícios Disponíveis (use apenas exercícios desta lista. A coluna 'equipamento' indica o necessário para cada um):
 {{{exerciciosDisponiveis}}}
 
 Instruções:
 1.  Crie um nome para a rotina que seja motivador e descritivo.
-2.  Selecione os melhores exercícios da lista fornecida que se alinhem com o objetivo do usuário.
+2.  Selecione os melhores exercícios da lista fornecida que se alinhem com o objetivo do usuário e seu local de treino. Por exemplo, se o local for 'Casa', priorize exercícios com 'Peso do Corpo' e 'Halteres'. Se for 'Academia', use todos os tipos de equipamento.
 3.  Distribua os exercícios de forma lógica ao longo dos dias de treino, se aplicável (embora o schema de saída seja uma lista única, você pode organizar a lógica do treino pensando na divisão semanal).
 4.  Defina o número de séries e repetições (seriesAlvo, repeticoesAlvo) para cada exercício, de acordo com o objetivo (ex: menos reps para força, mais reps para hipertrofia/resistência).
 5.  O 'exercicioId' no JSON de saída DEVE corresponder a um 'id' da lista de exercícios disponíveis.

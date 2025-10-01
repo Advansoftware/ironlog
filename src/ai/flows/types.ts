@@ -43,6 +43,7 @@ export const GenerateRoutineInputSchema = z.object({
   objetivo: z.string().describe('O principal objetivo do treino (ex: Hipertrofia, Força, Emagrecimento).'),
   nivelExperiencia: z.string().describe('O nível de experiência do usuário (Iniciante, Intermediário, Avançado).'),
   diasPorSemana: z.number().describe('O número de dias por semana que o usuário pode treinar.'),
+  localDeTreino: z.string().describe('Onde o usuário vai treinar, indicando os equipamentos disponíveis (ex: "Academia", "Casa").'),
   observacoes: z.string().optional().describe('Quaisquer observações ou preferências adicionais.'),
   exerciciosDisponiveis: z.string().describe('Uma lista em formato JSON de todos os exercícios disponíveis que podem ser incluídos na rotina.')
 });

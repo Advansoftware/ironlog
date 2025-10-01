@@ -24,6 +24,7 @@ const formSchema = z.object({
   objetivo: z.string().min(1, 'O objetivo é obrigatório.'),
   nivelExperiencia: z.string().min(1, 'O nível de experiência é obrigatório.'),
   diasPorSemana: z.coerce.number().min(1, 'Pelo menos 1 dia é necessário.').max(7),
+  localDeTreino: z.string().min(1, 'O local de treino é obrigatório.'),
   observacoes: z.string().optional(),
 });
 
@@ -41,6 +42,7 @@ export default function CreateRoutinePage() {
       objetivo: 'Hipertrofia',
       nivelExperiencia: 'Iniciante',
       diasPorSemana: 3,
+      localDeTreino: 'Academia',
       observacoes: '',
     },
   });
@@ -171,6 +173,28 @@ export default function CreateRoutinePage() {
                       <FormControl>
                         <Input type="number" min="1" max="7" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                 <FormField
+                  control={form.control}
+                  name="localDeTreino"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Onde você vai treinar?</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione o local" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Academia">Academia (equipamentos completos)</SelectItem>
+                          <SelectItem value="Casa">Casa (peso do corpo e halteres)</SelectItem>
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
