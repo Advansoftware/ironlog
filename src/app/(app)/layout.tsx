@@ -148,11 +148,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             isActive
                                 ? "text-primary"
                                 : "text-muted-foreground",
-                             item.href === '/session' && 'rounded-full bg-primary/20 text-primary'
+                             item.href === '/session' && 'relative flex items-center justify-center'
                         )}
                     >
-                        <item.icon className="size-5" />
-                        <span>{item.label}</span>
+                         {item.href === '/session' ? (
+                            <div className="aspect-square flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                 <item.icon className="size-6" />
+                            </div>
+                        ) : (
+                            <>
+                                <item.icon className="size-5" />
+                                <span>{item.label}</span>
+                            </>
+                        )}
                     </Link>
                   )
                 })}
