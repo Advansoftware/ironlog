@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular } from '@/lib/types';
@@ -130,5 +131,5 @@ export const gruposMusculares: GrupoMuscular[] = ['Peito', 'Costas', 'Pernas', '
 
 export function getNomeExercicio(exercicioId: string) {
     const biblioteca = getBibliotecaDeExercicios();
-    return biblioteca.find(ex => ex.id === exercicioId)?.nome ?? 'Exercício Desconhecido';
+    return biblioteca.find(ex => ex.id === exercicioId)?.nome ?? 'Exercício';
 }
