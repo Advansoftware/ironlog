@@ -11,38 +11,48 @@ import { ptBR } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
 import type { SessaoDeTreino, RecordePessoal, RotinaDeTreino } from '@/lib/types';
 import { Lightbulb, Loader2 } from 'lucide-react';
-import { generateBeginnerTip } from '@/ai/flows/generate-beginner-tip';
+import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
 
 
 export default function DashboardPage() {
   const [historico, setHistorico] = useState<SessaoDeTreino[]>([]);
   const [recordes, setRecordes] = useState<RecordePessoal[]>([]);
   const [rotinas, setRotinas] = useState<RotinaDeTreino[]>([]);
-  const [beginnerTip, setBeginnerTip] = useState<string | null>(null);
+  const [dailyTip, setDailyTip] = useState<string | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState(true);
 
   useEffect(() => {
-    setHistorico(getHistorico());
+    const allHistorico = getHistorico();
+    setHistorico(allHistorico);
     setRecordes(getRecordesPessoais());
     setRotinas(getRotinas());
     
     async function fetchTip() {
+      setIsLoadingTip(true);
       try {
-        const cachedTip = sessionStorage.getItem('beginnerTip');
-        const cacheDate = sessionStorage.getItem('beginnerTipDate');
+        const cachedTip = sessionStorage.getItem('dailyTip');
+        const cacheDate = sessionStorage.getItem('dailyTipDate');
         const today = new Date().toDateString();
 
         if (cachedTip && cacheDate === today) {
-          setBeginnerTip(cachedTip);
+          setDailyTip(cachedTip);
+        } else if (navigator.onLine) {
+          const oneMonthAgo = new Date();
+          oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+          const recentHistory = allHistorico.filter(s => new Date(s.data) > oneMonthAgo);
+          
+          const result = await generateDailyTip({ workoutHistory: JSON.stringify(recentHistory) });
+          setDailyTip(result.tip);
+          sessionStorage.setItem('dailyTip', result.tip);
+          sessionStorage.setItem('dailyTipDate', today);
+        } else if (cachedTip) {
+           setDailyTip(cachedTip); // Use cached tip if offline
         } else {
-          const result = await generateBeginnerTip();
-          setBeginnerTip(result.tip);
-          sessionStorage.setItem('beginnerTip', result.tip);
-          sessionStorage.setItem('beginnerTipDate', today);
+           setDailyTip("Conecte-se à internet para receber sua primeira dica do dia personalizada!");
         }
       } catch (error) {
-        console.error("Failed to fetch beginner tip:", error);
-        setBeginnerTip("Consistência é mais importante que intensidade no início. Focar em aprender a forma correta dos exercícios previne lesões e garante um progresso sólido.");
+        console.error("Failed to fetch daily tip:", error);
+        setDailyTip("Consistência é mais importante que intensidade no início. Focar em aprender a forma correta dos exercícios previne lesões e garante um progresso sólido.");
       } finally {
         setIsLoadingTip(false);
       }
@@ -67,7 +77,7 @@ export default function DashboardPage() {
       </PageHeader>
       
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary">
+        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Total de Treinos</span>
@@ -80,7 +90,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         
-        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary">
+        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Rotinas Criadas</span>
@@ -93,7 +103,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         
-        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary">
+        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
                 <span>Último Recorde</span>
@@ -116,7 +126,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-       <Card className="mt-8 bg-card/50 backdrop-blur-sm">
+       <Card className="mt-8 bg-card/50 backdrop-blur-sm border-primary/10">
         <CardHeader>
             <CardTitle className="flex items-center gap-2">
                 <Lightbulb className="text-yellow-400" />
@@ -127,11 +137,11 @@ export default function DashboardPage() {
             {isLoadingTip ? (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="size-4 animate-spin" />
-                <span>Gerando uma nova dica para você...</span>
+                <span>Analisando seu progresso para gerar uma nova dica...</span>
               </div>
             ) : (
-              <p className="text-muted-foreground">
-                {beginnerTip}
+              <p className="text-muted-foreground leading-relaxed">
+                {dailyTip}
               </p>
             )}
         </CardContent>

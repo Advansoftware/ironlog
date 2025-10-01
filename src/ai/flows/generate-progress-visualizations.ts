@@ -1,26 +1,11 @@
 'use server';
 /**
  * @fileOverview Generates visual representations of workout data to show progress over time and suggest incremental load increases.
- *
- * - generateProgressVisualizations - A function that generates visual representations of workout data.
- * - GenerateProgressVisualizationsInput - The input type for the generateProgressVisualizations function.
- * - GenerateProgressVisualizationsOutput - The return type for the generateProgressVisualizations function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { GenerateProgressVisualizationsInputSchema, GenerateProgressVisualizationsOutputSchema, type GenerateProgressVisualizationsInput, type GenerateProgressVisualizationsOutput } from './types';
 
-const GenerateProgressVisualizationsInputSchema = z.object({
-  workoutData: z.string().describe('Dados de treino em formato JSON, incluindo nome do exercício, séries, repetições, peso e data.'),
-  personalRecords: z.string().describe('Dados de recordes pessoais em formato JSON, incluindo nome do exercício e valor do recorde.'),
-  workoutHistory: z.string().describe('Dados do histórico de treinos em formato JSON, incluindo nome do exercício, data, séries, repetições e peso.'),
-});
-export type GenerateProgressVisualizationsInput = z.infer<typeof GenerateProgressVisualizationsInputSchema>;
-
-const GenerateProgressVisualizationsOutputSchema = z.object({
-  progressVisualization: z.string().describe('Uma descrição da visualização do progresso, incluindo sugestões de aumentos incrementais de carga.'),
-});
-export type GenerateProgressVisualizationsOutput = z.infer<typeof GenerateProgressVisualizationsOutputSchema>;
 
 export async function generateProgressVisualizations(
   input: GenerateProgressVisualizationsInput
