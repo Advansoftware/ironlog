@@ -41,13 +41,24 @@ const mobileNavItems = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [gamification, setGamification] = useState<Gamification>({ xp: 0, level: 1 });
+  const [gamification, setGamification] = useState<Gamification | null>(null);
 
   useEffect(() => {
+    // A gamificação será lida do localStorage, que só está disponível no cliente.
+    // Isso evita problemas de hidratação.
     setGamification(getGamification());
-  }, [pathname]); // Recarrega o nível ao navegar
+    
+    // Adiciona um listener para atualizar a gamificação quando ela mudar em outra aba
+    const handleStorageChange = () => {
+      setGamification(getGamification());
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [pathname]);
 
-  const currentLevelName = levelNames[gamification.level] || "Nível Desconhecido";
+  const currentLevelName = gamification ? levelNames[gamification.level] : "Carregando...";
 
 
   return (

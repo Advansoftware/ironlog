@@ -21,7 +21,7 @@ export default function DashboardPage() {
   const [recordes, setRecordes] = useState<RecordePessoal[]>([]);
   const [dailyTip, setDailyTip] = useState<string | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState(true);
-  const [gamification, setGamification] = useState<Gamification>({ xp: 0, level: 1 });
+  const [gamification, setGamification] = useState<Gamification | null>(null);
 
   useEffect(() => {
     const allHistorico = getHistorico();
@@ -67,8 +67,9 @@ export default function DashboardPage() {
   const workoutsThisMonth = historico.filter(s => isThisMonth(parseISO(s.data))).length;
   const totalPrs = recordes.length;
   
-  const { progressPercentage, xpToNextLevel, currentLevelXp } = getLevelProgress(gamification.xp);
-  const currentLevelName = levelNames[gamification.level] || "Nível Desconhecido";
+  const { progressPercentage, xpToNextLevel, currentLevelXp } = gamification ? getLevelProgress(gamification.xp) : { progressPercentage: 0, xpToNextLevel: 0, currentLevelXp: 0 };
+  const currentLevelName = gamification ? levelNames[gamification.level] : "Carregando...";
+  const currentLevel = gamification?.level ?? 1;
 
   return (
     <>
@@ -86,19 +87,30 @@ export default function DashboardPage() {
            <CardHeader>
             <CardTitle className="flex items-center gap-2">
                 <Icons.Award className="size-5 text-primary" />
-                Nível: {currentLevelName}
+                Nível {currentLevel}: {currentLevelName}
             </CardTitle>
-            <CardDescription>
-                XP Total: {gamification.xp.toLocaleString()}
-            </CardDescription>
+             {gamification && (
+                <CardDescription>
+                    XP Total: {gamification.xp.toLocaleString()}
+                </CardDescription>
+            )}
           </CardHeader>
-          <CardContent>
-            <Progress value={progressPercentage} className="h-3" />
-            <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
-                <span>{currentLevelXp.toLocaleString()} XP</span>
-                <span>{xpToNextLevel > 0 ? `${xpToNextLevel.toLocaleString()} XP para o próximo nível` : 'Nível Máximo!'}</span>
-            </div>
-          </CardContent>
+          {gamification !== null ? (
+            <CardContent>
+              <Progress value={progressPercentage} className="h-3" />
+              <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
+                  <span>{currentLevelXp.toLocaleString()} XP</span>
+                  <span>{xpToNextLevel > 0 ? `${xpToNextLevel.toLocaleString()} XP para o próximo nível` : 'Nível Máximo!'}</span>
+              </div>
+            </CardContent>
+          ) : (
+            <CardContent>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                    <Loader2 className="size-4 animate-spin" />
+                    <span>Carregando seu progresso...</span>
+                </div>
+            </CardContent>
+          )}
         </Card>
 
         <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
