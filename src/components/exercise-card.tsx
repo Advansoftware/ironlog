@@ -248,7 +248,7 @@ export function ExerciseCard({ exercise, className = "" }: ExerciseCardProps) {
                               variant="default"
                               className="text-xs"
                             >
-                              {translateMuscle(muscle)}
+                              {translateMuscle(muscle.name_en || muscle.name)}
                             </Badge>
                           ))}
                         </div>
@@ -270,7 +270,7 @@ export function ExerciseCard({ exercise, className = "" }: ExerciseCardProps) {
                               variant="secondary"
                               className="text-xs"
                             >
-                              {translateMuscle(muscle)}
+                              {translateMuscle(muscle.name_en || muscle.name)}
                             </Badge>
                           ))}
                         </div>
@@ -292,7 +292,7 @@ export function ExerciseCard({ exercise, className = "" }: ExerciseCardProps) {
                           variant="outline"
                           className="text-xs"
                         >
-                          {translateEquipment(equipment)}
+                          {translateEquipment(equipment.name)}
                         </Badge>
                       ))}
                     </div>

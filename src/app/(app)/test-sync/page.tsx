@@ -17,6 +17,7 @@ import {
 import { PageHeader } from "@/components/page-header";
 import { useToast } from "@/hooks/use-toast";
 import { syncRoutineToWger, syncSessionToWger } from "@/lib/wger-api";
+import { getWgerConfig } from "@/lib/storage";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, XCircle, TestTube } from "lucide-react";
 
@@ -271,29 +272,36 @@ export default function TestSyncPage() {
             </div>
 
             {/* Links para WGER */}
-            {(results.routine?.success || results.session?.success) && (
-              <div className="mt-4 pt-4 border-t space-y-2">
-                <p className="text-sm font-medium">Links do WGER:</p>
-                <div className="space-y-1 text-sm">
-                  <a
-                    href="https://fit.advansoftware.shop/routine"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-blue-500 hover:underline"
-                  >
-                    Ver Rotinas no WGER →
-                  </a>
-                  <a
-                    href="https://fit.advansoftware.shop/workout"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block text-blue-500 hover:underline"
-                  >
-                    Ver Sessões no WGER →
-                  </a>
-                </div>
-              </div>
-            )}
+            {(results.routine?.success || results.session?.success) &&
+              (() => {
+                const wgerConfig = getWgerConfig();
+                const baseUrl = wgerConfig.apiUrl
+                  .replace("/api/v2", "")
+                  .replace(/\/$/, "");
+                return (
+                  <div className="mt-4 pt-4 border-t space-y-2">
+                    <p className="text-sm font-medium">Links do WGER:</p>
+                    <div className="space-y-1 text-sm">
+                      <a
+                        href={`${baseUrl}/routine`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-blue-500 hover:underline"
+                      >
+                        Ver Rotinas no WGER →
+                      </a>
+                      <a
+                        href={`${baseUrl}/workout`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block text-blue-500 hover:underline"
+                      >
+                        Ver Treinos no WGER →
+                      </a>
+                    </div>
+                  </div>
+                );
+              })()}
           </CardContent>
         </Card>
 

@@ -182,7 +182,7 @@ export default function RoutinesPage() {
                         <Icons.Exercises className="size-3 flex-shrink-0" />
                         <ExerciseInfoDialog
                           exerciseName={ex.nomeExercicio}
-                          className="truncate"
+                          asChild
                         >
                           <span className="truncate hover:text-primary cursor-pointer transition-colors">
                             {ex.nomeExercicio}

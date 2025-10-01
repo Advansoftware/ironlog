@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, cloneElement, isValidElement } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,6 +29,7 @@ interface ExerciseInfoDialogProps {
   exerciseName: string;
   children?: React.ReactNode;
   className?: string;
+  asChild?: boolean;
 }
 
 /**
@@ -38,6 +39,7 @@ export function ExerciseInfoDialog({
   exerciseName,
   children,
   className = "",
+  asChild = false,
 }: ExerciseInfoDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [exerciseData, setExerciseData] = useState<ExerciseSearchResult | null>(
@@ -88,18 +90,30 @@ export function ExerciseInfoDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <button
-          onClick={handleOpenDialog}
-          className={`text-left hover:text-primary transition-colors ${className}`}
-        >
-          {children || (
-            <div className="flex items-center gap-1">
-              <span className="truncate">{exerciseName}</span>
-              <Info className="size-3 flex-shrink-0 opacity-50" />
-            </div>
-          )}
-        </button>
+      <DialogTrigger asChild={asChild}>
+        {asChild && isValidElement(children) ? (
+          cloneElement(children, {
+            onClick: (e: React.MouseEvent) => {
+              handleOpenDialog();
+              // Manter o onClick original se existir
+              if (children.props.onClick) {
+                children.props.onClick(e);
+              }
+            },
+          })
+        ) : (
+          <button
+            onClick={handleOpenDialog}
+            className={`text-left hover:text-primary transition-colors ${className}`}
+          >
+            {children || (
+              <div className="flex items-center gap-1">
+                <span className="truncate">{exerciseName}</span>
+                <Info className="size-3 flex-shrink-0 opacity-50" />
+              </div>
+            )}
+          </button>
+        )}
       </DialogTrigger>
 
       <DialogContent className="max-w-2xl max-h-[80vh]">

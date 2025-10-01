@@ -273,7 +273,7 @@ function SessionContent() {
                       {exercise.repeticoesAlvo} reps
                     </CardDescription>
                   </div>
-                  <ExerciseInfoDialog exerciseName={exerciseInfo}>
+                  <ExerciseInfoDialog exerciseName={exerciseInfo} asChild>
                     <Button
                       variant="outline"
                       size="sm"

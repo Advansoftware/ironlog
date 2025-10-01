@@ -19,7 +19,7 @@ function getUserWgerConfig(): WgerConfig {
   if (typeof window === 'undefined') {
     return {
       enabled: false,
-      apiUrl: 'https://fit.advansoftware.shop',
+      apiUrl: '',
       token: '',
       username: ''
     };
@@ -36,7 +36,7 @@ function getUserWgerConfig(): WgerConfig {
 
   return {
     enabled: false,
-    apiUrl: 'https://fit.advansoftware.shop',
+    apiUrl: '',
     token: '',
     username: ''
   };
@@ -47,7 +47,10 @@ function getUserWgerConfig(): WgerConfig {
  */
 export function isWgerConfigured(): boolean {
   const config = getUserWgerConfig();
-  return config.enabled && config.token.trim() !== '' && config.apiUrl.trim() !== '';
+  return config.enabled &&
+    config.token.trim() !== '' &&
+    config.apiUrl.trim() !== '' &&
+    config.apiUrl.startsWith('http');
 }
 
 
@@ -410,13 +413,17 @@ async function formatExerciseData(exercise: WgerExercise, language: number): Pro
     stripHtml(translation.description) :
     'Descrição não disponível';
 
+  // Obter a URL base da configuração
+  const { apiUrl } = getWgerApiConfig();
+  const baseUrl = apiUrl.replace('/api/v2/', '').replace('/api/v2', '').replace(/\/$/, '');
+
   // Extrair músculos primários e secundários com informações completas
   const primaryMuscles: MuscleInfo[] = exercise.muscles.map(m => ({
     id: m.id,
     name: m.name,
     name_en: m.name_en,
     is_front: m.is_front,
-    image_url_main: m.image_url_main
+    image_url_main: m.image_url_main ? `${baseUrl}${m.image_url_main}` : undefined
   }));
 
   const secondaryMuscles: MuscleInfo[] = exercise.muscles_secondary.map(m => ({
@@ -424,7 +431,7 @@ async function formatExerciseData(exercise: WgerExercise, language: number): Pro
     name: m.name,
     name_en: m.name_en,
     is_front: m.is_front,
-    image_url_main: m.image_url_main
+    image_url_main: m.image_url_main ? `${baseUrl}${m.image_url_main}` : undefined
   }));
 
   // Extrair equipamentos com informações completas

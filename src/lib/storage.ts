@@ -152,7 +152,7 @@ export const getDbConnections = () => getFromStorage<DbConnectionConfig[]>('dbCo
 // WGER Configuration Functions
 const defaultWgerConfig: WgerConfig = {
     enabled: false,
-    apiUrl: 'https://fit.advansoftware.shop',
+    apiUrl: '',
     token: '',
     username: ''
 };

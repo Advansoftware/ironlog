@@ -91,7 +91,7 @@ export default function SettingsPage() {
   );
   const [wgerConfig, setWgerConfig] = useState<WgerConfig>({
     enabled: false,
-    apiUrl: "https://fit.advansoftware.shop",
+    apiUrl: "",
     token: "",
     username: "",
   });
