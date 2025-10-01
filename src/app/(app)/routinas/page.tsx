@@ -41,6 +41,7 @@ export default function RoutinesPage() {
     const novasRotinas = rotinasAtuais.filter(r => r.id !== id);
     localStorage.setItem('rotinas', JSON.stringify(novasRotinas));
     setRotinas(novasRotinas);
+    setOpenDialogId(null);
   }
 
   return (
