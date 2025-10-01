@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { PageHeader } from '@/components/page-header';
 import { Icons } from '@/components/icons';
-import { getHistorico, getRecordesPessoais, getNomeExercicio, getRotinas } from '@/lib/storage';
-import { format, parseISO } from 'date-fns';
+import { getHistorico, getRecordesPessoais, getNomeExercicio } from '@/lib/storage';
+import { format, parseISO, isThisMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
-import type { SessaoDeTreino, RecordePessoal, RotinaDeTreino } from '@/lib/types';
+import type { SessaoDeTreino, RecordePessoal } from '@/lib/types';
 import { Lightbulb, Loader2 } from 'lucide-react';
 import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
 
@@ -17,7 +17,6 @@ import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
 export default function DashboardPage() {
   const [historico, setHistorico] = useState<SessaoDeTreino[]>([]);
   const [recordes, setRecordes] = useState<RecordePessoal[]>([]);
-  const [rotinas, setRotinas] = useState<RotinaDeTreino[]>([]);
   const [dailyTip, setDailyTip] = useState<string | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState(true);
 
@@ -25,7 +24,6 @@ export default function DashboardPage() {
     const allHistorico = getHistorico();
     setHistorico(allHistorico);
     setRecordes(getRecordesPessoais());
-    setRotinas(getRotinas());
     
     async function fetchTip() {
       setIsLoadingTip(true);
@@ -62,7 +60,8 @@ export default function DashboardPage() {
   }, []);
 
   const totalWorkouts = historico.length;
-  const totalRoutines = rotinas.length;
+  const workoutsThisMonth = historico.filter(s => isThisMonth(parseISO(s.data))).length;
+  const totalPrs = recordes.length;
   const latestPr = recordes.length > 0 ? recordes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())[0] : null;
 
   return (
@@ -93,35 +92,29 @@ export default function DashboardPage() {
         <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>Rotinas Criadas</span>
-              <Icons.Routines className="size-5 text-muted-foreground" />
+              <span>Sessões este Mês</span>
+              <Icons.Progress className="size-5 text-muted-foreground" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold">{totalRoutines}</p>
-            <p className="text-xs text-muted-foreground">planos de treino</p>
+            <p className="text-4xl font-bold">{workoutsThisMonth}</p>
+            <p className="text-xs text-muted-foreground">treinos mensais</p>
           </CardContent>
         </Card>
         
         <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-                <span>Último Recorde</span>
+                <span>Recordes Batidos</span>
                 <Icons.Star className="size-5 text-yellow-400" />
             </CardTitle>
-            <CardDescription>
-                {latestPr ? `em ${format(new Date(latestPr.data), 'd \'de\' MMMM', { locale: ptBR })}` : 'Nenhum recorde ainda'}
+             <CardDescription>
+                {latestPr ? `Último em ${format(new Date(latestPr.data), 'dd/MM')}` : 'Nenhum recorde ainda'}
             </CardDescription>
           </CardHeader>
           <CardContent>
-             {latestPr ? (
-                <>
-                    <p className="text-3xl font-bold">{getNomeExercicio(latestPr.exercicioId)}</p>
-                    <p className="text-lg text-muted-foreground">{latestPr.peso}kg por {latestPr.reps} reps</p>
-                </>
-            ) : (
-                <p className="text-lg text-muted-foreground">Registre um treino para bater seu primeiro recorde!</p>
-            )}
+             <p className="text-4xl font-bold">{totalPrs}</p>
+             <p className="text-xs text-muted-foreground">recordes pessoais totais</p>
           </CardContent>
         </Card>
       </div>
