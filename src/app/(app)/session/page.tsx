@@ -106,7 +106,7 @@ function SessionContent() {
 
     exercicios.forEach(ex => {
       const recordeAtual = recordesPessoaisAtuais.find(pr => pr.exercicioId === ex.exercicioId);
-      const melhorSet = ex.series.reduce((melhor, atual) => atual.peso > melhor.peso ? atual : melhor, { peso: 0, reps: 0 });
+      const melhorSet = ex.series.reduce((melhor, atual) => atual.peso > melhor.peso ? atual : melhor, { peso: 0, reps: 0, concluido: false });
 
       if (!recordeAtual || melhorSet.peso > recordeAtual.peso) {
         novosRecordes.push({
