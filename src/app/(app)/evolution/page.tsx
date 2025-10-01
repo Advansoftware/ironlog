@@ -218,6 +218,38 @@ export default function EvolutionPage() {
         description="Converse com a IA para evoluir seu plano de treino de forma inteligente."
       />
 
+      {/* Guia de Evolução */}
+      <div className="mb-4 p-4 bg-muted rounded-lg border">
+        <h3 className="font-medium mb-2 flex items-center gap-2">
+          <Sparkles className="size-4 text-primary" />
+          Como funciona a evolução do seu treino:
+        </h3>
+        <div className="text-sm text-muted-foreground space-y-2">
+          <div>
+            <span className="font-medium text-green-600">
+              📈 Evolução Natural:
+            </span>
+            <span className="ml-2">
+              "quero mais intensidade", "focar nos braços", "adicionar cardio"
+            </span>
+            <div className="text-xs ml-4 opacity-75">
+              → Preserva seu XP e nível atual, apenas melhora as rotinas
+            </div>
+          </div>
+          <div>
+            <span className="font-medium text-orange-600">
+              🔧 Correção de Perfil:
+            </span>
+            <span className="ml-2">
+              "na verdade nunca fiz exercício", "menti sobre minha experiência"
+            </span>
+            <div className="text-xs ml-4 opacity-75">
+              → Corrige seu nível e XP para refletir sua experiência real
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col h-[75vh] bg-card rounded-lg border overflow-hidden">
         {/* Área de Chat com Scroll */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 scroll-smooth">
