@@ -1,0 +1,26 @@
+import type { LucideProps } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Dumbbell,
+  BookCopy,
+  Clock,
+  BarChart3,
+  Weight,
+  Cog,
+  Plus,
+  MoreVertical,
+  ChevronDown,
+} from 'lucide-react';
+
+export const Icons = {
+  Logo: (props: LucideProps) => <Dumbbell {...props} />,
+  Dashboard: LayoutDashboard,
+  Routines: BookCopy,
+  History: Clock,
+  Progress: BarChart3,
+  Exercises: Weight,
+  Settings: Cog,
+  Add: Plus,
+  More: MoreVertical,
+  ChevronDown,
+};

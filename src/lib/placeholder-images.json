@@ -1,3 +1,22 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "bench-press",
+      "description": "Person performing a bench press",
+      "imageUrl": "https://images.unsplash.com/photo-1652363722833-509b3aac287b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxiZW5jaCUyMHByZXNzfGVufDB8fHx8MTc1OTIyMTA5MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bench press"
+    },
+    {
+      "id": "squat",
+      "description": "Person performing a squat",
+      "imageUrl": "https://images.unsplash.com/photo-1649887974297-4be052375a67?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzcXVhdHxlbnwwfHx8fDE3NTkyMDU1NDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "squat"
+    },
+    {
+      "id": "deadlift",
+      "description": "Person performing a deadlift",
+      "imageUrl": "https://images.unsplash.com/photo-1601106605547-7423365f86e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxkZWFkbGlmdHxlbnwwfHx8fDE3NTkyODYwNjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "deadlift"
+    }
+  ]
 }
