@@ -30,7 +30,7 @@ export function useDashboard() {
 
     // Verifica se o usuário acabou de subir de nível para mostrar o card
     const justLeveledUp = sessionStorage.getItem('justLeveledUp');
-    if (justLeveledUp) {
+    if (justLeveledUp && navigator.onLine) {
       setShowEvolutionCard(true);
       sessionStorage.removeItem('justLeveledUp');
     }

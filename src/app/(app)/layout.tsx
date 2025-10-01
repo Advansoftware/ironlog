@@ -26,10 +26,11 @@ import { Badge } from '@/components/ui/badge';
 import { Wand2, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { SplashScreen } from '@/components/splash-screen';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const navItems = [
   { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
-  { href: '/evolution', icon: Wand2, label: 'Evoluir' },
+  { href: '/evolution', icon: Wand2, label: 'Evoluir', requiresOnline: true },
   { href: '/history', icon: Icons.History, label: 'Histórico' },
   { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
   { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
@@ -44,7 +45,7 @@ const mobileBottomNavItems = [
 ];
 
 const moreMenuItems = [
-    { href: '/evolution', icon: Wand2, label: 'Evoluir' },
+    { href: '/evolution', icon: Wand2, label: 'Evoluir', requiresOnline: true },
     { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
     { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
     { href: '/exercises', icon: Icons.Exercises, label: 'Exercícios' },
@@ -56,12 +57,28 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [isInitializing, setIsInitializing] = useState(true);
   const [gamification, setGamification] = useState<Gamification | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+        setIsOnline(navigator.onLine);
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }
+  }, []);
 
   useEffect(() => {
     const updateGamification = () => {
       const data = getGamification();
       setGamification(data);
-      // Simula um tempo mínimo de carregamento para a splash screen ser visível
       setTimeout(() => setIsInitializing(false), 500); 
     };
     
@@ -75,6 +92,68 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const currentLevel = gamification?.level ?? 1;
   const { name: currentLevelName, color: currentLevelColor } = levelData[currentLevel] || levelData[1];
+
+  const renderSidebarMenuItem = (item: typeof navItems[0]) => {
+    const isDisabled = item.requiresOnline && !isOnline;
+
+    const menuItem = (
+        <SidebarMenuButton
+            asChild
+            isActive={pathname.startsWith(item.href)}
+            tooltip={{ children: item.label, side: 'right' }}
+            disabled={isDisabled}
+            aria-disabled={isDisabled}
+        >
+            <Link href={isDisabled ? '#' : item.href} className={cn(isDisabled && 'pointer-events-none opacity-50')}>
+                <item.icon />
+                <span>{item.label}</span>
+            </Link>
+        </SidebarMenuButton>
+    );
+
+    if (isDisabled) {
+        return (
+            <Tooltip>
+                <TooltipTrigger asChild>{menuItem}</TooltipTrigger>
+                <TooltipContent side="right" align="center">
+                    <p>Funcionalidade online</p>
+                </TooltipContent>
+            </Tooltip>
+        );
+    }
+    return menuItem;
+  }
+
+  const renderMobileMoreMenuItem = (item: typeof moreMenuItems[0]) => {
+    const isDisabled = item.requiresOnline && !isOnline;
+
+    const menuItem = (
+         <Link
+            href={isDisabled ? '#' : item.href}
+            onClick={() => !isDisabled && setMobileMenuOpen(false)}
+            className={cn(
+                "flex flex-col items-center gap-2 rounded-lg p-3 bg-secondary/50 active:bg-secondary",
+                isDisabled && 'opacity-50 pointer-events-none'
+            )}
+        >
+            <item.icon className="size-6 text-primary" />
+            <span className="text-sm font-medium text-center">{item.label}</span>
+        </Link>
+    );
+
+    if (isDisabled) {
+        return (
+            <Tooltip>
+                <TooltipTrigger asChild><div className="flex flex-col items-center">{menuItem}</div></TooltipTrigger>
+                <TooltipContent side="top">
+                    <p>Funcionalidade online</p>
+                </TooltipContent>
+            </Tooltip>
+        )
+    }
+
+    return menuItem;
+  }
 
 
   return (
@@ -117,16 +196,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </SidebarMenuItem>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith(item.href)}
-                  tooltip={{ children: item.label, side: 'right' }}
-                >
-                  <Link href={item.href}>
-                    <item.icon />
-                    <span>{item.label}</span>
-                  </Link>
-                </SidebarMenuButton>
+                {renderSidebarMenuItem(item)}
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
@@ -196,15 +266,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         </SheetHeader>
                         <div className="grid grid-cols-3 gap-4 py-4">
                             {moreMenuItems.map(item => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex flex-col items-center gap-2 rounded-lg p-3 bg-secondary/50 active:bg-secondary"
-                                >
-                                    <item.icon className="size-6 text-primary" />
-                                    <span className="text-sm font-medium text-center">{item.label}</span>
-                                </Link>
+                                <div key={item.href}>
+                                  {renderMobileMoreMenuItem(item)}
+                                </div>
                             ))}
                         </div>
                     </SheetContent>
@@ -216,5 +280,3 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-
-    
