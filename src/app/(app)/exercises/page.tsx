@@ -22,8 +22,8 @@ export default function ExercisesPage() {
         description="Navegue pelos exercícios por grupo muscular."
       />
 
-      <Tabs defaultValue={gruposMusculares[0]} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 mb-4">
+      <Tabs defaultValue={gruposMusculares[0]} className="w-full" orientation="vertical">
+        <TabsList className="grid w-full grid-cols-1 md:grid-cols-6 mb-4 h-auto">
           {gruposMusculares.map((group) => (
             <TabsTrigger key={group} value={group}>
               {group}
@@ -32,7 +32,7 @@ export default function ExercisesPage() {
         </TabsList>
         
         {gruposMusculares.map((group) => (
-          <TabsContent key={group} value={group}>
+          <TabsContent key={group} value={group} className="mt-0 md:mt-2 md:ml-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {biblioteca
                 .filter((ex) => ex.grupoMuscular === group)

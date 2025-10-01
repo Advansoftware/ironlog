@@ -15,7 +15,6 @@ function SessionContent() {
   const searchParams = useSearchParams();
   const routineId = searchParams.get('routineId');
   
-  // Usar dados de armazenamento local
   const rotinas = getRotinas();
   const routine = rotinas.find(r => r.id === routineId) || rotinas[0];
 
@@ -33,18 +32,17 @@ function SessionContent() {
     );
   }
 
-
   return (
     <>
       <PageHeader title={routine.nome} description="Registre sua sessão de treino.">
-        <div className="flex gap-2">
-            <Button variant="outline">
+        <div className="flex gap-2 w-full">
+            <Button variant="outline" className="w-1/2">
                 <X className="mr-2 size-4" />
-                Cancelar Treino
+                Cancelar
             </Button>
-            <Button>
+            <Button className="w-1/2">
                 <Check className="mr-2 size-4" />
-                Finalizar Treino
+                Finalizar
             </Button>
         </div>
       </PageHeader>
@@ -64,20 +62,18 @@ function SessionContent() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-[auto_1fr_1fr_1fr_auto] items-center gap-4 text-sm text-muted-foreground font-medium">
-                            <span>Série</span>
-                            <span>Anterior</span>
+                        <div className="grid grid-cols-[auto_1fr_1fr_auto] items-center gap-x-4 text-xs text-muted-foreground font-medium">
+                            <span className="invisible">Série</span>
                             <Label>Peso (kg)</Label>
                             <Label>Reps</Label>
-                            <span>Feito</span>
+                            <span className="invisible">Feito</span>
                         </div>
                         
                         {Array.from({ length: exercise.seriesAlvo }).map((_, i) => (
-                            <div key={i} className="grid grid-cols-[auto_1fr_1fr_1fr_auto] items-center gap-4">
+                            <div key={i} className="grid grid-cols-[auto_1fr_1fr_auto] items-center gap-x-2 sm:gap-x-4">
                                 <span className="font-bold text-lg text-foreground">{i + 1}</span>
-                                <span className="text-muted-foreground text-sm">-- kg x --</span>
-                                <Input type="number" placeholder="Peso" defaultValue={exercise.pesoAlvo} />
-                                <Input type="number" placeholder="Reps" defaultValue={exercise.repeticoesAlvo} />
+                                <Input type="number" placeholder="kg" defaultValue={exercise.pesoAlvo} />
+                                <Input type="number" placeholder="reps" defaultValue={exercise.repeticoesAlvo} />
                                 <Checkbox />
                             </div>
                         ))}
