@@ -17,6 +17,11 @@ import {
   SidebarInset,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import type { Gamification } from '@/lib/types';
+import { getGamification } from '@/lib/storage';
+import { levelNames } from '@/lib/gamification';
+import { Badge } from '@/components/ui/badge';
 
 const navItems = [
   { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
@@ -36,6 +41,14 @@ const mobileNavItems = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [gamification, setGamification] = useState<Gamification>({ xp: 0, level: 1 });
+
+  useEffect(() => {
+    setGamification(getGamification());
+  }, [pathname]); // Recarrega o nível ao navegar
+
+  const currentLevelName = levelNames[gamification.level] || "Nível Desconhecido";
+
 
   return (
     <SidebarProvider>
@@ -45,7 +58,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="flex items-center justify-center size-9 rounded-lg bg-gradient-to-br from-primary to-lime-400 text-primary-foreground">
                     <Icons.Logo className="size-6" />
                 </div>
-                <h1 className="text-2xl font-bold">IronLog</h1>
+                <div className="flex flex-col">
+                  <h1 className="text-xl font-bold">IronLog</h1>
+                  <Badge variant="secondary" className="w-fit text-xs h-auto py-0.5 px-1.5">{currentLevelName}</Badge>
+                </div>
             </div>
         </SidebarHeader>
         <SidebarContent>

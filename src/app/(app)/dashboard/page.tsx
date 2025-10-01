@@ -10,7 +10,7 @@ import { format, parseISO, isThisMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
 import type { SessaoDeTreino, RecordePessoal, Gamification } from '@/lib/types';
-import { Lightbulb, Loader2, Award } from 'lucide-react';
+import { Lightbulb, Loader2 } from 'lucide-react';
 import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
 import { Progress } from '@/components/ui/progress';
 import { levelNames, getLevelProgress } from '@/lib/gamification';
@@ -85,7 +85,7 @@ export default function DashboardPage() {
         <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50 col-span-1 md:col-span-2">
            <CardHeader>
             <CardTitle className="flex items-center gap-2">
-                <Award className="size-5 text-primary" />
+                <Icons.Award className="size-5 text-primary" />
                 Nível: {currentLevelName}
             </CardTitle>
             <CardDescription>
