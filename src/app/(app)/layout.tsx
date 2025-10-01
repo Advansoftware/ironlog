@@ -4,11 +4,11 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Icons } from '@/components/icons';
+import { cn } from '@/lib/utils';
 import {
   SidebarProvider,
   Sidebar,
   SidebarHeader,
-  SidebarTrigger,
   SidebarContent,
   SidebarMenu,
   SidebarMenuItem,
@@ -71,12 +71,28 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <div className="flex justify-start p-4 md:hidden">
-            <SidebarTrigger />
-        </div>
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-4 md:p-8 pb-20 md:pb-8">
             {children}
         </main>
+        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-sm md:hidden">
+            <div className="flex justify-around items-center h-16">
+                {navItems.map((item) => (
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                            "flex flex-col items-center justify-center gap-1 text-xs w-full h-full",
+                            pathname.startsWith(item.href)
+                                ? "text-primary"
+                                : "text-muted-foreground"
+                        )}
+                    >
+                        <item.icon className="size-5" />
+                        <span>{item.label}</span>
+                    </Link>
+                ))}
+            </div>
+        </nav>
       </SidebarInset>
     </SidebarProvider>
   );
