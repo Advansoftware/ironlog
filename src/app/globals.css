@@ -80,8 +80,8 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
-    background-image: radial-gradient(circle at 25% 30%, hsl(var(--primary) / 0.15), transparent 35%),
-                      radial-gradient(circle at 75% 70%, hsl(var(--primary) / 0.15), transparent 35%);
+    background-image: radial-gradient(circle at 25% 30%, hsl(var(--primary) / 0.3), transparent 40%),
+                      radial-gradient(circle at 75% 70%, hsl(var(--primary) / 0.3), transparent 40%);
     background-attachment: fixed;
   }
 }
