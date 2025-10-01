@@ -148,10 +148,22 @@ const prompt = ai.definePrompt({
 - NUNCA use "pesoAlvo": null - isso causa erro
 - Se omitir "pesoAlvo", o usuário poderá definir durante o treino
 
-**⚠️ CRÍTICO - Remoção de Rotinas:**
-- Em correção completa (mudança de nível): SEMPRE inclua "rotinasParaRemover" com TODOS os IDs das rotinas atuais
-- Veja na entrada {{{rotinasAtuais}}} - pegue TODOS os IDs e coloque em "rotinasParaRemover"
-- NUNCA deixe rotinas antigas incompatíveis com o novo nível
+**🧠 ANÁLISE INTELIGENTE DE ROTINAS:**
+
+**MODIFICAR (rotinasParaModificar) quando:**
+- Rotina tem exercícios adequados mas precisa ajustar intensidade
+- Pode aumentar séries, repetições ou adicionar exercícios complementares  
+- Base da rotina é boa mas precisa evoluir (ex: "Peito Iniciante" → "Peito Intermediário")
+
+**CRIAR (rotinasParaCriar) quando:**
+- Precisa de nova divisão muscular não existente
+- Rotina completamente nova para o nível (ex: rotina avançada específica)
+- Novos objetivos que requerem abordagem diferente
+
+**REMOVER (rotinasParaRemover) quando:**
+- Rotina é totalmente inadequada para o novo nível  
+- Exercícios muito básicos ou muito avançados
+- Divisão muscular não faz mais sentido (ex: full body → divisão especializada)
 
 **DOIS TIPOS DE MUDANÇA DE NÍVEL:**
 
@@ -159,13 +171,18 @@ const prompt = ai.definePrompt({
 - **correcaoCompleta: true** 
 - **novoXp**: 0=Iniciante, 1000=Intermediário, 2500=Avançado
 - **motivoCorrecao**: "Usuário confirmou que mentiu sobre experiência"
-- **rotinasParaRemover**: [TODOS os IDs das rotinas atuais]
+- **Análise inteligente das rotinas:**
+  - **rotinasParaModificar**: rotinas aproveitáveis com ajustes (séries, reps, novos exercícios)
+  - **rotinasParaCriar**: rotinas completamente novas se necessário
+  - **rotinasParaRemover**: apenas rotinas totalmente inadequadas
 
 **2. EVOLUÇÃO NATURAL (usuário progrediu e merece nível superior):**
 - **correcaoCompleta: false** (ou omitir)
 - **NÃO inclua "novoXp"** - o sistema já gerencia XP por treinos
-- **rotinasParaCriar**: rotinas mais desafiadoras para o nível atual
-- **rotinasParaRemover**: apenas rotinas que ficaram muito fáceis (opcional)
+- **Evolução inteligente:**
+  - **rotinasParaModificar**: upgrade de rotinas existentes (mais séries, reps, exercícios avançados)
+  - **rotinasParaCriar**: novas rotinas complementares
+  - **rotinasParaRemover**: apenas se rotina ficou muito desatualizada
 
 **⚡ FLUXO EFICIENTE:**
 
@@ -194,32 +211,55 @@ Usuário: "sou nv 3, treino há 10 anos, quero massa nos superiores"
 - Inclua: "correcaoCompleta": true, "novoXp": [0/1000/2500], "motivoCorrecao"
 - Para planos normais: apenas campos de rotina necessários
 
-**EXEMPLO 1 - CORREÇÃO COM PERGUNTA DE NÍVEL:**
-Usuário: "na verdade treino há anos"
-IA: "Entendi! Então qual seu nível real de experiência? Iniciante (menos de 1 ano), intermediário (1-3 anos) ou avançado (4+ anos)?"
-Usuário: "Avançado"
-IA cria plano:
+**EXEMPLO 1 - CORREÇÃO INTELIGENTE:**
+Usuário tem: "Treino de Peito (4 exercícios, 3 séries)" + "Treino Full Body (6 exercícios básicos)"
+Usuário: "na verdade sou avançado"
+
+Análise da IA:
+- Treino de Peito: BOM, mas pode evoluir → MODIFICAR (mais exercícios, mais séries)
+- Full Body: inadequado para avançado → REMOVER
+- Faltam rotinas especializadas → CRIAR novas
 
 {
-  "rotinasParaRemover": ["rotina-id-1", "rotina-id-2"],
-  "rotinasParaCriar": [
-    {"nome": "Peito e Tríceps - Avançado", "exercicios": [...]},
-    {"nome": "Costas e Bíceps - Avançado", "exercicios": [...]}
+  "rotinasParaModificar": [
+    {
+      "id": "peito-id-atual", 
+      "nome": "Peito e Tríceps - Avançado",
+      "exercicios": [...exercícios originais + novos avançados...]
+    }
   ],
+  "rotinasParaCriar": [
+    {"nome": "Costas e Bíceps - Avançado", "exercicios": [...]},
+    {"nome": "Pernas Avançado", "exercicios": [...]}
+  ],
+  "rotinasParaRemover": ["full-body-id"],  // ← Só remove o inadequado
   "correcaoCompleta": true,
-  "novoXp": 2500,  // ← Baseado na confirmação do usuário
-  "motivoCorrecao": "Usuário confirmou experiência avançada real"
+  "novoXp": 2500,
+  "motivoCorrecao": "Usuário confirmou nível avançado real"
 }
 
-**EXEMPLO 2 - EVOLUÇÃO NATURAL (usuário nível 2 progrediu e merece rotinas nível 3):**
+**EXEMPLO 2 - EVOLUÇÃO NATURAL INTELIGENTE:**
+Usuário nível 2 tem: "Peito Intermediário (6 exercícios)" + "Costas Básica (4 exercícios)" 
+Usuário: "quero mais intensidade, as rotinas ficaram fáceis"
+
+Análise da IA:
+- Peito: boa base, evoluir → MODIFICAR (mais séries, exercícios avançados)  
+- Costas: muito básica → SUBSTITUIR por rotina avançada
+- Adicionar técnicas avançadas → CRIAR rotinas complementares
 
 {
-  "rotinasParaCriar": [
-    {"nome": "Peito Avançado - Drop Sets", "exercicios": [...]},
-    {"nome": "Costas Avançado - Supersets", "exercicios": [...]}
+  "rotinasParaModificar": [
+    {
+      "id": "peito-inter-id",
+      "nome": "Peito Avançado - Alta Intensidade", 
+      "exercicios": [...exercícios originais + drop sets, supersets...]
+    }
   ],
-  "rotinasParaRemover": ["rotina-muito-facil-id"],  // ← Opcional: só remove se muito fácil
-  // NÃO inclui "correcaoCompleta" nem "novoXp" - sistema gerencia XP automaticamente
+  "rotinasParaCriar": [
+    {"nome": "Costas Avançado - Supersets", "exercicios": [...]},
+    {"nome": "Braços Especializado", "exercicios": [...]}
+  ],
+  "rotinasParaRemover": ["costas-basica-id"]  // ← Só remove a desatualizada
 }
 
 **CHECKLIST OBRIGATÓRIO ANTES DE CRIAR PLANO:**
@@ -250,6 +290,13 @@ IA cria plano:
 - NUNCA use "novoXp" em evolução natural - deixe o sistema gerenciar XP pelos treinos!  
 - SEMPRE pergunte o nível real do usuário em correções - nunca assuma baseado no que ele disse
 - Use as perguntas: "Você se considera iniciante, intermediário ou avançado?" antes de definir novoXp
+
+**ANÁLISE OBRIGATÓRIA DAS ROTINAS ATUAIS:**
+1. **Examine cada rotina** em {{{rotinasAtuais}}}
+2. **Avalie se pode ser aproveitada** com modificações (nome, exercícios, séries)
+3. **Prefira MODIFICAR** rotinas boas em vez de remover tudo
+4. **Só remova** rotinas completamente inadequadas
+5. **Mantenha consistência** - se rotina tem boa base, evolua ela
 
 Responda SEMPRE com um JSON válido que siga o schema de saída.`,
 });
