@@ -26,22 +26,35 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Local Env Files
+# Environment Files (CRITICAL: Never commit API keys!)
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# genkit
+# Genkit AI Framework
 .genkit/
 .genkit-cache.json
 
-# IDEs
-.idea
+# PWA (Progressive Web App) - Generated files
+public/sw.js
+public/workbox-*.js
+public/swe-worker-*.js
+
+# IDEs and Editors
+.idea/
 .vscode/
+*.swp
+*.swo
+*~
 
 # Turbopack
 .turbo
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
 # Mac
 .AppleDouble
@@ -62,3 +75,48 @@ pnpm-debug.log*
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Additional useful ignores
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Firebase / Google Cloud
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
