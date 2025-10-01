@@ -23,7 +23,6 @@ import { levelData } from '@/lib/gamification';
 import { Badge } from '@/components/ui/badge';
 import { Wand2, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { SplashScreen } from '@/components/splash-screen';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const navItems = [
@@ -53,20 +52,14 @@ const moreMenuItems = [
 export function AppLayoutClient({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isInitializing, setIsInitializing] = useState(true);
   const [gamification, setGamification] = useState<Gamification | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
+    // A lógica de verificação de onboarding foi movida para a página raiz (page.tsx)
+    // para evitar o piscar da tela de welcome.
     if (typeof window !== 'undefined') {
-        const onboardingComplete = hasCompletedOnboarding();
-        if (!onboardingComplete) {
-            router.replace('/welcome');
-        } else {
-            setIsInitializing(false);
-        }
-
         setIsOnline(navigator.onLine);
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);
@@ -79,7 +72,7 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
             window.removeEventListener('offline', handleOffline);
         };
     }
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     const updateGamification = () => {
@@ -95,10 +88,6 @@ export function AppLayoutClient({ children }: { children: React.ReactNode }) {
     };
   }, []);
   
-  if (isInitializing) {
-    return <SplashScreen />;
-  }
-
 
   const currentLevel = gamification?.level ?? 1;
   const { name: currentLevelName, color: currentLevelColor } = levelData[currentLevel] || levelData[1];

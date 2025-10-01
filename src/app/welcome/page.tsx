@@ -30,7 +30,7 @@ export default function WelcomePage() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Se o usuário já completou o onboarding, redireciona para o dashboard
+    // Redireciona se o onboarding já foi concluído
     if (hasCompletedOnboarding()) {
       router.replace('/dashboard');
       return;
@@ -185,7 +185,7 @@ export default function WelcomePage() {
             <div ref={bottomRef} />
         </div>
         <div className="p-4 bg-transparent border-t">
-          <div className="relative">
+          <div className="flex items-center gap-2">
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -204,9 +204,9 @@ export default function WelcomePage() {
                 onClick={() => handleSendMessage(input)} 
                 disabled={isLoading || isAwaitingPlanConfirmation} 
                 size="icon" 
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full flex-shrink-0"
+                className="rounded-full h-10 w-10 flex-shrink-0"
             >
-              <Send size={16} />
+              <Send size={18} />
               <span className="sr-only">Enviar</span>
             </Button>
           </div>
