@@ -180,12 +180,12 @@ export default function WelcomePage() {
             <div ref={bottomRef} />
         </div>
         <div className="p-4 bg-background/50 border-t">
-          <div className="relative">
+          <div className="flex items-center gap-2">
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Digite sua resposta..."
-              className="flex-1 resize-none pr-14"
+              className="flex-1 resize-none"
               rows={1}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -195,13 +195,8 @@ export default function WelcomePage() {
               }}
               disabled={isLoading || isAwaitingPlanConfirmation}
             />
-            <Button 
-              size="icon"
-              onClick={() => handleSendMessage(input)} 
-              disabled={isLoading || isAwaitingPlanConfirmation} 
-              className="absolute right-2 bottom-1.5 h-9 w-10"
-            >
-              <Send size={18} />
+            <Button onClick={() => handleSendMessage(input)} disabled={isLoading || isAwaitingPlanConfirmation}>
+              <Send size={16} />
               <span className="sr-only">Enviar</span>
             </Button>
           </div>
