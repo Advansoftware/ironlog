@@ -93,14 +93,17 @@ export default function RoutinesPage() {
               </DropdownMenu>
             </CardHeader>
             <CardContent className="flex-grow">
-              <ul className="text-sm text-muted-foreground space-y-1">
+              <ul className="text-sm text-muted-foreground space-y-2">
                  {routine.exercicios.slice(0, 4).map(ex => (
-                    <li key={ex.exercicioId} className="flex items-center gap-2">
-                        <Icons.Exercises className="size-3" />
-                        <span>{ex.nomeExercicio}</span>
+                    <li key={ex.exercicioId} className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 truncate">
+                          <Icons.Exercises className="size-3 flex-shrink-0" />
+                          <span className="truncate">{ex.nomeExercicio}</span>
+                        </div>
+                        <span className="font-mono text-xs text-foreground/80 flex-shrink-0">{ex.seriesAlvo}x{ex.repeticoesAlvo}</span>
                     </li>
                  ))}
-                 {routine.exercicios.length > 4 && <li className="text-xs">e mais...</li>}
+                 {routine.exercicios.length > 4 && <li className="text-xs pt-1">e mais {routine.exercicios.length - 4}...</li>}
               </ul>
             </CardContent>
             <CardFooter>
