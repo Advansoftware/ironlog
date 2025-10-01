@@ -1,0 +1,16 @@
+{
+  "name": "IronLog",
+  "short_name": "IronLog",
+  "description": "Um planejador e rastreador de treinos intuitivo.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#030712",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
