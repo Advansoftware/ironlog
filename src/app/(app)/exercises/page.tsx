@@ -1,6 +1,6 @@
 
 'use client';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PageHeader } from '@/components/page-header';
 import { getBibliotecaDeExercicios, gruposMusculares, salvarExercicio } from '@/lib/storage';
@@ -190,5 +190,3 @@ export default function ExercisesPage() {
     </>
   );
 }
-
-    
