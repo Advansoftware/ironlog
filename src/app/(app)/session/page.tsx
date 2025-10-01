@@ -46,14 +46,15 @@ function SessionContent() {
     }
   }, [routineId]);
 
-  const handleSetChange = (exercicioId: string, setId: number, field: 'reps' | 'peso' | 'concluido', value: number | boolean) => {
+  const handleSetChange = (exercicioId: string, setId: number, field: keyof SerieState, value: number | boolean) => {
     setSessionSets(prev => {
-        const newSets = [...(prev[exercicioId] || [])];
-        const setIndex = newSets.findIndex(s => s.id === setId);
-        if (setIndex !== -1) {
-            (newSets[setIndex] as any)[field] = value;
-        }
-        return { ...prev, [exercicioId]: newSets };
+      const newSets = [...(prev[exercicioId] || [])];
+      const setIndex = newSets.findIndex(s => s.id === setId);
+      if (setIndex !== -1) {
+        const updatedSet = { ...newSets[setIndex], [field]: value };
+        newSets[setIndex] = updatedSet;
+      }
+      return { ...prev, [exercicioId]: newSets };
     });
   };
 

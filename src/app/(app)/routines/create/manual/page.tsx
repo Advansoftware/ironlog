@@ -25,10 +25,11 @@ const exercicioSchema = z.object({
   nomeExercicio: z.string(), // Será preenchido automaticamente
   seriesAlvo: z.coerce.number().min(1, "Mínimo de 1 série."),
   repeticoesAlvo: z.coerce.number().min(1, "Mínimo de 1 repetição."),
+  pesoAlvo: z.coerce.number().optional(),
 });
 
 const formSchema = z.object({
-  id: z.string().optional(),
+  id: z.string(),
   nome: z.string().min(3, "O nome da rotina precisa ter pelo menos 3 caracteres."),
   exercicios: z.array(exercicioSchema).min(1, "Adicione pelo menos um exercício à rotina."),
 });
@@ -47,6 +48,7 @@ function ManualCreateContent() {
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            id: '',
             nome: '',
             exercicios: [],
         },
@@ -70,7 +72,7 @@ function ManualCreateContent() {
     }, [editId, form]);
 
     const handleAddExercise = () => {
-        append({ exercicioId: '', nomeExercicio: '', seriesAlvo: 3, repeticoesAlvo: 10 });
+        append({ exercicioId: '', nomeExercicio: '', seriesAlvo: 3, repeticoesAlvo: 10, pesoAlvo: 0 });
     };
 
     const handleExerciseSelect = (index: number, exercicioId: string) => {
@@ -82,14 +84,19 @@ function ManualCreateContent() {
     };
     
     const onSubmit = (values: FormValues) => {
-        if (isEditMode && values.id) {
-            atualizarRotina(values as RotinaDeTreino);
+        const rotina: RotinaDeTreino = {
+            ...values,
+            exercicios: values.exercicios.map(ex => ({...ex, pesoAlvo: ex.pesoAlvo ?? undefined}))
+        };
+
+        if (isEditMode) {
+            atualizarRotina(rotina);
              toast({
                 title: "Rotina Atualizada!",
                 description: "Suas alterações foram salvas.",
             });
         } else {
-            const newRoutine = { ...values, id: uuidv4() };
+            const newRoutine = { ...rotina, id: uuidv4() };
             salvarRotina(newRoutine);
              toast({
                 title: "Rotina Salva!",

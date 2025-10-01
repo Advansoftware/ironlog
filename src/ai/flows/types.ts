@@ -35,7 +35,9 @@ export const ExercicioDeRotinaSchema = z.object({
     nomeExercicio: z.string(),
     seriesAlvo: z.number(),
     repeticoesAlvo: z.number(),
+    pesoAlvo: z.number().optional(),
 });
+export type ExercicioDeRotina = z.infer<typeof ExercicioDeRotinaSchema>;
 
 export const GenerateRoutineInputSchema = z.object({
   objetivo: z.string().describe('O principal objetivo do treino (ex: Hipertrofia, Força, Emagrecimento).'),
@@ -67,9 +69,18 @@ export const SuggestRoutineEvolutionOutputSchema = z.object({
 export type SuggestRoutineEvolutionOutput = z.infer<typeof SuggestRoutineEvolutionOutputSchema>;
 
 // Tipos para EvolveRoutinePlan
+
+export const RotinaParaModificarSchema = z.object({ 
+    id: z.string(), 
+    nome: z.string(), 
+    exercicios: z.array(ExercicioDeRotinaSchema) 
+});
+export type RotinaParaModificar = z.infer<typeof RotinaParaModificarSchema>;
+
+
 export const PlanoDeAcaoSchema = z.object({
     rotinasParaCriar: z.array(GenerateRoutineOutputSchema).optional().describe("Novas rotinas a serem criadas."),
-    rotinasParaModificar: z.array(z.object({ id: z.string(), nome: z.string(), exercicios: z.array(ExercicioDeRotinaSchema) })).optional().describe("Rotinas existentes a serem modificadas."),
+    rotinasParaModificar: z.array(RotinaParaModificarSchema).optional().describe("Rotinas existentes a serem modificadas."),
     rotinasParaRemover: z.array(z.string()).optional().describe("IDs de rotinas existentes a serem removidas."),
     mensagemDeAcompanhamento: z.string().describe("Uma mensagem para o usuário explicando as mudanças ou fazendo a próxima pergunta.")
 });

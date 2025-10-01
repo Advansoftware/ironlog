@@ -7,10 +7,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { PageHeader } from '@/components/page-header';
 import { Icons } from '@/components/icons';
 import { Bot, Loader2, Send, Sparkles, User, Wand2 } from 'lucide-react';
-import { getGamification, getHistorico, getRecordesPessoais, getRotinas, salvarRotina, atualizarRotina, deletarRotina } from '@/lib/storage';
+import { getGamification, getHistorico, getRecordesPessoais, getRotinas, salvarRotina, atualizarRotina, deletarRotina, getBibliotecaDeExercicios } from '@/lib/storage';
 import { evolveRoutinePlan } from '@/ai/flows/evolve-routine-plan';
 import { suggestRoutineEvolution } from '@/ai/flows/suggest-routine-evolution';
-import type { PlanoDeAcao } from '@/ai/flows/types';
+import type { PlanoDeAcao, RotinaParaModificar } from '@/ai/flows/types';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { RotinaDeTreino } from '@/lib/types';
@@ -79,11 +79,11 @@ export default function EvolutionPage() {
             rotinasAtuais: JSON.stringify(getRotinas()),
             historicoTreinos: JSON.stringify(getHistorico().slice(0, 50)),
             recordesPessoais: JSON.stringify(getRecordesPessoais()),
-            exerciciosDisponiveis: '[]', // Deixamos a IA usar as rotinas atuais como base
+            exerciciosDisponiveis: JSON.stringify(getBibliotecaDeExercicios()), 
             nivelUsuario: getGamification().level,
         });
 
-        const hasPlan = result.rotinasParaCriar || result.rotinasParaModificar || result.rotinasParaRemover;
+        const hasPlan = result.rotinasParaCriar?.length || result.rotinasParaModificar?.length || result.rotinasParaRemover?.length;
         setMessages(prev => [...prev, { role: 'ia', content: result.mensagemDeAcompanhamento, plan: hasPlan ? result : undefined }]);
         if(hasPlan) {
             setIsAwaitingPlanConfirmation(true);
