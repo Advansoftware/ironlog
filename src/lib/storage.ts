@@ -113,38 +113,6 @@ const initialExercises: Exercicio[] = [
     { id: 'ex45', nome: 'Prancha Lateral', grupoMuscular: 'Core', equipamento: 'Peso do Corpo' }
 ];
 
-const initialRoutines: RotinaDeTreino[] = [
-  {
-    id: 'rt1',
-    nome: 'Dia de Empurrar (Exemplo)',
-    exercicios: [
-      { exercicioId: 'ex1', nomeExercicio: "Supino Reto com Barra", seriesAlvo: 3, repeticoesAlvo: 5, pesoAlvo: 100 },
-      { exercicioId: 'ex2', nomeExercicio: "Supino Inclinado com Halteres", seriesAlvo: 3, repeticoesAlvo: 8, pesoAlvo: 30 },
-      { exercicioId: 'ex10', nomeExercicio: "Desenvolvimento com Barra", seriesAlvo: 3, repeticoesAlvo: 8, pesoAlvo: 60 },
-      { exercicioId: 'ex13', nomeExercicio: "Tríceps Pulley com Corda", seriesAlvo: 3, repeticoesAlvo: 12, pesoAlvo: 20 },
-    ],
-  },
-  {
-    id: 'rt2',
-    nome: 'Dia de Puxar (Exemplo)',
-    exercicios: [
-      { exercicioId: 'ex4', nomeExercicio: "Barra Fixa", seriesAlvo: 3, repeticoesAlvo: 8 },
-      { exercicioId: 'ex5', nomeExercicio: "Remada Curvada com Barra", seriesAlvo: 3, repeticoesAlvo: 8 },
-      { exercicioId: 'ex12', nomeExercicio: "Rosca Direta com Barra", seriesAlvo: 3, repeticoesAlvo: 12 },
-    ],
-  },
-   {
-    id: 'rt3',
-    nome: 'Dia de Pernas (Exemplo)',
-    exercicios: [
-      { exercicioId: 'ex7', nomeExercicio: "Agachamento Livre com Barra", seriesAlvo: 4, repeticoesAlvo: 6 },
-      { exercicioId: 'ex8', nomeExercicio: "Leg Press 45", seriesAlvo: 3, repeticoesAlvo: 10 },
-      { exercicioId: 'ex26', nomeExercicio: "Mesa Flexora", seriesAlvo: 3, repeticoesAlvo: 12 },
-      { exercicioId: 'ex31', nomeExercicio: "Elevação de Panturrilha em Pé", seriesAlvo: 4, repeticoesAlvo: 15 },
-    ],
-  },
-];
-
 const initialGamification: Gamification = { xp: 0, level: 1 };
 
 /**
@@ -153,16 +121,16 @@ const initialGamification: Gamification = { xp: 0, level: 1 };
  */
 function initializeStorage() {
     if (!isBrowser) return;
-    if (localStorage.getItem('appDataInitialized_v2')) return; // Chave de versão para forçar reinicialização
+    if (localStorage.getItem('appDataInitialized_v3')) return;
 
     saveToStorage('bibliotecaDeExercicios', initialExercises);
-    saveToStorage('rotinas', initialRoutines);
+    saveToStorage('rotinas', []);
     saveToStorage('historico', []);
     saveToStorage('recordesPessoais', []);
     saveToStorage('gamification', initialGamification);
     saveToStorage('dbConnections', []);
     saveToStorage('unlockedAchievements', []);
-    localStorage.setItem('appDataInitialized_v2', 'true');
+    localStorage.setItem('appDataInitialized_v3', 'true');
 }
 
 // Executa a inicialização na primeira carga do script.
@@ -357,8 +325,14 @@ export function resetAllData() {
     localStorage.removeItem('gamification');
     localStorage.removeItem('unlockedAchievements');
     localStorage.removeItem('dbConnections');
-    localStorage.removeItem('appDataInitialized_v2');
+    localStorage.removeItem('appDataInitialized_v3');
 
     initializeStorage();
     window.dispatchEvent(new Event('storage'));
 }
+
+export function hasCompletedOnboarding() {
+    return getRotinas().length > 0;
+}
+
+    
