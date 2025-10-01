@@ -12,7 +12,6 @@ import { useState, useEffect } from 'react';
 import type { SessaoDeTreino, RecordePessoal, Gamification } from '@/lib/types';
 import { Lightbulb, Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
-import { suggestRoutineEvolution } from '@/ai/flows/suggest-routine-evolution';
 import { Progress } from '@/components/ui/progress';
 import { levelData, getLevelProgress } from '@/lib/gamification';
 

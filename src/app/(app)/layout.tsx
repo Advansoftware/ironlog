@@ -49,15 +49,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // A gamificação será lida do localStorage, que só está disponível no cliente.
     // Isso evita problemas de hidratação.
-    setGamification(getGamification());
-    
-    // Adiciona um listener para atualizar a gamificação quando ela mudar em outra aba
-    const handleStorageChange = () => {
+    const updateGamification = () => {
       setGamification(getGamification());
     };
-    window.addEventListener('storage', handleStorageChange);
+    
+    updateGamification();
+    
+    // Adiciona um listener para atualizar a gamificação quando ela mudar em outra aba
+    window.addEventListener('storage', updateGamification);
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('storage', updateGamification);
     };
   }, [pathname]);
 
@@ -117,7 +118,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-sm md:hidden">
             <div className="flex justify-around items-center h-16">
                 {mobileNavItems.map((item) => {
-                  const isActive = item.href === '/session' ? pathname === item.href : pathname.startsWith(item.href);
+                  const isActive = item.href === '/session' ? pathname === item.href : (pathname.startsWith(item.href) && item.href !== '/');
                   if (item.href === '/session') {
                     return (
                         <div key={item.href} className="-mt-8">
