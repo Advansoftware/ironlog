@@ -63,10 +63,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   const currentLevel = gamification?.level ?? 1;
-  const currentLevelName = levelData[currentLevel]?.name ?? 'Carregando...';
+  const { name: currentLevelName, color: currentLevelColor } = levelData[currentLevel] || levelData[1];
 
 
   return (
+    <div style={{ '--primary': currentLevelColor } as React.CSSProperties}>
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader className="p-4">
@@ -151,5 +152,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </nav>
       </SidebarInset>
     </SidebarProvider>
+    </div>
   );
 }

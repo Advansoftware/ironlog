@@ -23,17 +23,18 @@ export const levelThresholds: Record<number, number> = {
   10: 300000,
 };
 
-export const levelData: Record<number, { name: string; Icon: FunctionComponent<LucideProps> }> = {
-  1: { name: 'Frango em Crescimento', Icon: Icons.Level1 },
-  2: { name: 'Tá Saindo da Jaula', Icon: Icons.Level2 },
-  3: { name: 'Muleque Zica', Icon: Icons.Level3 },
-  4: { name: 'Corpo em Construção', Icon: Icons.Level4 },
-  5: { name: 'Vem Monstro!', Icon: Icons.Level5 },
-  6: { name: 'Fábrica de Monstros', Icon: Icons.Level6 },
-  7: { name: 'Monstrão', Icon: Icons.Level7 },
-  8: { name: 'BIIIRL!', Icon: Icons.Level8 },
-  9: { name: 'Aberração da Maromba', Icon: Icons.Level9 },
-  10: { name: 'Lenda da Maromba', Icon: Icons.Level10 },
+// As cores são em formato HSL (Hue, Saturation, Lightness) para serem usadas como variáveis CSS
+export const levelData: Record<number, { name: string; Icon: FunctionComponent<LucideProps>, color: string }> = {
+  1: { name: 'Frango em Crescimento', Icon: Icons.Level1, color: '48 96% 58%' }, // Amarelo
+  2: { name: 'Tá Saindo da Jaula', Icon: Icons.Level2, color: '24 96% 58%' }, // Laranja
+  3: { name: 'Muleque Zica', Icon: Icons.Level3, color: '200 90% 55%' }, // Azul claro
+  4: { name: 'Corpo em Construção', Icon: Icons.Level4, color: '260 80% 60%' }, // Roxo
+  5: { name: 'Vem Monstro!', Icon: Icons.Level5, color: '0 84% 60%' }, // Vermelho
+  6: { name: 'Fábrica de Monstros', Icon: Icons.Level6, color: '217 91% 60%'}, // Azul Escuro
+  7: { name: 'Monstrão', Icon: Icons.Level7, color: '300 80% 60%' }, // Magenta
+  8: { name: 'BIIIRL!', Icon: Icons.Level8, color: '100 80% 45%' }, // Verde Escuro
+  9: { name: 'Aberração da Maromba', Icon: Icons.Level9, color: '0 0% 80%'}, // Prata
+  10: { name: 'Lenda da Maromba', Icon: Icons.Level10, color: '130 100% 50%'}, // Verde IronLog original
 };
 
 /**
