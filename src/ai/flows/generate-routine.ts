@@ -36,14 +36,21 @@ Informações do Usuário:
 Exercícios Disponíveis (use apenas exercícios desta lista. A coluna 'equipamento' indica o necessário para cada um):
 {{{exerciciosDisponiveis}}}
 
+**REGRAS OBRIGATÓRIAS PARA INICIANTES:**
+- **Estrutura**: Divida por grupos musculares (ex: peito/tríceps, costas/bíceps, pernas)
+- **Exercícios**: 4-6 exercícios por treino máximo. PRIORIZE exercícios compostos (supino, agachamento, remada, desenvolvimento)
+- **Séries e Repetições**: 3 séries de 8-12 repetições para hipertrofia (ganho de massa)
+- **Consistência**: Para iniciantes, prefira 2-3 dias/semana com qualidade
+
 Instruções:
 1.  Crie um nome para a rotina que seja motivador e descritivo.
-2.  Selecione os melhores exercícios da lista fornecida que se alinhem com o objetivo do usuário e seu local de treino. Por exemplo, se o local for 'Casa', priorize exercícios com 'Peso do Corpo' e 'Halteres'. Se for 'Academia', use todos os tipos de equipamento.
-3.  Distribua os exercícios de forma lógica ao longo dos dias de treino, se aplicável (embora o schema de saída seja uma lista única, você pode organizar a lógica do treino pensando na divisão semanal).
-4.  Defina o número de séries e repetições (seriesAlvo, repeticoesAlvo) para cada exercício, de acordo com o objetivo (ex: menos reps para força, mais reps para hipertrofia/resistência).
-5.  O 'exercicioId' no JSON de saída DEVE corresponder a um 'id' da lista de exercícios disponíveis.
-6.  O 'nomeExercicio' no JSON de saída DEVE corresponder ao 'nome' do exercício correspondente.
-7.  A resposta final deve ser um JSON válido que corresponda ao GenerateRoutineOutputSchema. Não adicione nenhum texto ou formatação fora do JSON.
+2.  **SELEÇÃO DE EXERCÍCIOS**: Para iniciantes, SEMPRE priorize exercícios compostos da lista. Para intermediários/avançados, combine compostos + isolados. Adapte ao local de treino: 'Casa' = Peso do Corpo + Halteres, 'Academia' = todos os equipamentos.
+3.  **ESTRUTURA DA ROTINA**: Se iniciante, organize por grupos musculares lógicos. Se avançado, pode usar divisões mais complexas.
+4.  **SÉRIES E REPETIÇÕES**: Iniciante = 3 séries de 8-12 reps (hipertrofia), Intermediário = 3-4 séries de 6-15 reps, Avançado = 3-5 séries variadas conforme objetivo.
+5.  **QUANTIDADE**: Iniciante máximo 6 exercícios, Intermediário 6-8, Avançado 8-12.
+6.  O 'exercicioId' no JSON de saída DEVE corresponder a um 'id' da lista de exercícios disponíveis.
+7.  O 'nomeExercicio' no JSON de saída DEVE corresponder ao 'nome' do exercício correspondente.
+8.  A resposta final deve ser um JSON válido que corresponda ao GenerateRoutineOutputSchema. Não adicione nenhum texto ou formatação fora do JSON.
 `,
 });
 

@@ -85,12 +85,22 @@ Quando você tiver coletado TODAS as 5 informações obrigatórias (objetivo, ex
 3. Pedir aprovação do usuário
 
 **Diretrizes para Criação do Plano:**
-- Iniciante: 1-2 rotinas Full Body, 3 dias/semana máximo
-- Intermediário: 2-4 rotinas (Push/Pull/Legs ou Upper/Lower), 3-5 dias/semana
-- Avançado: 4-6 rotinas especializadas, 4-6 dias/semana
+
+**REGRAS OBRIGATÓRIAS PARA INICIANTES:**
+- **Estrutura**: Divida treinos por grupos musculares (ex: peito/tríceps, costas/bíceps, pernas)
+- **Exercícios**: 4-6 exercícios por treino máximo. PRIORIZE exercícios compostos (supino, agachamento, remada, desenvolvimento) que trabalham vários músculos
+- **Séries e Repetições**: 3 séries de 8-12 repetições para hipertrofia (ganho de massa)
+- **Consistência**: Máximo 2-3 vezes por semana para iniciantes. É melhor ser consistente com menos frequência do que tentar muito e desistir
+
+**Por Nível de Experiência:**
+- **Iniciante**: 1-2 rotinas Full Body ou divisão simples (A/B), 2-3 dias/semana, exercícios compostos
+- **Intermediário**: 2-4 rotinas (Push/Pull/Legs ou Upper/Lower), 3-5 dias/semana
+- **Avançado**: 4-6 rotinas especializadas, 4-6 dias/semana
+
+**Configurações Gerais:**
 - Use exercícios compatíveis com o local de treino informado
 - Defina séries e repetições apropriadas ao objetivo
-- xpInicial: Iniciante=1 (Nível 1), Intermediário=1000 (Nível 2), Avançado=2500 (Nível 3)
+- xpInicial: Iniciante=0 (Nível 1), Intermediário=1000 (Nível 2), Avançado=2500 (Nível 3)
 
 **EXEMPLO DE ANÁLISE:**
 Se no histórico você vê:

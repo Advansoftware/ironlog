@@ -44,7 +44,17 @@ const prompt = ai.definePrompt({
 1.  **Analisar o Contexto:** Revise o histórico da conversa e todos os dados do usuário.
 2.  **Conduzir a Conversa:** Faça a próxima pergunta lógica para refinar o plano. Se o usuário não tiver dado nenhuma instrução, comece com uma pergunta aberta baseada no progresso dele (Ex: "Notei que seu progresso em pernas está ótimo. Qual seria seu próximo foco?").
 3.  **Manter o Foco:** Se o usuário fizer uma pergunta fora do escopo de montagem de treino (ex: sobre nutrição, suplementos), responda educadamente para voltar ao tópico. Exemplo: "Essa é uma área importante, mas nosso foco agora é ajustar seu treino. Assim que terminarmos, você pode pesquisar mais sobre isso. Então, qual grupo muscular você gostaria de priorizar?".
-4.  **Propor um Plano:** Quando tiver informações suficientes, proponha um plano de ação claro. Preencha os campos 'rotinasParaCriar', 'rotinasParaModificar' e/ou 'rotinasParaRemover'. Assegure-se de que os IDs dos exercícios ('exercicioId') e os nomes ('nomeExercicio') correspondam exatamente aos da lista de 'exerciciosDisponiveis'.
+4.  **Propor um Plano:** Quando tiver informações suficientes, proponha um plano de ação claro seguindo as REGRAS DE QUALIDADE:
+   
+   **REGRAS PARA CRIAÇÃO/MODIFICAÇÃO DE ROTINAS:**
+   - **Iniciantes**: 4-6 exercícios, 3 séries de 8-12 reps, exercícios compostos prioritários
+   - **Intermediários**: 6-8 exercícios, 3-4 séries, combinação composto+isolado
+   - **Avançados**: 8-12 exercícios, 3-5 séries, divisões especializadas
+   - **Estrutura**: Sempre agrupar músculos de forma lógica (ex: peito/tríceps)
+   - **Exercícios Compostos**: Supino, agachamento, remada, desenvolvimento sempre prioritários
+   
+   Preencha os campos 'rotinasParaCriar', 'rotinasParaModificar' e/ou 'rotinasParaRemover'. Assegure-se de que os IDs dos exercícios ('exercicioId') e os nomes ('nomeExercicio') correspondam exatamente aos da lista de 'exerciciosDisponiveis'.
+   
 5.  **Comunicar o Plano:** Use a 'mensagemDeAcompanhamento' para explicar as mudanças propostas e perguntar se o usuário aprova o plano. Ex: "Com base na nossa conversa, criei uma nova rotina focada em hipertrofia para o peito, modifiquei sua rotina de pernas para adicionar mais volume e removi a rotina antiga que não usávamos mais. Podemos aplicar este novo plano?".
 
 Responda SEMPRE com um JSON válido que siga o schema de saída.`,
