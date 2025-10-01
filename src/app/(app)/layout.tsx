@@ -47,6 +47,7 @@ const moreMenuItems = [
     { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
     { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
     { href: '/exercises', icon: Icons.Exercises, label: 'Exercícios' },
+    { href: '/settings', icon: Icons.Settings, label: 'Configurações' },
 ]
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -119,8 +120,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarFooter className="p-4">
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip={{ children: 'Configurações', side: 'right' }}>
-                        <Link href="#">
+                    <SidebarMenuButton asChild tooltip={{ children: 'Configurações', side: 'right' }} isActive={pathname === '/settings'}>
+                        <Link href="/settings">
                             <Icons.Settings />
                             <span>Configurações</span>
                         </Link>

@@ -76,23 +76,19 @@ const initialRoutines: RotinaDeTreino[] = [
 
 const initialGamification: Gamification = { xp: 0, level: 1 };
 
+function initializeStorage() {
+    if (!isBrowser) return;
+    if (localStorage.getItem('appDataInitialized')) return;
 
-// Inicializa os dados se não existirem
-if (isBrowser && !localStorage.getItem('bibliotecaDeExercicios')) {
-  saveToStorage('bibliotecaDeExercicios', initialExercises);
-}
-if (isBrowser && !localStorage.getItem('rotinas')) {
+    saveToStorage('bibliotecaDeExercicios', initialExercises);
     saveToStorage('rotinas', initialRoutines);
-}
-if (isBrowser && !localStorage.getItem('historico')) {
     saveToStorage('historico', []);
-}
-if (isBrowser && !localStorage.getItem('recordesPessoais')) {
     saveToStorage('recordesPessoais', []);
-}
-if (isBrowser && !localStorage.getItem('gamification')) {
     saveToStorage('gamification', initialGamification);
+    localStorage.setItem('appDataInitialized', 'true');
 }
+
+initializeStorage();
 
 
 export const getBibliotecaDeExercicios = () => getFromStorage<Exercicio[]>('bibliotecaDeExercicios', []);
@@ -172,4 +168,18 @@ export const gruposMusculares: GrupoMuscular[] = ['Peito', 'Costas', 'Pernas', '
 export function getNomeExercicio(exercicioId: string) {
     const biblioteca = getBibliotecaDeExercicios();
     return biblioteca.find(ex => ex.id === exercicioId)?.nome ?? 'Exercício Desconhecido';
+}
+
+export function resetAllData() {
+    if (!isBrowser) return;
+    
+    localStorage.removeItem('bibliotecaDeExercicios');
+    localStorage.removeItem('rotinas');
+    localStorage.removeItem('historico');
+    localStorage.removeItem('recordesPessoais');
+    localStorage.removeItem('gamification');
+    localStorage.removeItem('appDataInitialized');
+
+    initializeStorage();
+    window.dispatchEvent(new Event('storage'));
 }
