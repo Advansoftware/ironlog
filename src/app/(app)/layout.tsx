@@ -22,7 +22,8 @@ import type { Gamification } from '@/lib/types';
 import { getGamification } from '@/lib/storage';
 import { levelData } from '@/lib/gamification';
 import { Badge } from '@/components/ui/badge';
-import { Wand2 } from 'lucide-react';
+import { Wand2, Menu } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const navItems = [
   { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
@@ -34,28 +35,31 @@ const navItems = [
   { href: '/exercises', icon: Icons.Exercises, label: 'Exercícios' },
 ];
 
-const mobileNavItems = [
+const mobileBottomNavItems = [
     { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
     { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
-    { href: '/session', icon: Icons.Add, label: 'Iniciar' }, // Ação Central
     { href: '/history', icon: Icons.History, label: 'Histórico' },
-    { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
 ];
+
+const moreMenuItems = [
+    { href: '/evolution', icon: Wand2, label: 'Evoluir' },
+    { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
+    { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
+    { href: '/exercises', icon: Icons.Exercises, label: 'Exercícios' },
+]
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [gamification, setGamification] = useState<Gamification | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // A gamificação será lida do localStorage, que só está disponível no cliente.
-    // Isso evita problemas de hidratação.
     const updateGamification = () => {
       setGamification(getGamification());
     };
     
     updateGamification();
     
-    // Adiciona um listener para atualizar a gamificação quando ela mudar em outra aba
     window.addEventListener('storage', updateGamification);
     return () => {
       window.removeEventListener('storage', updateGamification);
@@ -116,22 +120,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8">
             {children}
         </main>
+        
+        {/* Mobile Navigation */}
         <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background/95 backdrop-blur-sm md:hidden">
-            <div className="flex justify-around items-center h-16">
-                {mobileNavItems.map((item) => {
-                  const isActive = item.href === '/session' ? pathname === item.href : (pathname.startsWith(item.href) && item.href !== '/');
-                  if (item.href === '/session') {
-                    return (
-                        <div key={item.href} className="-mt-8">
-                            <Button asChild size="lg" className="rounded-full h-16 w-16 shadow-lg bg-primary hover:bg-primary/90 border-4 border-background">
-                               <Link href={item.href}>
-                                    <item.icon className="size-8" />
-                                    <span className="sr-only">{item.label}</span>
-                                </Link>
-                            </Button>
-                        </div>
-                    );
-                  }
+            <div className="grid grid-cols-5 items-center h-16">
+                {mobileBottomNavItems.map((item) => {
+                  const isActive = pathname.startsWith(item.href) && item.href !== '/';
                   return (
                     <Link
                         key={item.href}
@@ -148,6 +142,46 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </Link>
                   )
                 })}
+
+                {/* Central Action Button */}
+                <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2">
+                    <Button asChild size="lg" className="rounded-full h-16 w-16 shadow-lg bg-primary hover:bg-primary/90 border-4 border-background">
+                       <Link href="/session">
+                            <Icons.Add className="size-8" />
+                            <span className="sr-only">Iniciar Treino</span>
+                        </Link>
+                    </Button>
+                </div>
+
+                {/* More Menu */}
+                <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                    <SheetTrigger asChild>
+                        <button
+                            className="flex flex-col items-center justify-center gap-1 text-xs w-full h-full text-muted-foreground"
+                        >
+                            <Menu className="size-5" />
+                            <span>Mais</span>
+                        </button>
+                    </SheetTrigger>
+                    <SheetContent side="bottom" className="h-auto">
+                        <SheetHeader>
+                            <SheetTitle className="sr-only">Mais Opções</SheetTitle>
+                        </SheetHeader>
+                        <div className="grid grid-cols-2 gap-4 py-4">
+                            {moreMenuItems.map(item => (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex flex-col items-center gap-2 rounded-lg p-3 bg-secondary/50 active:bg-secondary"
+                                >
+                                    <item.icon className="size-6 text-primary" />
+                                    <span className="text-sm font-medium">{item.label}</span>
+                                </Link>
+                            ))}
+                        </div>
+                    </SheetContent>
+                </Sheet>
             </div>
         </nav>
       </SidebarInset>

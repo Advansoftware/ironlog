@@ -1,3 +1,4 @@
+
 import type { LucideProps } from 'lucide-react';
 import {
   LayoutDashboard,
@@ -24,7 +25,8 @@ import {
   Swords,
   Shield,
   Ghost,
-  Pencil
+  Pencil,
+  Menu,
 } from 'lucide-react';
 
 // Nivel 1: Frango em Crescimento
@@ -86,6 +88,7 @@ export const Icons = {
   Award,
   Trophy,
   Pencil,
+  Menu,
   Level1: Level1Icon,
   Level2: Level2Icon,
   Level3: Swords,
