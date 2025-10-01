@@ -129,3 +129,13 @@ export type DbConnectionConfig = {
   email: string;
   password?: string;
 }
+
+/**
+ * Representa as configurações do usuário para integração com WGER.
+ */
+export type WgerConfig = {
+  enabled: boolean;          // Se a sincronização está habilitada
+  apiUrl: string;           // URL da instância WGER (ex: https://fit.advansoftware.shop)
+  token: string;            // Token de autenticação do usuário
+  username?: string;        // Nome de usuário (opcional, para exibição)
+}

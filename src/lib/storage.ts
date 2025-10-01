@@ -7,7 +7,7 @@
  * Também inclui a lógica para inicializar o app com dados padrão na primeira execução.
  */
 
-import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular, Gamification, DbConnectionConfig, UnlockedAchievement, AchievementContext } from '@/lib/types';
+import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular, Gamification, DbConnectionConfig, UnlockedAchievement, AchievementContext, WgerConfig } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { calculateXP, checkForLevelUp, allAchievements } from './gamification';
 import { useToast } from '@/hooks/use-toast';
@@ -21,16 +21,16 @@ const isBrowser = typeof window !== 'undefined';
  * @returns O valor parseado do localStorage ou o valor padrão.
  */
 function getFromStorage<T>(key: string, defaultValue: T): T {
-  if (!isBrowser) {
-    return defaultValue;
-  }
-  try {
-    const item = window.localStorage.getItem(key);
-    return item ? JSON.parse(item) : defaultValue;
-  } catch (error) {
-    console.error(`Erro ao ler do localStorage [${key}]:`, error);
-    return defaultValue;
-  }
+    if (!isBrowser) {
+        return defaultValue;
+    }
+    try {
+        const item = window.localStorage.getItem(key);
+        return item ? JSON.parse(item) : defaultValue;
+    } catch (error) {
+        console.error(`Erro ao ler do localStorage [${key}]:`, error);
+        return defaultValue;
+    }
 }
 
 /**
@@ -39,18 +39,17 @@ function getFromStorage<T>(key: string, defaultValue: T): T {
  * @param value O valor a ser salvo (será convertido para JSON).
  */
 function saveToStorage<T>(key: string, value: T) {
-  if (!isBrowser) {
-    return;
-  }
-  try {
-    const item = JSON.stringify(value);
-    window.localStorage.setItem(key, item);
-    // Dispara um evento para notificar outras abas/componentes sobre a mudança.
-    window.dispatchEvent(new Event('storage'));
-  } catch (error)
- {
-    console.error(`Erro ao salvar no localStorage [${key}]:`, error);
-  }
+    if (!isBrowser) {
+        return;
+    }
+    try {
+        const item = JSON.stringify(value);
+        window.localStorage.setItem(key, item);
+        // Dispara um evento para notificar outras abas/componentes sobre a mudança.
+        window.dispatchEvent(new Event('storage'));
+    } catch (error) {
+        console.error(`Erro ao salvar no localStorage [${key}]:`, error);
+    }
 }
 
 // Dados iniciais para popular o aplicativo na primeira vez que é aberto.
@@ -133,7 +132,7 @@ function initializeStorage() {
     if (!localStorage.getItem('gamification')) saveToStorage('gamification', initialGamification);
     if (!localStorage.getItem('dbConnections')) saveToStorage('dbConnections', []);
     if (!localStorage.getItem('unlockedAchievements')) saveToStorage('unlockedAchievements', []);
-    
+
     localStorage.setItem('appDataInitialized_v4', 'true');
 }
 
@@ -149,6 +148,35 @@ export const getRecordesPessoais = () => getFromStorage<RecordePessoal[]>('recor
 export const getGamification = () => getFromStorage<Gamification>('gamification', initialGamification);
 export const getUnlockedAchievements = () => getFromStorage<UnlockedAchievement[]>('unlockedAchievements', []);
 export const getDbConnections = () => getFromStorage<DbConnectionConfig[]>('dbConnections', []);
+
+// WGER Configuration Functions
+const defaultWgerConfig: WgerConfig = {
+    enabled: false,
+    apiUrl: 'https://fit.advansoftware.shop',
+    token: '',
+    username: ''
+};
+
+/**
+ * Obtém a configuração WGER do usuário.
+ * @returns A configuração WGER atual do usuário.
+ */
+export const getWgerConfig = (): WgerConfig => getFromStorage<WgerConfig>('wgerConfig', defaultWgerConfig);
+
+/**
+ * Salva a configuração WGER do usuário.
+ * @param config A configuração WGER a ser salva.
+ */
+export const saveWgerConfig = (config: WgerConfig) => saveToStorage('wgerConfig', config);
+
+/**
+ * Verifica se a sincronização WGER está habilitada e configurada.
+ * @returns true se a sincronização está ativa, false caso contrário.
+ */
+export const isWgerSyncEnabled = (): boolean => {
+    const config = getWgerConfig();
+    return config.enabled && config.token.trim() !== '' && config.apiUrl.trim() !== '';
+};
 
 
 // Funções de Escrita (Setters)
@@ -166,10 +194,23 @@ export const salvarExercicio = (exercicio: Omit<Exercicio, 'id'>) => {
 /**
  * Salva uma nova rotina na lista de rotinas.
  * @param rotina O objeto da rotina a ser salvo.
+ * @param syncToWger Se deve sincronizar com WGER API (padrão: true).
  */
-export const salvarRotina = (rotina: RotinaDeTreino) => {
+export const salvarRotina = async (rotina: RotinaDeTreino, syncToWger = true) => {
     const rotinas = getRotinas();
     saveToStorage('rotinas', [rotina, ...rotinas]);
+
+    // Sincronizar com WGER se habilitado
+    if (syncToWger && isWgerSyncEnabled()) {
+        try {
+            const { syncRoutineToWger } = await import('./wger-api');
+            await syncRoutineToWger(rotina);
+            console.log('✅ Rotina sincronizada com WGER:', rotina.nome);
+        } catch (error) {
+            console.warn('⚠️ Falha na sincronização com WGER:', error);
+            // Não falha o salvamento local se a sincronização falhar
+        }
+    }
 };
 
 /**
@@ -190,9 +231,9 @@ export const atualizarRotina = (rotinaAtualizada: RotinaDeTreino) => {
  * @param id O ID da rotina a ser deletada.
  */
 export const deletarRotina = (id: string) => {
-  const rotinas = getRotinas();
-  const novasRotinas = rotinas.filter(r => r.id !== id);
-  saveToStorage('rotinas', novasRotinas);
+    const rotinas = getRotinas();
+    const novasRotinas = rotinas.filter(r => r.id !== id);
+    saveToStorage('rotinas', novasRotinas);
 }
 
 /**
@@ -217,20 +258,25 @@ export const salvarUnlockedAchievements = (achievements: UnlockedAchievement[]) 
  * e atualiza os recordes pessoais.
  * @param sessao O objeto da sessão de treino a ser salvo.
  * @param novosRecordes Uma lista de novos recordes pessoais batidos nesta sessão.
+ * @param syncToWger Se deve sincronizar com WGER API (padrão: true).
  * @returns Um objeto com informações sobre o level up e o XP ganho.
  */
-export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, novosRecordes: RecordePessoal[]) => {
+export const salvarSessao = async (
+    sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>,
+    novosRecordes: RecordePessoal[],
+    syncToWger = true
+) => {
     const { toast } = useToast();
     const historicoAnterior = getHistorico();
     const gamificationAnterior = getGamification();
 
     const xpGanho = calculateXP(sessao.exercicios);
     const newTotalXp = gamificationAnterior.xp + xpGanho;
-    
+
     const sessaoCompleta: SessaoDeTreino = {
-      ...sessao,
-      id: uuidv4(),
-      xpGanho,
+        ...sessao,
+        id: uuidv4(),
+        xpGanho,
     };
 
     const novoHistorico = [sessaoCompleta, ...historicoAnterior];
@@ -239,7 +285,7 @@ export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, nov
     const levelUpInfo = checkForLevelUp(gamificationAnterior.xp, newTotalXp);
     const novaGamification = { xp: newTotalXp, level: levelUpInfo.newLevel };
     saveToStorage('gamification', novaGamification);
-    
+
     // Armazena um flag na sessionStorage para notificar o app que o usuário acabou de subir de nível.
     // A sessionStorage é usada aqui porque este é um estado temporário que não precisa persistir.
     if (levelUpInfo.didLevelUp && isBrowser) {
@@ -262,9 +308,21 @@ export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, nov
 
         saveToStorage('recordesPessoais', recordesAtualizados);
     }
-    
+
     // Verifica por novas conquistas
     checkForNewAchievements(sessaoCompleta, toast);
+
+    // Sincronizar com WGER se habilitado
+    if (syncToWger && isWgerSyncEnabled()) {
+        try {
+            const { syncSessionToWger } = await import('./wger-api');
+            await syncSessionToWger(sessaoCompleta);
+            console.log('✅ Sessão sincronizada com WGER:', sessaoCompleta.nome);
+        } catch (error) {
+            console.warn('⚠️ Falha na sincronização da sessão com WGER:', error);
+            // Não falha o salvamento local se a sincronização falhar
+        }
+    }
 
     return { levelUpInfo, xpGanho };
 };
@@ -300,7 +358,7 @@ function checkForNewAchievements(latestSession: SessaoDeTreino, toast: ReturnTyp
         newAchievements.forEach(ach => {
             const achievementData = allAchievements.find(a => a.id === ach.id);
             if (achievementData) {
-                 toast({
+                toast({
                     title: "Conquista Desbloqueada!",
                     description: achievementData.name,
                 });
@@ -333,7 +391,7 @@ export function getNomeExercicio(exercicioId: string) {
  */
 export function resetAllData() {
     if (!isBrowser) return;
-    
+
     // Lista de todas as chaves gerenciadas pelo app
     const keys = [
         'bibliotecaDeExercicios',
@@ -349,7 +407,7 @@ export function resetAllData() {
         'dailyTipDate',
         'justLeveledUp',
     ];
-    
+
     keys.forEach(key => localStorage.removeItem(key));
     // Limpa também a sessionStorage para garantir
     sessionStorage.clear();

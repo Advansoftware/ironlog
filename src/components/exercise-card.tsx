@@ -48,7 +48,18 @@ export function ExerciseCard({ exercise, className = "" }: ExerciseCardProps) {
     setError(null);
 
     try {
-      const { searchExerciseByName } = await import("@/lib/wger-api");
+      const { searchExerciseByName, isWgerConfigured } = await import(
+        "@/lib/wger-api"
+      );
+
+      // Verificar se WGER está configurado
+      if (!isWgerConfigured()) {
+        setError(
+          "Configure WGER nas Configurações para ver detalhes dos exercícios."
+        );
+        return;
+      }
+
       const data = await searchExerciseByName(exercise.nome, 7);
 
       if (data) {
@@ -73,12 +84,14 @@ export function ExerciseCard({ exercise, className = "" }: ExerciseCardProps) {
         }
 
         if (!wgerData) {
-          setError("Detalhes não disponíveis para este exercício.");
+          setError("Detalhes não disponíveis para este exercício no WGER.");
         }
       }
     } catch (err) {
       console.error("Erro ao buscar dados do WGER:", err);
-      setError("Erro ao carregar detalhes do exercício.");
+      setError(
+        "Erro ao carregar detalhes do exercício. Verifique as configurações do WGER."
+      );
     } finally {
       setIsLoading(false);
     }

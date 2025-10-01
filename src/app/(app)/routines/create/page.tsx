@@ -1,31 +1,53 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { v4 as uuidv4 } from "uuid";
 
-'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { v4 as uuidv4 } from 'uuid';
-
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { PageHeader } from '@/components/page-header';
-import { useToast } from '@/hooks/use-toast';
-import { generateRoutine } from '@/ai/flows/generate-routine';
-import { getBibliotecaDeExercicios, salvarRotina } from '@/lib/storage';
-import type { RotinaDeTreino } from '@/lib/types';
-import { ArrowLeft, Loader2, Sparkles, Wand2, Plus } from 'lucide-react';
-import Link from 'next/link';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { PageHeader } from "@/components/page-header";
+import { useToast } from "@/hooks/use-toast";
+import { generateRoutine } from "@/ai/flows/generate-routine";
+import { getBibliotecaDeExercicios, salvarRotina } from "@/lib/storage";
+import type { RotinaDeTreino } from "@/lib/types";
+import { ArrowLeft, Loader2, Sparkles, Wand2, Plus } from "lucide-react";
+import Link from "next/link";
 
 const formSchema = z.object({
-  objetivo: z.string().min(1, 'O objetivo é obrigatório.'),
-  nivelExperiencia: z.string().min(1, 'O nível de experiência é obrigatório.'),
-  diasPorSemana: z.coerce.number().min(1, 'Pelo menos 1 dia é necessário.').max(7),
-  localDeTreino: z.string().min(1, 'O local de treino é obrigatório.'),
+  objetivo: z.string().min(1, "O objetivo é obrigatório."),
+  nivelExperiencia: z.string().min(1, "O nível de experiência é obrigatório."),
+  diasPorSemana: z.coerce
+    .number()
+    .min(1, "Pelo menos 1 dia é necessário.")
+    .max(7),
+  localDeTreino: z.string().min(1, "O local de treino é obrigatório."),
   observacoes: z.string().optional(),
 });
 
@@ -35,16 +57,17 @@ export default function CreateRoutinePage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [generatedRoutine, setGeneratedRoutine] = useState<RotinaDeTreino | null>(null);
+  const [generatedRoutine, setGeneratedRoutine] =
+    useState<RotinaDeTreino | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      objetivo: 'Hipertrofia',
-      nivelExperiencia: 'Iniciante',
+      objetivo: "Hipertrofia",
+      nivelExperiencia: "Iniciante",
       diasPorSemana: 3,
-      localDeTreino: 'Academia',
-      observacoes: '',
+      localDeTreino: "Academia",
+      observacoes: "",
     },
   });
 
@@ -66,34 +89,49 @@ export default function CreateRoutinePage() {
       });
 
       toast({
-        title: 'Rotina Gerada com Sucesso!',
-        description: 'Revise os detalhes e salve se estiver satisfeito.',
+        title: "Rotina Gerada com Sucesso!",
+        description: "Revise os detalhes e salve se estiver satisfeito.",
       });
     } catch (error) {
-      console.error('Falha ao gerar rotina:', error);
+      console.error("Falha ao gerar rotina:", error);
       toast({
-        variant: 'destructive',
-        title: 'Erro ao Gerar Rotina',
-        description: 'Não foi possível se conectar à IA. Verifique sua conexão ou tente novamente.',
+        variant: "destructive",
+        title: "Erro ao Gerar Rotina",
+        description:
+          "Não foi possível se conectar à IA. Verifique sua conexão ou tente novamente.",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSaveRoutine = () => {
+  const handleSaveRoutine = async () => {
     if (!generatedRoutine) return;
-    salvarRotina(generatedRoutine);
-    toast({
-      title: 'Rotina Salva!',
-      description: 'Sua nova rotina está pronta para ser usada.',
-    });
-    router.push('/routines');
+
+    try {
+      await salvarRotina(generatedRoutine);
+      toast({
+        title: "Rotina Salva!",
+        description:
+          "Sua nova rotina está pronta para ser usada e foi sincronizada com WGER.",
+      });
+      router.push("/routines");
+    } catch (error) {
+      console.error("Erro ao salvar rotina:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao Salvar",
+        description: "Houve um problema ao salvar a rotina. Tente novamente.",
+      });
+    }
   };
 
   return (
     <>
-      <PageHeader title="Criar Rotina com IA" description="Descreva seu treino ideal e deixe a IA fazer o trabalho pesado.">
+      <PageHeader
+        title="Criar Rotina com IA"
+        description="Descreva seu treino ideal e deixe a IA fazer o trabalho pesado."
+      >
         <div className="flex gap-2">
           <Button variant="outline" asChild>
             <Link href="/routines">
@@ -124,17 +162,26 @@ export default function CreateRoutinePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Qual seu objetivo principal?</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione um objetivo" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Hipertrofia">Hipertrofia (Ganho de Massa)</SelectItem>
+                          <SelectItem value="Hipertrofia">
+                            Hipertrofia (Ganho de Massa)
+                          </SelectItem>
                           <SelectItem value="Força">Força</SelectItem>
-                          <SelectItem value="Resistência">Resistência Muscular</SelectItem>
-                          <SelectItem value="Emagrecimento">Emagrecimento</SelectItem>
+                          <SelectItem value="Resistência">
+                            Resistência Muscular
+                          </SelectItem>
+                          <SelectItem value="Emagrecimento">
+                            Emagrecimento
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -148,16 +195,25 @@ export default function CreateRoutinePage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Qual seu nível de experiência?</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione um nível" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Iniciante">Iniciante (0-1 ano)</SelectItem>
-                          <SelectItem value="Intermediário">Intermediário (1-3 anos)</SelectItem>
-                          <SelectItem value="Avançado">Avançado (3+ anos)</SelectItem>
+                          <SelectItem value="Iniciante">
+                            Iniciante (0-1 ano)
+                          </SelectItem>
+                          <SelectItem value="Intermediário">
+                            Intermediário (1-3 anos)
+                          </SelectItem>
+                          <SelectItem value="Avançado">
+                            Avançado (3+ anos)
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -170,7 +226,9 @@ export default function CreateRoutinePage() {
                   name="diasPorSemana"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Quantos dias por semana pode treinar?</FormLabel>
+                      <FormLabel>
+                        Quantos dias por semana pode treinar?
+                      </FormLabel>
                       <FormControl>
                         <Input type="number" min="1" max="7" {...field} />
                       </FormControl>
@@ -179,21 +237,28 @@ export default function CreateRoutinePage() {
                   )}
                 />
 
-                 <FormField
+                <FormField
                   control={form.control}
                   name="localDeTreino"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Onde você vai treinar?</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione o local" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Academia">Academia (equipamentos completos)</SelectItem>
-                          <SelectItem value="Casa">Casa (peso do corpo e halteres)</SelectItem>
+                          <SelectItem value="Academia">
+                            Academia (equipamentos completos)
+                          </SelectItem>
+                          <SelectItem value="Casa">
+                            Casa (peso do corpo e halteres)
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -208,7 +273,10 @@ export default function CreateRoutinePage() {
                     <FormItem>
                       <FormLabel>Observações (opcional)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Ex: Foco em peito, evitar agachamento por dor no joelho, etc." {...field} />
+                        <Textarea
+                          placeholder="Ex: Foco em peito, evitar agachamento por dor no joelho, etc."
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -237,7 +305,9 @@ export default function CreateRoutinePage() {
         <Card>
           <CardHeader>
             <CardTitle>2. Resultado da IA</CardTitle>
-            <CardDescription>Revise a rotina sugerida. Você pode salvá-la ou gerar uma nova.</CardDescription>
+            <CardDescription>
+              Revise a rotina sugerida. Você pode salvá-la ou gerar uma nova.
+            </CardDescription>
           </CardHeader>
           <CardContent className="min-h-[300px]">
             {isLoading && (
@@ -253,10 +323,15 @@ export default function CreateRoutinePage() {
             )}
             {generatedRoutine && (
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-primary">{generatedRoutine.nome}</h3>
+                <h3 className="text-xl font-bold text-primary">
+                  {generatedRoutine.nome}
+                </h3>
                 <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2">
                   {generatedRoutine.exercicios.map((ex) => (
-                    <div key={ex.exercicioId} className="p-3 bg-secondary/50 rounded-lg">
+                    <div
+                      key={ex.exercicioId}
+                      className="p-3 bg-secondary/50 rounded-lg"
+                    >
                       <p className="font-semibold">{ex.nomeExercicio}</p>
                       <p className="text-sm text-muted-foreground">
                         {ex.seriesAlvo} séries de {ex.repeticoesAlvo} reps
@@ -277,7 +352,11 @@ export default function CreateRoutinePage() {
               <Sparkles className="mr-2" />
               Gerar Novamente
             </Button>
-            <Button onClick={handleSaveRoutine} disabled={!generatedRoutine} className="w-full">
+            <Button
+              onClick={handleSaveRoutine}
+              disabled={!generatedRoutine}
+              className="w-full"
+            >
               Salvar Rotina
             </Button>
           </CardFooter>

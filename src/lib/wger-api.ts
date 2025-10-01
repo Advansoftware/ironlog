@@ -4,6 +4,67 @@
  * instruções e imagens da API do WGER.
  */
 
+import type {
+  RotinaDeTreino,
+  ExercicioDeRotina,
+  SessaoDeTreino,
+  ExercicioRegistrado,
+  WgerConfig
+} from './types';
+
+/**
+ * Obtém as configurações WGER do usuário do localStorage
+ */
+function getUserWgerConfig(): WgerConfig {
+  if (typeof window === 'undefined') {
+    return {
+      enabled: false,
+      apiUrl: 'https://fit.advansoftware.shop',
+      token: '',
+      username: ''
+    };
+  }
+
+  try {
+    const stored = localStorage.getItem('wgerConfig');
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Erro ao ler configuração WGER:', error);
+  }
+
+  return {
+    enabled: false,
+    apiUrl: 'https://fit.advansoftware.shop',
+    token: '',
+    username: ''
+  };
+}
+
+/**
+ * Verifica se a sincronização WGER está configurada e habilitada
+ */
+export function isWgerConfigured(): boolean {
+  const config = getUserWgerConfig();
+  return config.enabled && config.token.trim() !== '' && config.apiUrl.trim() !== '';
+}
+
+
+
+/**
+ * Obtém as credenciais e configurações da API WGER do usuário
+ */
+function getWgerApiConfig(): { apiUrl: string; token: string } {
+  const config = getUserWgerConfig();
+  // Garantir que a URL termine com /
+  const apiUrl = config.apiUrl.endsWith('/') ? config.apiUrl : config.apiUrl + '/';
+  return {
+    apiUrl,
+    token: config.token
+  };
+}
+
 // Tipos para os dados da API do WGER
 export interface WgerExercise {
   id: number;
@@ -17,12 +78,14 @@ export interface WgerExercise {
     name: string;
     name_en: string;
     is_front: boolean;
+    image_url_main?: string;
   }>;
   muscles_secondary: Array<{
     id: number;
     name: string;
     name_en: string;
     is_front: boolean;
+    image_url_main?: string;
   }>;
   equipment: Array<{
     id: number;
@@ -45,13 +108,27 @@ export interface WgerExercise {
   }>;
 }
 
+export interface MuscleInfo {
+  id: number;
+  name: string;
+  name_en: string;
+  is_front: boolean;
+  image_url_main?: string;
+}
+
+export interface EquipmentInfo {
+  id: number;
+  name: string;
+}
+
 export interface ExerciseSearchResult {
   name: string;
   description: string;
   instructions: string;
-  primaryMuscles: string[];
-  secondaryMuscles: string[];
-  equipment: string[];
+  primaryMuscles: MuscleInfo[];
+  secondaryMuscles: MuscleInfo[];
+  equipment: EquipmentInfo[];
+  category: string;
   images: string[];
   videos: string[];
 }
@@ -77,8 +154,12 @@ export async function searchExerciseByName(
   }
 
   try {
-    const apiUrl = process.env.WGER_API_URL || 'https://fit.advansoftware.shop/';
-    const apiToken = process.env.WGER_API_TOKEN;
+    if (!isWgerConfigured()) {
+      console.warn('⚠️  WGER não configurado ou desabilitado');
+      return null;
+    }
+
+    const { apiUrl, token } = getWgerApiConfig();
     const url = `${apiUrl}api/v2/exerciseinfo/?limit=50`;
 
     const headers: HeadersInit = {
@@ -86,8 +167,8 @@ export async function searchExerciseByName(
       'Content-Type': 'application/json',
     };
 
-    if (apiToken) {
-      headers['Authorization'] = `Token ${apiToken}`;
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
     }
 
     const response = await fetch(url, { headers });
@@ -106,7 +187,7 @@ export async function searchExerciseByName(
       return null;
     }
 
-    const result = formatExerciseData(exercise, language);
+    const result = await formatExerciseData(exercise, language);
 
     // Salvar no cache
     exerciseCache.set(cacheKey, result);
@@ -135,8 +216,12 @@ export async function getExerciseById(
   }
 
   try {
-    const apiUrl = process.env.WGER_API_URL || 'https://fit.advansoftware.shop/';
-    const apiToken = process.env.WGER_API_TOKEN;
+    if (!isWgerConfigured()) {
+      console.warn('⚠️  WGER não configurado ou desabilitado');
+      return null;
+    }
+
+    const { apiUrl, token } = getWgerApiConfig();
     const url = `${apiUrl}api/v2/exerciseinfo/${exerciseId}/`;
 
     const headers: HeadersInit = {
@@ -144,8 +229,8 @@ export async function getExerciseById(
       'Content-Type': 'application/json',
     };
 
-    if (apiToken) {
-      headers['Authorization'] = `Token ${apiToken}`;
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
     }
 
     const response = await fetch(url, { headers });
@@ -155,7 +240,7 @@ export async function getExerciseById(
     }
 
     const exercise: WgerExercise = await response.json();
-    const result = formatExerciseData(exercise, language);
+    const result = await formatExerciseData(exercise, language);
 
     exerciseCache.set(cacheKey, result);
     return result;
@@ -220,9 +305,100 @@ function normalizeString(str: string): string {
 }
 
 /**
+ * Busca imagens de um exercício específico
+ */
+async function fetchExerciseImages(exerciseId: number): Promise<string[]> {
+  try {
+    if (!isWgerConfigured()) {
+      return [];
+    }
+
+    const { apiUrl, token } = getWgerApiConfig();
+    const url = `${apiUrl}api/v2/exerciseimage/?exercise=${exerciseId}`;
+
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
+    }
+
+    const response = await fetch(url, { headers });
+    if (!response.ok) {
+      console.error('Erro ao buscar imagens:', response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    return data.results?.map((img: any) => {
+      const imageUrl = img.image;
+      return imageUrl.startsWith('http') ? imageUrl : `${apiUrl}${imageUrl}`;
+    }) || [];
+  } catch (error) {
+    console.error('Erro ao buscar imagens do exercício:', error);
+    return [];
+  }
+}
+
+/**
+ * Busca vídeos de um exercício específico
+ */
+async function fetchExerciseVideos(exerciseId: number): Promise<string[]> {
+  try {
+    if (!isWgerConfigured()) {
+      return [];
+    }
+
+    const { apiUrl, token } = getWgerApiConfig();
+    const url = `${apiUrl}api/v2/video/?exercise=${exerciseId}`;
+
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
+    }
+
+    const response = await fetch(url, { headers });
+    if (!response.ok) {
+      console.error('Erro ao buscar vídeos:', response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    return data.results?.map((video: any) => {
+      const videoUrl = video.video;
+      return videoUrl.startsWith('http') ? videoUrl : `${apiUrl}${videoUrl}`;
+    }) || [];
+  } catch (error) {
+    console.error('Erro ao buscar vídeos do exercício:', error);
+    return [];
+  }
+}
+
+/**
+ * Extrai links de vídeos do YouTube da descrição
+ */
+function extractYouTubeLinks(description: string): string[] {
+  const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/g;
+  const matches = [];
+  let match;
+
+  while ((match = youtubeRegex.exec(description)) !== null) {
+    matches.push(`https://www.youtube.com/watch?v=${match[1]}`);
+  }
+
+  return matches;
+}
+
+/**
  * Formata os dados do exercício para o formato usado na aplicação
  */
-function formatExerciseData(exercise: WgerExercise, language: number): ExerciseSearchResult {
+async function formatExerciseData(exercise: WgerExercise, language: number): Promise<ExerciseSearchResult> {
   // Buscar tradução no idioma preferido (português = 7), depois inglês (2), depois alemão (1)
   const translation = exercise.translations.find(t => t.language === language) ||
     exercise.translations.find(t => t.language === 7) || // português como fallback
@@ -234,23 +410,38 @@ function formatExerciseData(exercise: WgerExercise, language: number): ExerciseS
     stripHtml(translation.description) :
     'Descrição não disponível';
 
-  // Extrair músculos primários e secundários (preferir nome em inglês para tradução posterior)
-  const primaryMuscles = exercise.muscles.map(m => m.name_en || m.name).filter(Boolean);
-  const secondaryMuscles = exercise.muscles_secondary.map(m => m.name_en || m.name).filter(Boolean);
+  // Extrair músculos primários e secundários com informações completas
+  const primaryMuscles: MuscleInfo[] = exercise.muscles.map(m => ({
+    id: m.id,
+    name: m.name,
+    name_en: m.name_en,
+    is_front: m.is_front,
+    image_url_main: m.image_url_main
+  }));
 
-  // Extrair equipamentos
-  const equipment = exercise.equipment.map(e => e.name);
+  const secondaryMuscles: MuscleInfo[] = exercise.muscles_secondary.map(m => ({
+    id: m.id,
+    name: m.name,
+    name_en: m.name_en,
+    is_front: m.is_front,
+    image_url_main: m.image_url_main
+  }));
 
-  // Processar imagens (adicionar URL base se necessário)
-  const apiUrl = process.env.WGER_API_URL || 'https://fit.advansoftware.shop/';
-  const images = exercise.images?.map(img => {
-    return img.image.startsWith('http') ? img.image : `${apiUrl}${img.image}`;
-  }) || [];
+  // Extrair equipamentos com informações completas
+  const equipment: EquipmentInfo[] = exercise.equipment.map(e => ({
+    id: e.id,
+    name: e.name
+  }));
 
-  // Processar vídeos
-  const videos = exercise.videos?.map(video => {
-    return video.video.startsWith('http') ? video.video : `${apiUrl}${video.video}`;
-  }) || [];
+  // Buscar imagens e vídeos separadamente
+  const [images, videos] = await Promise.all([
+    fetchExerciseImages(exercise.id),
+    fetchExerciseVideos(exercise.id)
+  ]);
+
+  // Extrair links de YouTube da descrição
+  const youtubeLinks = extractYouTubeLinks(translation?.description || '');
+  const allVideos = [...videos, ...youtubeLinks];
 
   return {
     name,
@@ -259,12 +450,11 @@ function formatExerciseData(exercise: WgerExercise, language: number): ExerciseS
     primaryMuscles,
     secondaryMuscles,
     equipment,
+    category: exercise.category?.name || '',
     images,
-    videos
+    videos: allVideos
   };
-}
-
-/**
+}/**
  * Remove tags HTML de uma string
  */
 function stripHtml(html: string): string {
@@ -287,8 +477,11 @@ export async function searchExercisesByCategory(
   limit: number = 10
 ): Promise<ExerciseSearchResult[]> {
   try {
-    const apiUrl = process.env.WGER_API_URL || 'https://fit.advansoftware.shop/';
-    const apiToken = process.env.WGER_API_TOKEN;
+    if (!isWgerConfigured()) {
+      return [];
+    }
+
+    const { apiUrl, token } = getWgerApiConfig();
     const url = `${apiUrl}api/v2/exerciseinfo/?limit=${limit * 2}`; // Buscar mais para filtrar
 
     const headers: HeadersInit = {
@@ -296,8 +489,8 @@ export async function searchExercisesByCategory(
       'Content-Type': 'application/json',
     };
 
-    if (apiToken) {
-      headers['Authorization'] = `Token ${apiToken}`;
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
     }
 
     const response = await fetch(url, { headers });
@@ -308,7 +501,7 @@ export async function searchExercisesByCategory(
     const data = await response.json();
     const normalizedCategory = normalizeString(category);
 
-    const matchingExercises = data.results
+    const filteredExercises = data.results
       .filter((exercise: WgerExercise) => {
         // Verificar se a categoria ou músculos correspondem
         const categoryMatch = normalizeString(exercise.category.name).includes(normalizedCategory);
@@ -319,12 +512,426 @@ export async function searchExercisesByCategory(
 
         return categoryMatch || muscleMatch;
       })
-      .slice(0, limit)
-      .map((exercise: WgerExercise) => formatExerciseData(exercise, 7));
+      .slice(0, limit);
+
+    // Processar exercícios de forma assíncrona
+    const matchingExercises = await Promise.all(
+      filteredExercises.map((exercise: WgerExercise) => formatExerciseData(exercise, 7))
+    );
 
     return matchingExercises;
   } catch (error) {
     console.error('Erro ao buscar exercícios por categoria:', error);
     return [];
+  }
+}
+
+// ========================================
+// FUNCIONALIDADES DE SINCRONIZAÇÃO
+// ========================================
+
+/**
+ * Tipos para sincronização com WGER
+ */
+export interface WgerRoutine {
+  id?: number;
+  name: string;
+  description: string;
+  start?: string;
+  end?: string;
+  fit_in_week?: boolean;
+  is_template?: boolean;
+  is_public?: boolean;
+}
+
+export interface WgerDay {
+  id?: number;
+  routine: number;
+  day: number;
+  description?: string;
+}
+
+export interface WgerSet {
+  id?: number;
+  day: number;
+  exercise: number;
+  sets: number;
+  reps: number;
+  weight?: number;
+  comment?: string;
+  order?: number;
+}
+
+export interface WgerWorkoutSession {
+  id?: number;
+  routine: number;
+  date: string;
+  impression?: number; // 1-10 scale
+  notes?: string;
+  time_start?: string;
+  time_end?: string;
+}
+
+export interface WgerWorkoutLog {
+  id?: number;
+  session: number;
+  exercise: number;
+  repetitions: number;
+  weight: number;
+  date: string;
+  comment?: string;
+}
+
+/**
+ * Cria uma rotina no WGER
+ */
+export async function createWgerRoutine(routine: RotinaDeTreino): Promise<WgerRoutine | null> {
+  try {
+    if (!isWgerConfigured()) {
+      return null;
+    }
+
+    const { apiUrl, token } = getWgerApiConfig();
+
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
+    }
+
+    const wgerRoutine: WgerRoutine = {
+      name: `IronLog: ${routine.nome}`,
+      description: `Rotina criada pelo IronLog com ${routine.exercicios.length} exercícios`,
+      start: new Date().toISOString().split('T')[0], // Data atual
+      fit_in_week: true,
+      is_template: false,
+      is_public: false
+    };
+
+    const response = await fetch(`${apiUrl}api/v2/routine/`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(wgerRoutine)
+    });
+
+    if (!response.ok) {
+      console.error('Erro ao criar rotina no WGER:', response.status, await response.text());
+      return null;
+    }
+
+    const createdRoutine = await response.json();
+    console.log('✅ Rotina criada no WGER:', createdRoutine.id);
+
+    // Criar dia de treino para a rotina
+    await createWgerDay(createdRoutine.id, routine);
+
+    return createdRoutine;
+  } catch (error) {
+    console.error('Erro ao criar rotina no WGER:', error);
+    return null;
+  }
+}
+
+/**
+ * Cria um dia de treino no WGER
+ */
+async function createWgerDay(routineId: number, routine: RotinaDeTreino): Promise<void> {
+  try {
+    const { apiUrl, token } = getWgerApiConfig();
+
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
+    }
+
+    const wgerDay: WgerDay = {
+      routine: routineId,
+      day: 1,
+      description: `Dia 1 - ${routine.nome}`
+    };
+
+    const response = await fetch(`${apiUrl}api/v2/day/`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(wgerDay)
+    });
+
+    if (!response.ok) {
+      console.error('Erro ao criar dia no WGER:', response.status);
+      return;
+    }
+
+    const createdDay = await response.json();
+    console.log('✅ Dia criado no WGER:', createdDay.id);
+
+    // Criar sets para cada exercício
+    for (let i = 0; i < routine.exercicios.length; i++) {
+      await createWgerSet(createdDay.id, routine.exercicios[i], i + 1);
+    }
+  } catch (error) {
+    console.error('Erro ao criar dia no WGER:', error);
+  }
+}
+
+/**
+ * Cria um set de exercício no WGER
+ */
+async function createWgerSet(dayId: number, exercicio: ExercicioDeRotina, order: number): Promise<void> {
+  try {
+    const { apiUrl, token } = getWgerApiConfig();
+
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
+    }
+
+    // Buscar o exercício no WGER pelo nome
+    const wgerExercise = await findWgerExerciseByName(exercicio.nomeExercicio);
+
+    if (!wgerExercise) {
+      console.log(`⚠️ Exercício "${exercicio.nomeExercicio}" não encontrado no WGER`);
+      return;
+    }
+
+    const wgerSet: WgerSet = {
+      day: dayId,
+      exercise: wgerExercise.id,
+      sets: exercicio.seriesAlvo,
+      reps: exercicio.repeticoesAlvo,
+      weight: exercicio.pesoAlvo,
+      comment: `Criado pelo IronLog`,
+      order: order
+    };
+
+    const response = await fetch(`${apiUrl}api/v2/set/`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(wgerSet)
+    });
+
+    if (!response.ok) {
+      console.error('Erro ao criar set no WGER:', response.status);
+      return;
+    }
+
+    const createdSet = await response.json();
+    console.log(`✅ Set criado no WGER para ${exercicio.nomeExercicio}:`, createdSet.id);
+  } catch (error) {
+    console.error('Erro ao criar set no WGER:', error);
+  }
+}
+
+/**
+ * Busca um exercício no WGER pelo nome para obter o ID
+ */
+async function findWgerExerciseByName(exerciseName: string): Promise<{ id: number, name: string } | null> {
+  try {
+    const { apiUrl, token } = getWgerApiConfig();
+
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
+    }
+
+    // Buscar no exerciseinfo
+    const response = await fetch(`${apiUrl}api/v2/exerciseinfo/?limit=100`, { headers });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+    const exercise = findExerciseByName(data.results, exerciseName, 7);
+
+    if (exercise) {
+      return {
+        id: exercise.id,
+        name: exercise.translations[0]?.name || exerciseName
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Erro ao buscar exercício no WGER:', error);
+    return null;
+  }
+}
+
+/**
+ * Cria uma sessão de treino no WGER
+ */
+export async function createWgerWorkoutSession(
+  routineId: number,
+  session: SessaoDeTreino
+): Promise<WgerWorkoutSession | null> {
+  try {
+    const { apiUrl, token } = getWgerApiConfig();
+
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
+    }
+
+    const sessionDate = new Date(session.data);
+    const wgerSession: WgerWorkoutSession = {
+      routine: routineId,
+      date: sessionDate.toISOString().split('T')[0],
+      impression: 8, // Sempre positivo para treinos completos
+      notes: `Sessão do IronLog - XP ganho: ${session.xpGanho}`,
+      time_start: sessionDate.toISOString(),
+      time_end: new Date(sessionDate.getTime() + session.duracao * 60000).toISOString()
+    };
+
+    const response = await fetch(`${apiUrl}api/v2/workoutsession/`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(wgerSession)
+    });
+
+    if (!response.ok) {
+      console.error('Erro ao criar sessão no WGER:', response.status, await response.text());
+      return null;
+    }
+
+    const createdSession = await response.json();
+    console.log('✅ Sessão criada no WGER:', createdSession.id);
+
+    // Criar logs dos exercícios
+    for (const exercicio of session.exercicios) {
+      await createWgerWorkoutLogs(createdSession.id, exercicio, session.data);
+    }
+
+    return createdSession;
+  } catch (error) {
+    console.error('Erro ao criar sessão no WGER:', error);
+    return null;
+  }
+}
+
+/**
+ * Cria logs de treino no WGER
+ */
+async function createWgerWorkoutLogs(
+  sessionId: number,
+  exercicio: ExercicioRegistrado,
+  sessionDate: string
+): Promise<void> {
+  try {
+    const { apiUrl, token } = getWgerApiConfig();
+
+    const headers: HeadersInit = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers['Authorization'] = `Token ${token}`;
+    }
+
+    // Buscar o exercício no WGER
+    const wgerExercise = await findWgerExerciseByName(exercicio.exercicioId);
+
+    if (!wgerExercise) {
+      console.log(`⚠️ Exercício "${exercicio.exercicioId}" não encontrado no WGER`);
+      return;
+    }
+
+    // Criar um log para cada série completada
+    for (const serie of exercicio.series) {
+      if (serie.concluido && serie.peso > 0 && serie.reps > 0) {
+        const wgerLog: WgerWorkoutLog = {
+          session: sessionId,
+          exercise: wgerExercise.id,
+          repetitions: serie.reps,
+          weight: serie.peso,
+          date: sessionDate.split('T')[0],
+          comment: 'IronLog'
+        };
+
+        const response = await fetch(`${apiUrl}api/v2/workoutlog/`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(wgerLog)
+        });
+
+        if (response.ok) {
+          const createdLog = await response.json();
+          console.log(`✅ Log criado no WGER para ${exercicio.exercicioId}: ${serie.peso}kg x ${serie.reps}`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Erro ao criar logs no WGER:', error);
+  }
+}
+
+/**
+ * Função principal para sincronizar uma rotina completa com o WGER
+ */
+export async function syncRoutineToWger(routine: RotinaDeTreino): Promise<{ success: boolean, routineId?: number }> {
+  try {
+    console.log(`🔄 Iniciando sincronização da rotina "${routine.nome}" com WGER...`);
+
+    const wgerRoutine = await createWgerRoutine(routine);
+
+    if (wgerRoutine) {
+      console.log(`✅ Rotina "${routine.nome}" sincronizada com WGER (ID: ${wgerRoutine.id})`);
+      return { success: true, routineId: wgerRoutine.id };
+    } else {
+      console.error(`❌ Falha ao sincronizar rotina "${routine.nome}" com WGER`);
+      return { success: false };
+    }
+  } catch (error) {
+    console.error('Erro na sincronização com WGER:', error);
+    return { success: false };
+  }
+}
+
+/**
+ * Função principal para sincronizar uma sessão de treino com o WGER
+ */
+export async function syncSessionToWger(
+  session: SessaoDeTreino,
+  wgerRoutineId?: number
+): Promise<{ success: boolean, sessionId?: number }> {
+  try {
+    if (!wgerRoutineId) {
+      console.log('⚠️ ID da rotina no WGER não fornecido, pulando sincronização da sessão');
+      return { success: false };
+    }
+
+    console.log(`🔄 Sincronizando sessão de treino com WGER...`);
+
+    const wgerSession = await createWgerWorkoutSession(wgerRoutineId, session);
+
+    if (wgerSession) {
+      console.log(`✅ Sessão sincronizada com WGER (ID: ${wgerSession.id})`);
+      return { success: true, sessionId: wgerSession.id };
+    } else {
+      console.error('❌ Falha ao sincronizar sessão com WGER');
+      return { success: false };
+    }
+  } catch (error) {
+    console.error('Erro na sincronização da sessão com WGER:', error);
+    return { success: false };
   }
 }

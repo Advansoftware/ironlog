@@ -109,7 +109,7 @@ function SessionContent() {
     });
   };
 
-  const handleFinishSession = () => {
+  const handleFinishSession = async () => {
     if (!routine) return;
 
     const endTime = new Date();
@@ -165,36 +165,48 @@ function SessionContent() {
       }
     });
 
-    const { levelUpInfo, xpGanho } = salvarSessao(novaSessao, novosRecordes);
+    try {
+      const { levelUpInfo, xpGanho } = await salvarSessao(
+        novaSessao,
+        novosRecordes
+      );
 
-    toast({
-      title: "Treino Finalizado!",
-      description: `Bom trabalho! Você ganhou ${xpGanho.toLocaleString(
-        "pt-BR"
-      )} XP.`,
-    });
-
-    if (levelUpInfo.didLevelUp) {
       toast({
-        title: "BIIIRL! Subiu de Nível!",
-        description: `Você alcançou o Nível ${levelUpInfo.newLevel}: ${
-          levelData[levelUpInfo.newLevel].name
-        }`,
-        duration: 5000,
-        action: <Zap className="text-yellow-400" />,
+        title: "Treino Finalizado!",
+        description: `Bom trabalho! Você ganhou ${xpGanho.toLocaleString(
+          "pt-BR"
+        )} XP e foi sincronizado com WGER.`,
+      });
+
+      if (levelUpInfo.didLevelUp) {
+        toast({
+          title: "BIIIRL! Subiu de Nível!",
+          description: `Você alcançou o Nível ${levelUpInfo.newLevel}: ${
+            levelData[levelUpInfo.newLevel].name
+          }`,
+          duration: 5000,
+          action: <Zap className="text-yellow-400" />,
+        });
+      }
+
+      if (novosRecordes.length > 0) {
+        toast({
+          title: "Novo Recorde Pessoal!",
+          description: `Você quebrou ${novosRecordes.length} recorde(s)!`,
+          duration: 5000,
+          action: <PartyPopper className="text-yellow-400" />,
+        });
+      }
+
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Erro ao finalizar sessão:", error);
+      toast({
+        variant: "destructive",
+        title: "Erro ao Finalizar Treino",
+        description: "Houve um problema ao salvar a sessão. Tente novamente.",
       });
     }
-
-    if (novosRecordes.length > 0) {
-      toast({
-        title: "Novo Recorde Pessoal!",
-        description: `Você quebrou ${novosRecordes.length} recorde(s)!`,
-        duration: 5000,
-        action: <PartyPopper className="text-yellow-400" />,
-      });
-    }
-
-    router.push("/dashboard");
   };
 
   const handleCancelSession = () => {
