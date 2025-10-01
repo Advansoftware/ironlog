@@ -87,7 +87,8 @@ export const PlanoDeAcaoSchema = z.object({
     rotinasParaCriar: z.array(GenerateRoutineOutputSchema).optional().describe("Novas rotinas a serem criadas."),
     rotinasParaModificar: z.array(RotinaParaModificarSchema).optional().describe("Rotinas existentes a serem modificadas."),
     rotinasParaRemover: z.array(z.string()).optional().describe("IDs de rotinas existentes a serem removidas."),
-    mensagemDeAcompanhamento: z.string().describe("Uma mensagem para o usuário explicando as mudanças ou fazendo a próxima pergunta.")
+    mensagemDeAcompanhamento: z.string().describe("Uma mensagem para o usuário explicando as mudanças ou fazendo a próxima pergunta."),
+    xpInicial: z.number().optional().describe("XP inicial a ser concedido ao usuário com base no nível de experiência avaliado.")
 });
 export type PlanoDeAcao = z.infer<typeof PlanoDeAcaoSchema>;
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -7,11 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/icons';
 import { Bot, Loader2, Send, Sparkles, User, Wand2 } from 'lucide-react';
-import { getBibliotecaDeExercicios, salvarRotina, getGamification, salvarGamification, salvarUnlockedAchievements } from '@/lib/storage';
+import { getBibliotecaDeExercicios, salvarRotina, salvarGamification, salvarUnlockedAchievements } from '@/lib/storage';
 import { initializeUserPlan } from '@/ai/flows/initialize-user-plan';
 import type { PlanoDeAcao } from '@/ai/flows/types';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
+import { checkForLevelUp } from '@/lib/gamification';
 
 interface ChatMessage {
   role: 'user' | 'ia';
@@ -36,7 +38,7 @@ export default function WelcomePage() {
   useEffect(() => {
     setMessages([{ 
         role: 'ia', 
-        content: 'Olá! Sou seu personal trainer de IA. Para começarmos, preciso entender seus objetivos. Você quer focar em Hipertrofia (ganho de massa), Força, Emagrecimento, ou outro objetivo?' 
+        content: 'Olá! Sou seu personal trainer de IA, e juntos vamos construir o plano perfeito para você. Para começar, me diga: qual é seu principal objetivo? Ganhar massa muscular (Hipertrofia), ficar mais forte, emagrecer, ou algo diferente?' 
     }]);
     setIsLoading(false);
   }, []);
@@ -87,13 +89,19 @@ export default function WelcomePage() {
       }
 
       // Salva as rotinas
-      plan.rotinasParaCriar.forEach(rotina => salvarRotina({ ...rotina, id: uuidv4() }));
+      plan.rotinasParaCriar.forEach(rotina => salvarRotina({ ...rotina, id: `rt-ai-${uuidv4()}` }));
 
-      // Define o usuário como nível 1
-      salvarGamification({ xp: 1, level: 1 });
-
-      // Desbloqueia a primeira conquista
-      salvarUnlockedAchievements([{ id: 'first-workout', date: new Date().toISOString() }]);
+      // Define o XP e nível inicial com base na avaliação da IA
+      const initialXp = plan.xpInicial || 1;
+      const { newLevel } = checkForLevelUp(0, initialXp);
+      salvarGamification({ xp: initialXp, level: newLevel });
+      
+      // Desbloqueia as primeiras conquistas
+      const initialAchievements = [
+        { id: 'first-workout', date: new Date().toISOString() },
+        { id: 'first-ai-routine', date: new Date().toISOString() },
+      ];
+      salvarUnlockedAchievements(initialAchievements);
 
       toast({
         title: 'Plano de Treino Criado!',
@@ -102,6 +110,10 @@ export default function WelcomePage() {
       toast({
         title: "Conquista Desbloqueada!",
         description: "Primeiro Passo",
+      });
+      toast({
+        title: "Conquista Desbloqueada!",
+        description: "Amigo da IA",
       });
       
       // Força um reload para que o client-layout detecte a mudança e redirecione
@@ -173,7 +185,7 @@ export default function WelcomePage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Digite sua resposta..."
-              className="flex-1 resize-none pr-20"
+              className="flex-1 resize-none pr-14"
               rows={1}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -183,8 +195,13 @@ export default function WelcomePage() {
               }}
               disabled={isLoading || isAwaitingPlanConfirmation}
             />
-            <Button onClick={() => handleSendMessage(input)} disabled={isLoading || isAwaitingPlanConfirmation} className="absolute right-2 bottom-1.5 h-8">
-              <Send size={16} />
+            <Button 
+              size="icon"
+              onClick={() => handleSendMessage(input)} 
+              disabled={isLoading || isAwaitingPlanConfirmation} 
+              className="absolute right-2 bottom-1.5 h-9 w-10"
+            >
+              <Send size={18} />
               <span className="sr-only">Enviar</span>
             </Button>
           </div>
