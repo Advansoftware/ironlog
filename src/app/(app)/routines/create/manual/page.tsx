@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { getBibliotecaDeExercicios, getRotinas, salvarRotina, atualizarRotina } from '@/lib/storage';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
-import type { Exercicio } from '@/lib/types';
+import type { Exercicio, RotinaDeTreino } from '@/lib/types';
 
 
 const exercicioSchema = z.object({
@@ -83,7 +83,7 @@ function ManualCreateContent() {
     
     const onSubmit = (values: FormValues) => {
         if (isEditMode && values.id) {
-            atualizarRotina(values as any);
+            atualizarRotina(values as RotinaDeTreino);
              toast({
                 title: "Rotina Atualizada!",
                 description: "Suas alterações foram salvas.",
