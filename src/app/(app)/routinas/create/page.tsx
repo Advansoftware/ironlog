@@ -99,7 +99,7 @@ export default function CreateRoutinePage() {
             </Link>
           </Button>
           <Button variant="secondary" asChild>
-            <Link href="/routines/create/manual">
+            <Link href="/routinas/create/manual">
               <Plus className="mr-2" />
               Criar Manualmente
             </Link>

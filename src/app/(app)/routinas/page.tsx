@@ -49,13 +49,13 @@ export default function RoutinesPage() {
       <PageHeader title="Rotinas" description="Gerencie suas rotinas ou crie uma nova.">
         <div className="flex gap-2">
             <Button asChild>
-              <Link href="/routines/create">
+              <Link href="/routinas/create">
                 <Sparkles className="mr-2" />
                 Criar com IA
               </Link>
             </Button>
              <Button asChild variant="outline">
-              <Link href="/routines/create/manual">
+              <Link href="/routinas/create/manual">
                 <Plus className="mr-2" />
                 Criar Manualmente
               </Link>
@@ -80,7 +80,7 @@ export default function RoutinesPage() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem asChild>
-                      <Link href={`/routines/create/manual?editId=${routine.id}`}>
+                      <Link href={`/routinas/create/manual?editId=${routine.id}`}>
                         <Pencil className="mr-2 h-4 w-4" />
                         <span>Editar</span>
                       </Link>
@@ -141,13 +141,13 @@ export default function RoutinesPage() {
             </p>
              <div className="flex gap-4 justify-center">
                  <Button asChild>
-                  <Link href="/routines/create">
+                  <Link href="/routinas/create">
                     <Sparkles className="mr-2" />
                     Criar com IA
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link href="/routines/create/manual">
+                  <Link href="/routinas/create/manual">
                     <Plus className="mr-2" />
                     Criar Manualmente
                   </Link>
