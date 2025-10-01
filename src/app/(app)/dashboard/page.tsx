@@ -26,7 +26,7 @@ export default function DashboardPage() {
 
   const totalWorkouts = historico.length;
   const totalRoutines = rotinas.length;
-  const latestPr = recordes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())[0];
+  const latestPr = recordes.length > 0 ? recordes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())[0] : null;
 
   return (
     <>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,14 +10,23 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { getRotinas, getNomeExercicio } from '@/lib/storage';
 import { Check, Dumbbell, X } from 'lucide-react';
+import type { RotinaDeTreino } from '@/lib/types';
 
 function SessionContent() {
   const searchParams = useSearchParams();
   const routineId = searchParams.get('routineId');
-  
-  const rotinas = getRotinas();
-  const routine = rotinas.find(r => r.id === routineId) || rotinas[0];
+  const [routine, setRoutine] = useState<RotinaDeTreino | null | undefined>(undefined);
 
+  useEffect(() => {
+    const rotinas = getRotinas();
+    const foundRoutine = rotinas.find(r => r.id === routineId) || rotinas[0];
+    setRoutine(foundRoutine || null);
+  }, [routineId]);
+  
+  if (routine === undefined) {
+    return <div>Carregando rotina...</div>;
+  }
+  
   if (!routine) {
     return (
         <>
