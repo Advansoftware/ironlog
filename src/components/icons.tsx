@@ -10,6 +10,9 @@ import {
   Plus,
   MoreVertical,
   ChevronDown,
+  Flame,
+  Star,
+  Zap,
 } from 'lucide-react';
 
 export const Icons = {
@@ -23,4 +26,7 @@ export const Icons = {
   Add: Plus,
   More: MoreVertical,
   ChevronDown,
+  Flame,
+  Star,
+  Zap,
 };

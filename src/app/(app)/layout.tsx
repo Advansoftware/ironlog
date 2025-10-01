@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -32,7 +33,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader className="p-4">
             <div className="flex items-center gap-2">
-                <Icons.Logo className="size-8 text-primary" />
+                <div className="flex items-center justify-center size-9 rounded-lg bg-gradient-to-br from-primary to-green-400 text-primary-foreground">
+                    <Icons.Logo className="size-6" />
+                </div>
                 <h1 className="text-2xl font-bold">IronLog</h1>
             </div>
         </SidebarHeader>
