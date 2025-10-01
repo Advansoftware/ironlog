@@ -84,12 +84,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar>
         <SidebarHeader className="p-4">
             <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center size-9 rounded-lg bg-gradient-to-br from-primary to-lime-400 text-primary-foreground">
-                    <Icons.Logo className="size-6" />
+                <div className="flex items-center justify-center size-9 rounded-lg bg-gradient-to-br from-zinc-900 to-zinc-800">
+                    <Icons.Logo className="size-6 text-primary" style={{color: 'hsl(130 100% 50%)'}}/>
                 </div>
                 <div className="flex flex-col">
                   <h1 className="text-xl font-bold">IronLog</h1>
-                  <Badge variant="secondary" className="w-fit text-xs h-auto py-0.5 px-1.5">{currentLevelName}</Badge>
+                  <Badge 
+                    style={{ 
+                      backgroundColor: 'hsl(var(--primary))', 
+                      color: 'hsl(var(--primary-foreground))' 
+                    }}
+                    className="w-fit text-xs h-auto py-0.5 px-1.5 border-transparent"
+                  >
+                    {currentLevelName}
+                  </Badge>
                 </div>
             </div>
         </SidebarHeader>
