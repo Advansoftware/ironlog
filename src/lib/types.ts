@@ -89,6 +89,37 @@ export type Gamification = {
 };
 
 /**
+ * Define a estrutura de uma conquista.
+ */
+export type Achievement = {
+  id: string;
+  name: string;
+  description: string;
+  icon: string; // Nome do ícone de Lucide
+  criteria: (context: AchievementContext) => boolean;
+};
+
+/**
+ * Representa uma conquista desbloqueada pelo usuário.
+ */
+export type UnlockedAchievement = {
+  id: string; // ID da conquista
+  date: string; // Data em que foi desbloqueada
+};
+
+/**
+ * Contexto de dados usado para verificar se uma conquista foi alcançada.
+ */
+export type AchievementContext = {
+  historico: SessaoDeTreino[];
+  rotinas: RotinaDeTreino[];
+  recordes: RecordePessoal[];
+  gamification: Gamification;
+  latestSession: SessaoDeTreino;
+};
+
+
+/**
  * Representa a configuração para uma conexão com banco de dados externo (para sincronização).
  */
 export type DbConnectionConfig = {
@@ -98,5 +129,3 @@ export type DbConnectionConfig = {
   email: string;
   password?: string;
 }
-
-    

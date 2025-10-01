@@ -7,9 +7,10 @@
  * Também inclui a lógica para inicializar o app com dados padrão na primeira execução.
  */
 
-import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular, Gamification, DbConnectionConfig } from '@/lib/types';
+import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular, Gamification, DbConnectionConfig, UnlockedAchievement, AchievementContext } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
-import { calculateXP, checkForLevelUp } from './gamification';
+import { calculateXP, checkForLevelUp, allAchievements } from './gamification';
+import { toast } from '@/hooks/use-toast';
 
 const isBrowser = typeof window !== 'undefined';
 
@@ -139,7 +140,7 @@ const initialRoutines: RotinaDeTreino[] = [
       { exercicioId: 'ex7', nomeExercicio: "Agachamento Livre com Barra", seriesAlvo: 4, repeticoesAlvo: 6 },
       { exercicioId: 'ex8', nomeExercicio: "Leg Press 45", seriesAlvo: 3, repeticoesAlvo: 10 },
       { exercicioId: 'ex26', nomeExercicio: "Mesa Flexora", seriesAlvo: 3, repeticoesAlvo: 12 },
-      { id: 'ex31', nomeExercicio: "Elevação de Panturrilha em Pé", seriesAlvo: 4, repeticoesAlvo: 15 },
+      { exercicioId: 'ex31', nomeExercicio: "Elevação de Panturrilha em Pé", seriesAlvo: 4, repeticoesAlvo: 15 },
     ],
   },
 ];
@@ -160,6 +161,7 @@ function initializeStorage() {
     saveToStorage('recordesPessoais', []);
     saveToStorage('gamification', initialGamification);
     saveToStorage('dbConnections', []);
+    saveToStorage('unlockedAchievements', []);
     localStorage.setItem('appDataInitialized_v2', 'true');
 }
 
@@ -173,6 +175,7 @@ export const getRotinas = () => getFromStorage<RotinaDeTreino[]>('rotinas', []);
 export const getHistorico = () => getFromStorage<SessaoDeTreino[]>('historico', []);
 export const getRecordesPessoais = () => getFromStorage<RecordePessoal[]>('recordesPessoais', []);
 export const getGamification = () => getFromStorage<Gamification>('gamification', initialGamification);
+export const getUnlockedAchievements = () => getFromStorage<UnlockedAchievement[]>('unlockedAchievements', []);
 export const getDbConnections = () => getFromStorage<DbConnectionConfig[]>('dbConnections', []);
 
 
@@ -234,11 +237,11 @@ export const saveDbConnections = (connections: DbConnectionConfig[]) => saveToSt
  * @returns Um objeto com informações sobre o level up e o XP ganho.
  */
 export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, novosRecordes: RecordePessoal[]) => {
-    const historico = getHistorico();
-    const gamification = getGamification();
+    const historicoAnterior = getHistorico();
+    const gamificationAnterior = getGamification();
 
     const xpGanho = calculateXP(sessao.exercicios);
-    const newTotalXp = gamification.xp + xpGanho;
+    const newTotalXp = gamificationAnterior.xp + xpGanho;
     
     const sessaoCompleta: SessaoDeTreino = {
       ...sessao,
@@ -246,10 +249,12 @@ export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, nov
       xpGanho,
     };
 
-    saveToStorage('historico', [sessaoCompleta, ...historico]);
+    const novoHistorico = [sessaoCompleta, ...historicoAnterior];
+    saveToStorage('historico', novoHistorico);
 
-    const levelUpInfo = checkForLevelUp(gamification.xp, newTotalXp);
-    saveToStorage('gamification', { xp: newTotalXp, level: levelUpInfo.newLevel });
+    const levelUpInfo = checkForLevelUp(gamificationAnterior.xp, newTotalXp);
+    const novaGamification = { xp: newTotalXp, level: levelUpInfo.newLevel };
+    saveToStorage('gamification', novaGamification);
     
     // Armazena um flag na sessionStorage para notificar o app que o usuário acabou de subir de nível.
     // A sessionStorage é usada aqui porque este é um estado temporário que não precisa persistir.
@@ -273,8 +278,52 @@ export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, nov
 
         saveToStorage('recordesPessoais', recordesAtualizados);
     }
+    
+    // Verifica por novas conquistas
+    checkForNewAchievements(sessaoCompleta);
+
     return { levelUpInfo, xpGanho };
 };
+
+/**
+ * Verifica se alguma nova conquista foi desbloqueada após uma sessão.
+ * @param latestSession A sessão de treino que acabou de ser concluída.
+ */
+function checkForNewAchievements(latestSession: SessaoDeTreino) {
+    const unlocked = getUnlockedAchievements();
+    const unlockedIds = new Set(unlocked.map(a => a.id));
+
+    const context: AchievementContext = {
+        historico: getHistorico(),
+        rotinas: getRotinas(),
+        recordes: getRecordesPessoais(),
+        gamification: getGamification(),
+        latestSession,
+    };
+
+    const newAchievements: UnlockedAchievement[] = [];
+
+    for (const achievement of allAchievements) {
+        if (!unlockedIds.has(achievement.id) && achievement.criteria(context)) {
+            newAchievements.push({ id: achievement.id, date: new Date().toISOString() });
+            unlocked.push({ id: achievement.id, date: new Date().toISOString() });
+        }
+    }
+
+    if (newAchievements.length > 0) {
+        saveToStorage('unlockedAchievements', unlocked);
+        // Dispara um toast para cada nova conquista
+        newAchievements.forEach(ach => {
+            const achievementData = allAchievements.find(a => a.id === ach.id);
+            if (achievementData) {
+                 toast({
+                    title: "Conquista Desbloqueada!",
+                    description: achievementData.name,
+                });
+            }
+        });
+    }
+}
 
 
 // Funções Utilitárias
@@ -306,11 +355,10 @@ export function resetAllData() {
     localStorage.removeItem('historico');
     localStorage.removeItem('recordesPessoais');
     localStorage.removeItem('gamification');
+    localStorage.removeItem('unlockedAchievements');
     localStorage.removeItem('dbConnections');
     localStorage.removeItem('appDataInitialized_v2');
 
     initializeStorage();
     window.dispatchEvent(new Event('storage'));
 }
-
-    

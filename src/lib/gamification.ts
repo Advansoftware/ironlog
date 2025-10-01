@@ -5,10 +5,11 @@
  * são calculados com base no volume de treino e como os níveis são atribuídos.
  */
 
-import type { ExercicioRegistrado } from './types';
+import type { Achievement, ExercicioRegistrado, SessaoDeTreino } from './types';
 import { Icons } from '@/components/icons';
 import type { LucideProps } from 'lucide-react';
 import type { FunctionComponent } from 'react';
+import { isSameWeek, parseISO, differenceInDays } from 'date-fns';
 
 // Cada 10kg de volume total levantado em uma sessão equivale a 1 ponto de XP.
 // Volume é calculado como: (peso * repetições) para cada série.
@@ -48,18 +49,77 @@ export const levelData: Record<number, { name: string; Icon: FunctionComponent<L
 };
 
 /**
- * Calcula o XP ganho em uma sessão de treino com base no volume total.
- * @param exercicios - A lista de exercícios registrados na sessão.
- * @returns O total de XP ganho, arredondado para o número inteiro mais próximo.
+ * Lista de todas as conquistas disponíveis no aplicativo.
  */
-export function calculateXP(exercicios: ExercicioRegistrado[]): number {
-  const totalVolume = exercicios.reduce((sessionVolume, exercicio) => {
+export const allAchievements: Achievement[] = [
+  // Consistência
+  { id: 'first-workout', name: 'Primeiro Passo', description: 'Complete seu primeiro treino.', icon: 'Footprints',
+    criteria: ({ historico }) => historico.length === 1 },
+  { id: 'week-streak', name: 'Começando a Pegar o Ritmo', description: 'Treine pelo menos duas vezes na mesma semana.', icon: 'CalendarDays',
+    criteria: ({ historico }) => {
+        if (historico.length < 2) return false;
+        const lastSessionDate = parseISO(historico[0].data);
+        return historico.slice(1).some(s => isSameWeek(lastSessionDate, parseISO(s.data), { weekStartsOn: 1 }));
+    }},
+  { id: 'month-marathon', name: 'Maratonista de 1 Mês', description: 'Treine toda semana por um mês.', icon: 'CalendarCheck',
+    criteria: ({ historico }) => {
+        if (historico.length < 4) return false;
+        const lastDate = parseISO(historico[0].data);
+        const fourWeeksAgo = new Date(lastDate);
+        fourWeeksAgo.setDate(lastDate.getDate() - 28);
+        
+        const sessionsInLastMonth = historico.filter(s => parseISO(s.data) >= fourWeeksAgo);
+        const weeks = new Set(sessionsInLastMonth.map(s => isSameWeek(parseISO(s.data), new Date(), { weekStartsOn: 1})));
+        return weeks.size >= 4;
+    }},
+  { id: 'habitual-50', name: 'Habitual', description: 'Complete 50 treinos.', icon: 'Repeat',
+    criteria: ({ historico }) => historico.length >= 50 },
+
+  // Volume
+  { id: 'volume-10k', name: 'Clube dos 10k', description: 'Levante 10.000 kg de volume total.', icon: 'Barbell',
+    criteria: ({ historico }) => {
+        const totalVolume = historico.reduce((total, sessao) => total + calculateSessionVolume(sessao.exercicios), 0);
+        return totalVolume >= 10000;
+    }},
+  { id: 'volume-100k', name: 'Clube dos 100k', description: 'Levante 100.000 kg de volume total.', icon: 'Flame',
+    criteria: ({ historico }) => {
+        const totalVolume = historico.reduce((total, sessao) => total + calculateSessionVolume(sessao.exercicios), 0);
+        return totalVolume >= 100000;
+    }},
+
+  // Exploração
+  { id: 'first-manual-routine', name: 'Arquiteto de Treinos', description: 'Crie sua primeira rotina manual.', icon: 'PenSquare',
+    criteria: ({ rotinas }) => rotinas.some(r => r.id.startsWith('rt-manual-')) }, // Assumindo um prefixo para rotinas manuais
+  { id: 'first-ai-routine', name: 'Amigo da IA', description: 'Crie uma rotina usando a IA.', icon: 'BrainCircuit',
+    criteria: ({ rotinas }) => rotinas.some(r => r.id.startsWith('rt-ai-')) }, // Assumindo um prefixo para rotinas de IA
+  { id: 'first-evolution', name: 'Papo com a IA', description: 'Use a função de evoluir treino pela primeira vez.', icon: 'Sparkles',
+    criteria: () => localStorage.getItem('usedEvolution') === 'true'}, // Critério especial
+  
+  // Recordes
+  { id: 'first-pr', name: 'Quebra de Limites', description: 'Bata seu primeiro recorde pessoal.', icon: 'Trophy',
+    criteria: ({ recordes }) => recordes.length >= 1 },
+  { id: 'ten-prs', name: 'Colecionador de Recordes', description: 'Bata 10 recordes pessoais diferentes.', icon: 'Award',
+    criteria: ({ recordes }) => recordes.length >= 10 },
+];
+
+
+function calculateSessionVolume(exercicios: ExercicioRegistrado[]): number {
+  return exercicios.reduce((sessionVolume, exercicio) => {
     const exerciseVolume = exercicio.series.reduce((exerciseTotal, set) => {
       return exerciseTotal + (set.peso * set.reps);
     }, 0);
     return sessionVolume + exerciseVolume;
   }, 0);
+}
 
+
+/**
+ * Calcula o XP ganho em uma sessão de treino com base no volume total.
+ * @param exercicios - A lista de exercícios registrados na sessão.
+ * @returns O total de XP ganho, arredondado para o número inteiro mais próximo.
+ */
+export function calculateXP(exercicios: ExercicioRegistrado[]): number {
+  const totalVolume = calculateSessionVolume(exercicios);
   return Math.floor(totalVolume * XP_PER_VOLUME);
 }
 
@@ -133,5 +193,3 @@ export function getLevelProgress(totalXp: number): { progressPercentage: number;
     currentLevel,
   };
 }
-
-    
