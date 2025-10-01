@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/icons';
 import { Bot, Loader2, Send, Sparkles, User, Wand2 } from 'lucide-react';
-import { getBibliotecaDeExercicios, salvarRotina, salvarGamification, salvarUnlockedAchievements } from '@/lib/storage';
+import { getBibliotecaDeExercicios, salvarRotina, salvarGamification, salvarUnlockedAchievements, hasCompletedOnboarding } from '@/lib/storage';
 import { initializeUserPlan } from '@/ai/flows/initialize-user-plan';
 import type { PlanoDeAcao } from '@/ai/flows/types';
 import { useToast } from '@/hooks/use-toast';
@@ -30,17 +30,23 @@ export default function WelcomePage() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    // Se o usuário já completou o onboarding, redireciona para o dashboard
+    if (hasCompletedOnboarding()) {
+      router.replace('/dashboard');
+      return;
+    }
 
-  // Inicia a conversa com uma mensagem da IA
-  useEffect(() => {
     setMessages([{ 
         role: 'ia', 
         content: 'Olá! Sou seu personal trainer de IA, e juntos vamos construir o plano perfeito para você. Para começar, me diga: qual é seu principal objetivo? Ganhar massa muscular (Hipertrofia), ficar mais forte, emagrecer, ou algo diferente?' 
     }]);
     setIsLoading(false);
-  }, []);
+  }, [router]);
+
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const handleSendMessage = async (messageContent: string) => {
     if (!messageContent.trim()) return;
@@ -97,7 +103,6 @@ export default function WelcomePage() {
       
       // Desbloqueia as primeiras conquistas
       const initialAchievements = [
-        { id: 'first-workout', date: new Date().toISOString() },
         { id: 'first-ai-routine', date: new Date().toISOString() },
       ];
       salvarUnlockedAchievements(initialAchievements);
@@ -105,10 +110,6 @@ export default function WelcomePage() {
       toast({
         title: 'Plano de Treino Criado!',
         description: 'Seja bem-vindo ao IronLog. Seu dashboard está pronto!',
-      });
-      toast({
-        title: "Conquista Desbloqueada!",
-        description: "Primeiro Passo",
       });
       toast({
         title: "Conquista Desbloqueada!",
@@ -129,22 +130,22 @@ export default function WelcomePage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background p-4 justify-center items-center relative overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
       {/* Animated Gradient Blobs */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-primary/20 rounded-full filter blur-3xl opacity-50 animated-gradient-blob-1"></div>
       <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-500/20 rounded-full filter blur-3xl opacity-50 animated-gradient-blob-2"></div>
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full filter blur-3xl opacity-50 animated-gradient-blob-3"></div>
 
-      <div className="z-10 flex flex-col items-center">
+      <header className="z-10 p-4 pt-8 md:p-8 flex flex-col items-center text-center">
        <div className="flex items-center gap-3 mb-4">
             <Icons.Logo className="size-8 text-primary" />
             <h1 className="text-3xl font-bold tracking-tight">Bem-vindo ao IronLog!</h1>
         </div>
-        <p className="text-muted-foreground mb-8 text-center max-w-lg">Vamos construir seu plano de treino inicial juntos. Responda às perguntas para que eu possa criar a melhor estratégia para você.</p>
-      </div>
+        <p className="text-muted-foreground max-w-lg">Vamos construir seu plano de treino inicial juntos. Responda às perguntas para que eu possa criar a melhor estratégia para você.</p>
+      </header>
 
-      <div className="flex flex-col w-full max-w-2xl h-[60vh] bg-card/80 backdrop-blur-lg rounded-lg border z-10">
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <main className="flex-1 flex flex-col w-full max-w-2xl mx-auto p-4 pt-0 z-10">
+        <div className="flex-1 overflow-y-auto p-2 md:p-6 space-y-6">
           {messages.map((msg, index) => (
             <div key={index} className={`flex items-start gap-4 ${msg.role === 'ia' ? '' : 'justify-end'}`}>
               {msg.role === 'ia' && <div className="flex-shrink-0 size-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground"><Bot size={18} /></div>}
@@ -173,7 +174,7 @@ export default function WelcomePage() {
               {msg.role === 'user' && <div className="flex-shrink-0 size-8 bg-secondary rounded-full flex items-center justify-center"><User size={18}/></div>}
             </div>
           ))}
-           {isLoading && (
+           {isLoading && messages.length > 0 && (
               <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 size-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground"><Bot size={18} /></div>
                   <div className="max-w-xl p-4 rounded-lg bg-secondary flex items-center">
@@ -183,13 +184,13 @@ export default function WelcomePage() {
             )}
             <div ref={bottomRef} />
         </div>
-        <div className="p-4 bg-background/50 border-t">
-          <div className="flex items-center gap-2">
+        <div className="p-4 bg-transparent border-t">
+          <div className="relative">
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Digite sua resposta..."
-              className="flex-1 resize-none bg-transparent"
+              className="flex-1 resize-none bg-background/80 backdrop-blur-sm pr-14"
               rows={1}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -199,13 +200,18 @@ export default function WelcomePage() {
               }}
               disabled={isLoading || isAwaitingPlanConfirmation}
             />
-            <Button onClick={() => handleSendMessage(input)} disabled={isLoading || isAwaitingPlanConfirmation} size="icon" className="rounded-full flex-shrink-0">
+            <Button 
+                onClick={() => handleSendMessage(input)} 
+                disabled={isLoading || isAwaitingPlanConfirmation} 
+                size="icon" 
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full flex-shrink-0"
+            >
               <Send size={16} />
               <span className="sr-only">Enviar</span>
             </Button>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
