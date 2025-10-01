@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { PageHeader } from '@/components/page-header';
 import { Icons } from '@/components/icons';
-import { getHistorico, getRecordesPessoais, getGamification } from '@/lib/storage';
 import { format, parseISO, isThisMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useState, useEffect } from 'react';
@@ -16,6 +15,7 @@ import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
 import { Progress } from '@/components/ui/progress';
 import { levelData, getLevelProgress } from '@/lib/gamification';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getHistorico, getRecordesPessoais, getGamification } from '@/lib/storage';
 
 
 function DashboardSkeleton() {
@@ -336,3 +336,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+    

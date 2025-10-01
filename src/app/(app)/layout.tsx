@@ -85,7 +85,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <SidebarHeader className="p-4">
             <div className="flex items-center gap-2">
                 <div className="flex items-center justify-center size-9 rounded-lg bg-gradient-to-br from-zinc-900 to-zinc-800">
-                    <Icons.Logo className="size-6 text-primary" style={{color: 'hsl(130 100% 50%)'}}/>
+                    <Icons.Logo className="size-6" style={{color: 'hsl(130 100% 50%)'}}/>
                 </div>
                 <div className="flex flex-col">
                   <h1 className="text-xl font-bold">IronLog</h1>
@@ -216,3 +216,5 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+    
