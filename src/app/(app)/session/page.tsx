@@ -7,13 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { PageHeader } from '@/components/page-header';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { getRotinas, getNomeExercicio, salvarSessao, getRecordesPessoais } from '@/lib/storage';
-import { Check, Dumbbell, X, PartyPopper, Zap } from 'lucide-react';
+import { Check, Dumbbell, X, PartyPopper, Zap, Circle } from 'lucide-react';
 import type { RotinaDeTreino, SerieRegistrada, ExercicioRegistrado, RecordePessoal } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { v4 as uuidv4 } from 'uuid';
 import { levelData } from '@/lib/gamification';
+import { cn } from '@/lib/utils';
 
 type SerieState = SerieRegistrada & { id: number };
 
@@ -46,7 +46,7 @@ function SessionContent() {
     }
   }, [routineId]);
 
-  const handleSetChange = (exercicioId: string, setId: number, field: keyof SerieState, value: number | boolean) => {
+  const handleSetChange = (exercicioId: string, setId: number, field: 'reps' | 'peso' | 'concluido', value: number | boolean) => {
     setSessionSets(prev => {
       const newSets = [...(prev[exercicioId] || [])];
       const setIndex = newSets.findIndex(s => s.id === setId);
@@ -201,7 +201,7 @@ function SessionContent() {
                             <span className="invisible px-2">Série</span>
                             <Label>Peso (kg)</Label>
                             <Label>Reps</Label>
-                            <span className="invisible">Feito</span>
+                            <span className="text-center">Feito</span>
                         </div>
                         
                         {(sessionSets[exercise.exercicioId] || []).map((set, i) => (
@@ -209,7 +209,15 @@ function SessionContent() {
                                 <span className="font-bold text-lg text-foreground px-2">{i + 1}</span>
                                 <Input type="number" placeholder="kg" value={set.peso} onChange={(e) => handleSetChange(exercise.exercicioId, set.id, 'peso', parseInt(e.target.value) || 0)} />
                                 <Input type="number" placeholder="reps" value={set.reps} onChange={(e) => handleSetChange(exercise.exercicioId, set.id, 'reps', parseInt(e.target.value) || 0)} />
-                                <Checkbox checked={set.concluido} onCheckedChange={(checked) => handleSetChange(exercise.exercicioId, set.id, 'concluido', !!checked)} />
+                                <Button
+                                  variant={set.concluido ? 'default' : 'ghost'}
+                                  size="icon"
+                                  className={cn("rounded-full h-10 w-10 justify-self-center", set.concluido && "bg-green-500 hover:bg-green-600")}
+                                  onClick={() => handleSetChange(exercise.exercicioId, set.id, 'concluido', !set.concluido)}
+                                >
+                                  {set.concluido ? <Check className="size-5" /> : <Circle className="size-5" />}
+                                  <span className="sr-only">Marcar série como concluída</span>
+                                </Button>
                             </div>
                         ))}
 
