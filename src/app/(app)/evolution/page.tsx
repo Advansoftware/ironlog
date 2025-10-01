@@ -150,6 +150,13 @@ export default function EvolutionPage() {
         const gamificationAtual = getGamification();
         const novoNivel = plan.novoXp === 0 ? 1 : plan.novoXp >= 2500 ? 3 : 2;
 
+        console.log("Correção de nível:", {
+          xpAtual: gamificationAtual.xp,
+          levelAtual: gamificationAtual.level,
+          novoXp: plan.novoXp,
+          novoNivel,
+        });
+
         salvarGamification({
           ...gamificationAtual,
           xp: plan.novoXp,

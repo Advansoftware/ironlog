@@ -148,11 +148,19 @@ const prompt = ai.definePrompt({
 - Veja na entrada {{{rotinasAtuais}}} - pegue TODOS os IDs e coloque em "rotinasParaRemover"
 - NUNCA deixe rotinas antigas incompatíveis com o novo nível
 
-**CAMPOS ESPECIAIS PARA CORREÇÕES (USE COM CUIDADO):**
-- **correcaoCompleta: true** - APENAS após investigação e confirmação explícita do usuário sobre desalinhamento grave
-- **novoXp** - APENAS quando o usuário confirmar que mentiu/errou no onboarding: Iniciante=0, Intermediário=1000, Avançado=2500
-- **motivoCorrecao** - Resuma o que o usuário confirmou sobre o erro de classificação
-- **rotinasParaRemover: [TODOS os IDs das rotinas atuais]** - ⚠️ OBRIGATÓRIO em correção completa: remova TODAS as rotinas existentes que não servem mais
+**DOIS TIPOS DE MUDANÇA DE NÍVEL:**
+
+**1. CORREÇÃO DE ERRO (usuário mentiu no onboarding):**
+- **correcaoCompleta: true** 
+- **novoXp**: 0=Iniciante, 1000=Intermediário, 2500=Avançado
+- **motivoCorrecao**: "Usuário confirmou que mentiu sobre experiência"
+- **rotinasParaRemover**: [TODOS os IDs das rotinas atuais]
+
+**2. EVOLUÇÃO NATURAL (usuário progrediu e merece nível superior):**
+- **correcaoCompleta: false** (ou omitir)
+- **NÃO inclua "novoXp"** - o sistema já gerencia XP por treinos
+- **rotinasParaCriar**: rotinas mais desafiadoras para o nível atual
+- **rotinasParaRemover**: apenas rotinas que ficaram muito fáceis (opcional)
 
 **⚡ FLUXO EFICIENTE:**
 
@@ -181,37 +189,28 @@ Usuário: "sou nv 3, treino há 10 anos, quero massa nos superiores"
 - Inclua: "correcaoCompleta": true, "novoXp": [0/1000/2500], "motivoCorrecao"
 - Para planos normais: apenas campos de rotina necessários
 
-**EXEMPLO DE CORREÇÃO COMPLETA (usuário mudou de iniciante para avançado):**
-
-PASSO 1: Veja as rotinas atuais em {{{rotinasAtuais}}} e pegue TODOS os IDs
-PASSO 2: Coloque TODOS em "rotinasParaRemover"
+**EXEMPLO 1 - CORREÇÃO DE ERRO (usuário mentiu ser iniciante, na verdade é avançado):**
 
 {
-  "rotinasParaRemover": ["rotina-id-1", "rotina-id-2", "rotina-id-3"],  // ← TODOS os IDs das rotinas atuais
+  "rotinasParaRemover": ["rotina-id-1", "rotina-id-2"],  // ← Remove TODAS as rotinas inadequadas
   "rotinasParaCriar": [
-    {
-      "nome": "Peito e Tríceps - Avançado",
-      "exercicios": [
-        {"exercicioId": "ex1", "nomeExercicio": "Supino Reto", "seriesAlvo": 4, "repeticoesAlvo": 8},
-        {"exercicioId": "ex2", "nomeExercicio": "Supino Inclinado", "seriesAlvo": 4, "repeticoesAlvo": 10}
-      ]
-    },
-    {
-      "nome": "Costas e Bíceps - Avançado", 
-      "exercicios": [...]
-    },
-    {
-      "nome": "Ombros e Abdomen - Avançado",
-      "exercicios": [...]
-    },
-    {
-      "nome": "Pernas - Avançado",
-      "exercicios": [...]
-    }
+    {"nome": "Peito e Tríceps - Avançado", "exercicios": [...]},
+    {"nome": "Costas e Bíceps - Avançado", "exercicios": [...]}
   ],
   "correcaoCompleta": true,
-  "novoXp": 2500,
-  "motivoCorrecao": "Usuário tem 10 anos de experiência, correção para nível avançado"
+  "novoXp": 2500,  // ← Força mudança para nível avançado
+  "motivoCorrecao": "Usuário confirmou 10 anos de experiência real"
+}
+
+**EXEMPLO 2 - EVOLUÇÃO NATURAL (usuário nível 2 progrediu e merece rotinas nível 3):**
+
+{
+  "rotinasParaCriar": [
+    {"nome": "Peito Avançado - Drop Sets", "exercicios": [...]},
+    {"nome": "Costas Avançado - Supersets", "exercicios": [...]}
+  ],
+  "rotinasParaRemover": ["rotina-muito-facil-id"],  // ← Opcional: só remove se muito fácil
+  // NÃO inclui "correcaoCompleta" nem "novoXp" - sistema gerencia XP automaticamente
 }
 
 **CHECKLIST OBRIGATÓRIO ANTES DE CRIAR PLANO:**
@@ -224,8 +223,20 @@ PASSO 2: Coloque TODOS em "rotinasParaRemover"
 **SE FALTAR QUALQUER ITEM → PERGUNTE**
 **SE TIVER TUDO → CRIE O PLANO**
 
-**⚠️ LEMBRETE FINAL:** 
-Em correção completa (mudança de nível), SEMPRE inclua "rotinasParaRemover" com os IDs de TODAS as rotinas atuais do usuário. Não deixe rotinas antigas incompatíveis!
+**⚠️ DECISION TREE - QUANDO USAR CADA TIPO:**
+
+**Use CORREÇÃO DE ERRO quando:**
+- Usuário confessa que mentiu no onboarding
+- Nível atual não condiz com experiência real declarada
+- Exemplos: "na verdade nunca fiz exercício", "treino há 10 anos mas estou nível 1"
+
+**Use EVOLUÇÃO NATURAL quando:**
+- Usuário progrediu naturalmente e quer desafio maior
+- Rotinas atuais ficaram fáceis por progresso legítimo  
+- Usuário quer focar em área específica ou novo objetivo
+- Exemplos: "quero mais intensidade", "focar nos braços", "adicionar cardio"
+
+**REGRA:** NUNCA use "novoXp" em evolução natural - deixe o sistema gerenciar XP pelos treinos!
 
 Responda SEMPRE com um JSON válido que siga o schema de saída.`,
 });
