@@ -6,3 +6,4 @@ import '@/ai/flows/generate-daily-tip.ts';
 import '@/ai/flows/generate-routine.ts';
 import '@/ai/flows/suggest-routine-evolution.ts';
 import '@/ai/flows/evolve-routine-plan.ts';
+import '@/ai/flows/initialize-user-plan.ts';

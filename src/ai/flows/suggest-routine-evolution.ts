@@ -8,7 +8,6 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
 import { SuggestRoutineEvolutionInputSchema, SuggestRoutineEvolutionOutputSchema, type SuggestRoutineEvolutionInput, type SuggestRoutineEvolutionOutput } from './types';
 
 /**
@@ -54,5 +53,3 @@ const suggestRoutineEvolutionFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

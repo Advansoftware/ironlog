@@ -121,16 +121,20 @@ const initialGamification: Gamification = { xp: 0, level: 1 };
  */
 function initializeStorage() {
     if (!isBrowser) return;
-    if (localStorage.getItem('appDataInitialized_v3')) return;
+    // O onboarding agora controla a inicialização dos dados principais (rotinas, gamification).
+    // Aqui garantimos apenas que a biblioteca de exercícios exista.
+    if (localStorage.getItem('appDataInitialized_v4')) return;
 
     saveToStorage('bibliotecaDeExercicios', initialExercises);
-    saveToStorage('rotinas', []);
-    saveToStorage('historico', []);
-    saveToStorage('recordesPessoais', []);
-    saveToStorage('gamification', initialGamification);
-    saveToStorage('dbConnections', []);
-    saveToStorage('unlockedAchievements', []);
-    localStorage.setItem('appDataInitialized_v3', 'true');
+    // Dados que agora são criados no final do onboarding
+    if (!localStorage.getItem('rotinas')) saveToStorage('rotinas', []);
+    if (!localStorage.getItem('historico')) saveToStorage('historico', []);
+    if (!localStorage.getItem('recordesPessoais')) saveToStorage('recordesPessoais', []);
+    if (!localStorage.getItem('gamification')) saveToStorage('gamification', initialGamification);
+    if (!localStorage.getItem('dbConnections')) saveToStorage('dbConnections', []);
+    if (!localStorage.getItem('unlockedAchievements')) saveToStorage('unlockedAchievements', []);
+    
+    localStorage.setItem('appDataInitialized_v4', 'true');
 }
 
 // Executa a inicialização na primeira carga do script.
@@ -196,6 +200,17 @@ export const deletarRotina = (id: string) => {
  * @param connections A lista de configurações de conexão.
  */
 export const saveDbConnections = (connections: DbConnectionConfig[]) => saveToStorage('dbConnections', connections);
+
+/**
+ * Salva os dados de gamificação (XP e nível). Usado principalmente no onboarding.
+ */
+export const salvarGamification = (gamification: Gamification) => saveToStorage('gamification', gamification);
+
+/**
+ * Salva a lista de conquistas desbloqueadas.
+ */
+export const salvarUnlockedAchievements = (achievements: UnlockedAchievement[]) => saveToStorage('unlockedAchievements', achievements);
+
 
 /**
  * Salva uma sessão de treino completa, calcula o XP ganho, verifica se houve level up
@@ -318,21 +333,31 @@ export function getNomeExercicio(exercicioId: string) {
 export function resetAllData() {
     if (!isBrowser) return;
     
-    localStorage.removeItem('bibliotecaDeExercicios');
-    localStorage.removeItem('rotinas');
-    localStorage.removeItem('historico');
-    localStorage.removeItem('recordesPessoais');
-    localStorage.removeItem('gamification');
-    localStorage.removeItem('unlockedAchievements');
-    localStorage.removeItem('dbConnections');
-    localStorage.removeItem('appDataInitialized_v3');
+    // Lista de todas as chaves gerenciadas pelo app
+    const keys = [
+        'bibliotecaDeExercicios',
+        'rotinas',
+        'historico',
+        'recordesPessoais',
+        'gamification',
+        'unlockedAchievements',
+        'dbConnections',
+        'appDataInitialized_v3',
+        'appDataInitialized_v4'
+    ];
+    
+    keys.forEach(key => localStorage.removeItem(key));
 
     initializeStorage();
     window.dispatchEvent(new Event('storage'));
 }
 
+/**
+ * Verifica se o usuário já completou o fluxo de onboarding.
+ * A condição é ter pelo menos uma rotina criada.
+ * @returns `true` se o usuário completou o onboarding, `false` caso contrário.
+ */
 export function hasCompletedOnboarding() {
+    if (!isBrowser) return false;
     return getRotinas().length > 0;
 }
-
-    

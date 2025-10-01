@@ -41,5 +41,3 @@ const generateProgressVisualizationsFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

@@ -58,5 +58,3 @@ const generateRoutineFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

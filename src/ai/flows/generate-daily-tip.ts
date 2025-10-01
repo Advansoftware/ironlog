@@ -45,5 +45,3 @@ const generateDailyTipFlow = ai.defineFlow(
     return output!;
   }
 );
-
-    

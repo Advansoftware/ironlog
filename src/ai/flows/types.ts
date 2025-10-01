@@ -73,7 +73,7 @@ export const SuggestRoutineEvolutionOutputSchema = z.object({
 });
 export type SuggestRoutineEvolutionOutput = z.infer<typeof SuggestRoutineEvolutionOutputSchema>;
 
-// Tipos para EvolveRoutinePlan
+// Tipos para EvolveRoutinePlan (e outros fluxos baseados em plano)
 
 export const RotinaParaModificarSchema = z.object({ 
     id: z.string(), 
@@ -105,4 +105,14 @@ export type EvolveRoutinePlanInput = z.infer<typeof EvolveRoutinePlanInputSchema
 export const EvolveRoutinePlanOutputSchema = PlanoDeAcaoSchema;
 export type EvolveRoutinePlanOutput = z.infer<typeof EvolveRoutinePlanOutputSchema>;
 
-    
+
+// Tipos para InitializeUserPlan
+export const InitializeUserPlanInputSchema = z.object({
+    historicoConversa: z.string().describe("O histórico da conversa com o novo usuário, em formato JSON."),
+    exerciciosDisponiveis: z.string().describe('Uma lista em formato JSON de todos os exercícios disponíveis que podem ser incluídos na rotina.'),
+});
+export type InitializeUserPlanInput = z.infer<typeof InitializeUserPlanInputSchema>;
+
+// A saída é a mesma do fluxo de evolução, pois a ação final é um plano.
+export const InitializeUserPlanOutputSchema = EvolveRoutinePlanOutputSchema;
+export type InitializeUserPlanOutput = z.infer<typeof InitializeUserPlanOutputSchema>;
