@@ -3,6 +3,27 @@
 @tailwind utilities;
 
 @layer base {
+  * {
+    /* Prevenir zoom em inputs no iOS */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  html, body {
+    /* Garantir que não há overflow horizontal */
+    overflow-x: hidden;
+    /* Prevenir zoom em double-tap */
+    touch-action: manipulation;
+    /* Fixar tamanho de texto para PWA */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  input, textarea, select {
+    /* Prevenir zoom automático em inputs no mobile */
+    font-size: 16px;
+  }
+  
   :root {
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
@@ -116,5 +137,50 @@
   }
   .animated-gradient-blob-3 {
     animation: blob-move-3 20s ease-in-out infinite;
+  }
+  
+  /* PWA Mobile Specific Styles */
+  @media screen and (max-width: 768px) {
+    body {
+      /* Prevenir zoom inicial indesejado */
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      /* Garantir largura fixa */
+      width: 100vw;
+      min-width: 100vw;
+      max-width: 100vw;
+      /* Prevenir overflow horizontal */
+      overflow-x: hidden;
+    }
+    
+    /* Container principal das páginas */
+    main, [role="main"], .container {
+      width: 100%;
+      min-width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    
+    /* Grid específico para rotinas */
+    .grid {
+      width: 100%;
+      max-width: 100vw;
+    }
+    
+    /* Cards de rotina */
+    .card {
+      min-width: 0;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    
+    /* Forçar largura correta em PWA standalone */
+    @media (display-mode: standalone) {
+      html, body {
+        width: 100vw !important;
+        height: 100vh !important;
+        overflow-x: hidden !important;
+      }
+    }
   }
 }
