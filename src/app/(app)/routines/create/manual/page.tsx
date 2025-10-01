@@ -145,10 +145,10 @@ function ManualCreateContent() {
                         <AlertTitle>Dicas para Iniciantes!</AlertTitle>
                         <AlertDescription>
                             <ul className="list-disc pl-5 space-y-1 mt-2 text-xs">
-                                <li>**Estrutura:** Tente dividir seus treinos por grupos musculares (ex: um dia para peito/tríceps, outro para costas/bíceps, outro para pernas).</li>
-                                <li>**Exercícios:** Comece com 4-6 exercícios por treino. Priorize exercícios compostos (como supino, agachamento, remada) que trabalham vários músculos.</li>
-                                <li>**Séries e Repetições:** 3 séries de 8 a 12 repetições é um ótimo ponto de partida para hipertrofia (ganho de massa).</li>
-                                <li>**Consistência:** O mais importante é ser consistente. É melhor treinar 2-3 vezes por semana sem falhar do que tentar ir 5 vezes e desistir.</li>
+                                <li><strong>Estrutura:</strong> Tente dividir seus treinos por grupos musculares (ex: um dia para peito/tríceps, outro para costas/bíceps, outro para pernas).</li>
+                                <li><strong>Exercícios:</strong> Comece com 4-6 exercícios por treino. Priorize exercícios compostos (como supino, agachamento, remada) que trabalham vários músculos.</li>
+                                <li><strong>Séries e Repetições:</strong> 3 séries de 8 a 12 repetições é um ótimo ponto de partida para hipertrofia (ganho de massa).</li>
+                                <li><strong>Consistência:</strong> O mais importante é ser consistente. É melhor treinar 2-3 vezes por semana sem falhar do que tentar ir 5 vezes e desistir.</li>
                             </ul>
                         </AlertDescription>
                     </Alert>
