@@ -1,3 +1,4 @@
+
 'use client';
 import {
   Accordion,
@@ -16,13 +17,45 @@ import type { SessaoDeTreino } from '@/lib/types';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+function HistorySkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-7 w-48" />
+      </CardHeader>
+      <CardContent className="p-0">
+          {[...Array(3)].map((_, i) => (
+             <div key={i} className="border-b p-6">
+                <div className="flex justify-between items-center mb-4">
+                    <Skeleton className="h-6 w-1/2" />
+                    <Skeleton className="h-5 w-1/4" />
+                </div>
+                 <div className="space-y-4">
+                    <Skeleton className="h-5 w-1/3" />
+                     <div className="pl-6 space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                    </div>
+                </div>
+             </div>
+          ))}
+      </CardContent>
+    </Card>
+  )
+}
 
 export default function HistoryPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [historico, setHistorico] = useState<SessaoDeTreino[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
   useEffect(() => {
+    setIsLoading(true);
     setHistorico(getHistorico().sort((a,b) => new Date(b.data).getTime() - new Date(a.data).getTime()));
+    setIsLoading(false);
   }, []);
 
   const workoutDates = historico.map(session => startOfDay(parseISO(session.data)));
@@ -76,68 +109,72 @@ export default function HistoryPage() {
           </Card>
         </div>
         <div className="md:col-span-2">
-          <Card>
-            <CardHeader>
-                <CardTitle>
-                    {selectedDate 
-                      ? `Treinos de ${format(selectedDate, "d 'de' MMMM", { locale: ptBR })}`
-                      : 'Todos os Treinos'}
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              {filteredHistorico.length === 0 ? (
-                <div className="p-6 text-center text-muted-foreground">
-                  Nenhum treino registrado {selectedDate ? 'para esta data' : 'ainda'}.
-                </div>
-              ) : (
-                <Accordion type="single" collapsible className="w-full">
-                  {filteredHistorico.map((session) => (
-                    <AccordionItem value={session.id} key={session.id}>
-                      <AccordionTrigger className="px-6 py-4 hover:no-underline">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between w-full text-left pr-4">
-                          <span className="font-semibold text-lg">{session.nome}</span>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                              <span>{format(parseISO(session.data), "d 'de' MMMM, yyyy", { locale: ptBR })}</span>
-                              <div className="flex items-center gap-1">
-                                  <Clock className="size-4" />
-                                  <span>{session.duracao} min</span>
-                              </div>
-                          </div>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="px-6 pb-4">
-                        <div className="space-y-4">
-                          {session.exercicios.map((exercise, index) => (
-                            <div key={index}>
-                              <h4 className="font-semibold text-md mb-2 flex items-center gap-2">
-                                <Dumbbell className="size-4 text-primary" />
-                                {getNomeExercicio(exercise.exercicioId)}
-                              </h4>
-                              <div className="space-y-1 pl-6">
-                                {exercise.series.map((set, setIndex) => (
-                                  <div key={setIndex} className="flex items-center gap-4 text-sm text-muted-foreground">
-                                    <span className="w-16">Série {setIndex + 1}</span>
-                                    <div className="flex items-center gap-1">
-                                      <Repeat className="size-3"/>
-                                      <span>{set.reps} reps</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                      <Weight className="size-3"/>
-                                      <span>{set.peso} kg</span>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
+          {isLoading ? (
+            <HistorySkeleton />
+          ) : (
+            <Card>
+              <CardHeader>
+                  <CardTitle>
+                      {selectedDate 
+                        ? `Treinos de ${format(selectedDate, "d 'de' MMMM", { locale: ptBR })}`
+                        : 'Todos os Treinos'}
+                  </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                {filteredHistorico.length === 0 ? (
+                  <div className="p-6 text-center text-muted-foreground">
+                    Nenhum treino registrado {selectedDate ? 'para esta data' : 'ainda'}.
+                  </div>
+                ) : (
+                  <Accordion type="single" collapsible className="w-full">
+                    {filteredHistorico.map((session) => (
+                      <AccordionItem value={session.id} key={session.id}>
+                        <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                          <div className="flex flex-col md:flex-row md:items-center justify-between w-full text-left pr-4">
+                            <span className="font-semibold text-lg">{session.nome}</span>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                <span>{format(parseISO(session.data), "d 'de' MMMM, yyyy", { locale: ptBR })}</span>
+                                <div className="flex items-center gap-1">
+                                    <Clock className="size-4" />
+                                    <span>{session.duracao} min</span>
+                                </div>
                             </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              )}
-            </CardContent>
-          </Card>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-6 pb-4">
+                          <div className="space-y-4">
+                            {session.exercicios.map((exercise, index) => (
+                              <div key={index}>
+                                <h4 className="font-semibold text-md mb-2 flex items-center gap-2">
+                                  <Dumbbell className="size-4 text-primary" />
+                                  {getNomeExercicio(exercise.exercicioId)}
+                                </h4>
+                                <div className="space-y-1 pl-6">
+                                  {exercise.series.map((set, setIndex) => (
+                                    <div key={setIndex} className="flex items-center gap-4 text-sm text-muted-foreground">
+                                      <span className="w-16">Série {setIndex + 1}</span>
+                                      <div className="flex items-center gap-1">
+                                        <Repeat className="size-3"/>
+                                        <span>{set.reps} reps</span>
+                                      </div>
+                                      <div className="flex items-center gap-1">
+                                        <Weight className="size-3"/>
+                                        <span>{set.peso} kg</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </>

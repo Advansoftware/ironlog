@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -14,9 +15,95 @@ import { Lightbulb, Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
 import { Progress } from '@/components/ui/progress';
 import { levelData, getLevelProgress } from '@/lib/gamification';
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+function DashboardSkeleton() {
+  return (
+    <>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="col-span-1 md:col-span-2 lg:col-span-3">
+           <CardHeader>
+            <Skeleton className="h-7 w-48" />
+            <Skeleton className="h-5 w-32" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-3 w-full" />
+            <div className="flex justify-between mt-1.5">
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-4 w-40" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-3/4" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-10 w-16 mb-2" />
+            <Skeleton className="h-4 w-24" />
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-3/4" />
+          </CardHeader>
+          <CardContent>
+             <Skeleton className="h-10 w-16 mb-2" />
+             <Skeleton className="h-4 w-20" />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+             <Skeleton className="h-6 w-3/4" />
+          </CardHeader>
+          <CardContent>
+             <Skeleton className="h-10 w-16 mb-2" />
+             <Skeleton className="h-4 w-28" />
+          </CardContent>
+        </Card>
+      </div>
+
+       <Card className="mt-8">
+        <CardHeader>
+            <Skeleton className="h-7 w-32" />
+        </CardHeader>
+        <CardContent>
+            <div className="flex items-center gap-2">
+                <Skeleton className="h-5 w-5 rounded-full" />
+                <Skeleton className="h-5 w-full" />
+            </div>
+        </CardContent>
+      </Card>
+      
+      <div className="mt-8">
+        <Skeleton className="h-8 w-48 mb-4" />
+        <Card>
+          <CardContent className="p-0">
+            <div className="divide-y divide-border">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="p-4 flex justify-between items-center">
+                  <div>
+                    <Skeleton className="h-6 w-36 mb-2" />
+                    <Skeleton className="h-4 w-28" />
+                  </div>
+                  <Skeleton className="h-5 w-24" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </>
+  );
+}
 
 
 export default function DashboardPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [historico, setHistorico] = useState<SessaoDeTreino[]>([]);
   const [recordes, setRecordes] = useState<RecordePessoal[]>([]);
   const [dailyTip, setDailyTip] = useState<string | null>(null);
@@ -26,12 +113,16 @@ export default function DashboardPage() {
   const [showEvolutionCard, setShowEvolutionCard] = useState(false);
   
   useEffect(() => {
+    setIsLoading(true);
     const allHistorico = getHistorico();
-    setHistorico(allHistorico);
     const allRecordes = getRecordesPessoais();
-    setRecordes(allRecordes);
     const currentGamification = getGamification();
+
+    setHistorico(allHistorico);
+    setRecordes(allRecordes);
     setGamification(currentGamification);
+    setIsLoading(false);
+
 
     const justLeveledUp = sessionStorage.getItem('justLeveledUp');
     if (justLeveledUp) {
@@ -121,121 +212,127 @@ export default function DashboardPage() {
          </Card>
       )}
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50 col-span-1 md:col-span-2 lg:col-span-3">
-           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-                <LevelIcon className="size-6 text-primary" />
-                Nível {currentLevel}: {currentLevelName}
-            </CardTitle>
-             {gamification !== null && (
-                <CardDescription>
-                    XP Total: {gamification.xp.toLocaleString('pt-BR')}
-                </CardDescription>
-            )}
-          </CardHeader>
-          {gamification !== null ? (
+      {isLoading ? (
+        <DashboardSkeleton />
+      ) : (
+        <>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="col-span-1 md:col-span-2 lg:col-span-3">
+               <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <LevelIcon className="size-6 text-primary" />
+                    Nível {currentLevel}: {currentLevelName}
+                </CardTitle>
+                 {gamification !== null && (
+                    <CardDescription>
+                        XP Total: {gamification.xp.toLocaleString('pt-BR')}
+                    </CardDescription>
+                )}
+              </CardHeader>
+              {gamification !== null ? (
+                <CardContent>
+                  <Progress value={progressPercentage} className="h-3" />
+                  <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
+                      <span>{currentLevelXp.toLocaleString('pt-BR')} XP</span>
+                      <span>{xpToNextLevel > 0 ? `${xpToNextLevel.toLocaleString('pt-BR')} XP para o próximo nível` : 'Nível Máximo!'}</span>
+                  </div>
+                </CardContent>
+              ) : (
+                <CardContent>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                        <Loader2 className="size-4 animate-spin" />
+                        <span>Carregando seu progresso...</span>
+                    </div>
+                </CardContent>
+              )}
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Total de Treinos</span>
+                  <Icons.Flame className="size-5 text-primary" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-4xl font-bold">{totalWorkouts}</p>
+                <p className="text-xs text-muted-foreground">sessões completas</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Treinos este Mês</span>
+                  <Icons.History className="size-5 text-primary" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                 <p className="text-4xl font-bold">{workoutsThisMonth}</p>
+                 <p className="text-xs text-muted-foreground">no mês atual</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Recordes Batidos</span>
+                  <Icons.Star className="size-5 text-yellow-400" />
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                 <p className="text-4xl font-bold">{totalPrs}</p>
+                 <p className="text-xs text-muted-foreground">recordes pessoais totais</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="mt-8 bg-card/50 backdrop-blur-sm border-primary/10">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Lightbulb className="text-yellow-400" />
+                    Dica do Dia
+                </CardTitle>
+            </CardHeader>
             <CardContent>
-              <Progress value={progressPercentage} className="h-3" />
-              <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
-                  <span>{currentLevelXp.toLocaleString('pt-BR')} XP</span>
-                  <span>{xpToNextLevel > 0 ? `${xpToNextLevel.toLocaleString('pt-BR')} XP para o próximo nível` : 'Nível Máximo!'}</span>
-              </div>
-            </CardContent>
-          ) : (
-            <CardContent>
-                <div className="flex items-center gap-2 text-muted-foreground">
+                {isLoadingTip ? (
+                  <div className="flex items-center gap-2 text-muted-foreground">
                     <Loader2 className="size-4 animate-spin" />
-                    <span>Carregando seu progresso...</span>
-                </div>
+                    <span>Analisando seu progresso para gerar uma nova dica...</span>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground leading-relaxed">
+                    {dailyTip}
+                  </p>
+                )}
             </CardContent>
-          )}
-        </Card>
+          </Card>
 
-        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Total de Treinos</span>
-              <Icons.Flame className="size-5 text-primary" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold">{totalWorkouts}</p>
-            <p className="text-xs text-muted-foreground">sessões completas</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Treinos este Mês</span>
-              <Icons.History className="size-5 text-primary" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-             <p className="text-4xl font-bold">{workoutsThisMonth}</p>
-             <p className="text-xs text-muted-foreground">no mês atual</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-primary/20 bg-gradient-to-br from-card to-secondary/50">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Recordes Batidos</span>
-              <Icons.Star className="size-5 text-yellow-400" />
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-             <p className="text-4xl font-bold">{totalPrs}</p>
-             <p className="text-xs text-muted-foreground">recordes pessoais totais</p>
-          </CardContent>
-        </Card>
-      </div>
-
-       <Card className="mt-8 bg-card/50 backdrop-blur-sm border-primary/10">
-        <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="text-yellow-400" />
-                Dica do Dia
-            </CardTitle>
-        </CardHeader>
-        <CardContent>
-            {isLoadingTip ? (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Loader2 className="size-4 animate-spin" />
-                <span>Analisando seu progresso para gerar uma nova dica...</span>
-              </div>
-            ) : (
-              <p className="text-muted-foreground leading-relaxed">
-                {dailyTip}
-              </p>
-            )}
-        </CardContent>
-      </Card>
-
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Histórico Recente</h2>
-        <Card>
-            <CardContent className="p-0">
-                 <div className="divide-y divide-border">
-                    {historico.length === 0 && (
-                      <div className="p-6 text-center text-muted-foreground">
-                        Você ainda não registrou nenhum treino.
-                      </div>
-                    )}
-                    {historico.slice(0, 3).map((session) => (
-                        <div key={session.id} className="p-4 flex justify-between items-center hover:bg-secondary/50 transition-colors">
-                            <div>
-                                <p className="font-semibold">{session.nome}</p>
-                                <p className="text-sm text-muted-foreground">{session.exercicios.length} exercícios &bull; +{session.xpGanho} XP</p>
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold mb-4">Histórico Recente</h2>
+            <Card>
+                <CardContent className="p-0">
+                     <div className="divide-y divide-border">
+                        {historico.length === 0 && (
+                          <div className="p-6 text-center text-muted-foreground">
+                            Você ainda não registrou nenhum treino.
+                          </div>
+                        )}
+                        {historico.slice(0, 3).map((session) => (
+                            <div key={session.id} className="p-4 flex justify-between items-center hover:bg-secondary/50 transition-colors">
+                                <div>
+                                    <p className="font-semibold">{session.nome}</p>
+                                    <p className="text-sm text-muted-foreground">{session.exercicios.length} exercícios &bull; +{session.xpGanho} XP</p>
+                                </div>
+                                <p className="text-sm text-muted-foreground">{format(parseISO(session.data), 'd MMM, yyyy', { locale: ptBR })}</p>
                             </div>
-                            <p className="text-sm text-muted-foreground">{format(parseISO(session.data), 'd MMM, yyyy', { locale: ptBR })}</p>
-                        </div>
-                    ))}
-                 </div>
-            </CardContent>
-        </Card>
-      </div>
+                        ))}
+                     </div>
+                </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
     </>
   );
 }

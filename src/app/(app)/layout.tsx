@@ -25,6 +25,7 @@ import { levelData } from '@/lib/gamification';
 import { Badge } from '@/components/ui/badge';
 import { Wand2, Menu } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { SplashScreen } from '@/components/splash-screen';
 
 const navItems = [
   { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
@@ -52,12 +53,16 @@ const moreMenuItems = [
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [isInitializing, setIsInitializing] = useState(true);
   const [gamification, setGamification] = useState<Gamification | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const updateGamification = () => {
-      setGamification(getGamification());
+      const data = getGamification();
+      setGamification(data);
+      // Simula um tempo mínimo de carregamento para a splash screen ser visível
+      setTimeout(() => setIsInitializing(false), 500); 
     };
     
     updateGamification();
@@ -66,7 +71,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return () => {
       window.removeEventListener('storage', updateGamification);
     };
-  }, [pathname]);
+  }, []);
 
   const currentLevel = gamification?.level ?? 1;
   const { name: currentLevelName, color: currentLevelColor } = levelData[currentLevel] || levelData[1];
@@ -74,6 +79,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div style={{ '--primary': currentLevelColor } as React.CSSProperties}>
+    {isInitializing && <SplashScreen />}
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader className="p-4">
