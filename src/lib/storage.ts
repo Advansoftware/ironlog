@@ -105,6 +105,15 @@ export const salvarRotina = (rotina: RotinaDeTreino) => {
     saveToStorage('rotinas', [rotina, ...rotinas]);
 };
 
+export const atualizarRotina = (rotinaAtualizada: RotinaDeTreino) => {
+    const rotinas = getRotinas();
+    const index = rotinas.findIndex(r => r.id === rotinaAtualizada.id);
+    if (index !== -1) {
+        rotinas[index] = rotinaAtualizada;
+        saveToStorage('rotinas', rotinas);
+    }
+};
+
 
 export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, novosRecordes: RecordePessoal[]) => {
     const historico = getHistorico();

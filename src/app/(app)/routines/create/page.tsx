@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { generateRoutine } from '@/ai/flows/generate-routine';
 import { getBibliotecaDeExercicios, salvarRotina } from '@/lib/storage';
 import type { RotinaDeTreino } from '@/lib/types';
-import { ArrowLeft, Loader2, Sparkles, Wand2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Sparkles, Wand2, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 const formSchema = z.object({
@@ -85,18 +85,26 @@ export default function CreateRoutinePage() {
       title: 'Rotina Salva!',
       description: 'Sua nova rotina está pronta para ser usada.',
     });
-    router.push('/routines');
+    router.push('/routinas');
   };
 
   return (
     <>
       <PageHeader title="Criar Rotina com IA" description="Descreva seu treino ideal e deixe a IA fazer o trabalho pesado.">
-         <Button variant="outline" asChild>
-          <Link href="/routines">
-            <ArrowLeft className="mr-2" />
-            Voltar
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" asChild>
+            <Link href="/routinas">
+              <ArrowLeft className="mr-2" />
+              Voltar
+            </Link>
+          </Button>
+          <Button variant="secondary" asChild>
+            <Link href="/routines/create/manual">
+              <Plus className="mr-2" />
+              Criar Manualmente
+            </Link>
+          </Button>
+        </div>
       </PageHeader>
 
       <div className="grid md:grid-cols-2 gap-8">

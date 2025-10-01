@@ -23,7 +23,8 @@ import {
   Sparkles,
   Swords,
   Shield,
-  Ghost
+  Ghost,
+  Pencil
 } from 'lucide-react';
 
 // Nivel 1: Frango em Crescimento
@@ -84,6 +85,7 @@ export const Icons = {
   PartyPopper,
   Award,
   Trophy,
+  Pencil,
   Level1: Level1Icon,
   Level2: Level2Icon,
   Level3: Swords,
