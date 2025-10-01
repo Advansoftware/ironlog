@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { usePathname } from 'next/navigation';
@@ -33,7 +32,7 @@ const navItems = [
   { href: '/evolution', icon: Wand2, label: 'Evoluir', requiresOnline: true },
   { href: '/history', icon: Icons.History, label: 'Histórico' },
   { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
-  { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
+  { href: '/levels', icon: Icons.Trophy, label: 'BIIIRL!' },
   { href: '/exercises', icon: Icons.Exercises, label: 'Exercícios' },
 ];
 
@@ -47,7 +46,7 @@ const mobileBottomNavItems = [
 const moreMenuItems = [
     { href: '/evolution', icon: Wand2, label: 'Evoluir', requiresOnline: true },
     { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
-    { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
+    { href: '/levels', icon: Icons.Trophy, label: 'BIIIRL!' },
     { href: '/exercises', icon: Icons.Exercises, label: 'Exercícios' },
     { href: '/settings', icon: Icons.Settings, label: 'Configurações' },
 ]
