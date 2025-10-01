@@ -212,7 +212,7 @@ function SessionContent() {
                                 <Button
                                   variant={set.concluido ? 'default' : 'ghost'}
                                   size="icon"
-                                  className={cn("rounded-full h-10 w-10 justify-self-center", set.concluido && "bg-green-500 hover:bg-green-600")}
+                                  className={cn("rounded-full h-10 w-10 justify-self-center")}
                                   onClick={() => handleSetChange(exercise.exercicioId, set.id, 'concluido', !set.concluido)}
                                 >
                                   {set.concluido ? <Check className="size-5" /> : <Circle className="size-5" />}
