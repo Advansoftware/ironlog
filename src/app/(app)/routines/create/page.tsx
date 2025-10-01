@@ -85,7 +85,7 @@ export default function CreateRoutinePage() {
       title: 'Rotina Salva!',
       description: 'Sua nova rotina está pronta para ser usada.',
     });
-    router.push('/routinas');
+    router.push('/routines');
   };
 
   return (
@@ -93,7 +93,7 @@ export default function CreateRoutinePage() {
       <PageHeader title="Criar Rotina com IA" description="Descreva seu treino ideal e deixe a IA fazer o trabalho pesado.">
         <div className="flex gap-2">
           <Button variant="outline" asChild>
-            <Link href="/routinas">
+            <Link href="/routines">
               <ArrowLeft className="mr-2" />
               Voltar
             </Link>

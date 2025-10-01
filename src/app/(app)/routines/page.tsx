@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { PageHeader } from '@/components/page-header';
 import { Icons } from '@/components/icons';
-import { getRotinas } from '@/lib/storage';
+import { getRotinas, deletarRotina } from '@/lib/storage';
 import { useEffect, useState } from 'react';
 import type { RotinaDeTreino } from '@/lib/types';
 import { Sparkles, Trash2, MoreVertical, Pencil, Plus } from 'lucide-react';
@@ -24,8 +24,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { AlertDialogTrigger } from '@radix-ui/react-alert-dialog';
 
 
 export default function RoutinesPage() {
@@ -37,10 +37,8 @@ export default function RoutinesPage() {
   }, []);
 
   const handleDeleteRoutine = (id: string) => {
-    const rotinasAtuais = getRotinas();
-    const novasRotinas = rotinasAtuais.filter(r => r.id !== id);
-    localStorage.setItem('rotinas', JSON.stringify(novasRotinas));
-    setRotinas(novasRotinas);
+    deletarRotina(id);
+    setRotinas(getRotinas());
     setOpenDialogId(null);
   }
 
@@ -49,13 +47,13 @@ export default function RoutinesPage() {
       <PageHeader title="Rotinas" description="Gerencie suas rotinas ou crie uma nova.">
         <div className="flex gap-2">
             <Button asChild>
-              <Link href="/routinas/create">
+              <Link href="/routines/create">
                 <Sparkles className="mr-2" />
                 Criar com IA
               </Link>
             </Button>
              <Button asChild variant="outline">
-              <Link href="/routinas/create/manual">
+              <Link href="/routines/create/manual">
                 <Plus className="mr-2" />
                 Criar Manualmente
               </Link>
@@ -80,7 +78,7 @@ export default function RoutinesPage() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem asChild>
-                      <Link href={`/routinas/create/manual?editId=${routine.id}`}>
+                      <Link href={`/routines/create/manual?editId=${routine.id}`}>
                         <Pencil className="mr-2 h-4 w-4" />
                         <span>Editar</span>
                       </Link>
@@ -141,13 +139,13 @@ export default function RoutinesPage() {
             </p>
              <div className="flex gap-4 justify-center">
                  <Button asChild>
-                  <Link href="/routinas/create">
+                  <Link href="/routines/create">
                     <Sparkles className="mr-2" />
                     Criar com IA
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link href="/routinas/create/manual">
+                  <Link href="/routines/create/manual">
                     <Plus className="mr-2" />
                     Criar Manualmente
                   </Link>

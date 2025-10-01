@@ -96,14 +96,14 @@ function ManualCreateContent() {
                 description: "Sua nova rotina manual foi criada.",
             });
         }
-        router.push('/routinas');
+        router.push('/routines');
     };
 
     return (
         <>
             <PageHeader title={isEditMode ? "Editar Rotina" : "Criar Rotina Manualmente"} description="Monte seu treino exatamente como você quer.">
                  <Button variant="outline" asChild>
-                    <Link href="/routinas">
+                    <Link href="/routines">
                         <ArrowLeft className="mr-2" />
                         Voltar
                     </Link>

@@ -100,6 +100,13 @@ export const getRecordesPessoais = () => getFromStorage<RecordePessoal[]>('recor
 export const getGamification = () => getFromStorage<Gamification>('gamification', initialGamification);
 
 export const salvarRotinas = (rotinas: RotinaDeTreino[]) => saveToStorage('rotinas', rotinas);
+
+export const deletarRotina = (id: string) => {
+  const rotinas = getRotinas();
+  const novasRotinas = rotinas.filter(r => r.id !== id);
+  saveToStorage('rotinas', novasRotinas);
+}
+
 export const salvarRotina = (rotina: RotinaDeTreino) => {
     const rotinas = getRotinas();
     saveToStorage('rotinas', [rotina, ...rotinas]);
