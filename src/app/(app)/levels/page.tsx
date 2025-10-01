@@ -66,8 +66,9 @@ export default function LevelsPage() {
                         >
                             <CardContent className="p-4 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
-                                     <div className={cn("flex items-center justify-center size-10 rounded-full", isUnlocked ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
-                                        {isUnlocked ? <Icon className="size-6" /> : <Lock className="size-5" />}
+                                     <div className={cn("relative flex items-center justify-center size-12 rounded-full", isUnlocked ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground")}>
+                                        <Icon className={cn("size-7", !isUnlocked && "opacity-30")} />
+                                        {!isUnlocked && <Lock className="absolute size-5" />}
                                     </div>
                                     <div>
                                         <h3 className={cn("font-bold text-lg", isUnlocked ? "text-primary" : "text-foreground")}>
