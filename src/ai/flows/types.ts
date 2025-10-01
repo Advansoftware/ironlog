@@ -27,3 +27,27 @@ export const GenerateProgressVisualizationsOutputSchema = z.object({
   progressVisualization: z.string().describe('Uma descrição da visualização do progresso, incluindo sugestões de aumentos incrementais de carga.'),
 });
 export type GenerateProgressVisualizationsOutput = z.infer<typeof GenerateProgressVisualizationsOutputSchema>;
+
+
+// Tipos para generateRoutine
+export const GenerateRoutineInputSchema = z.object({
+  objetivo: z.string().describe('O principal objetivo do treino (ex: Hipertrofia, Força, Emagrecimento).'),
+  nivelExperiencia: z.string().describe('O nível de experiência do usuário (Iniciante, Intermediário, Avançado).'),
+  diasPorSemana: z.number().describe('O número de dias por semana que o usuário pode treinar.'),
+  observacoes: z.string().optional().describe('Quaisquer observações ou preferências adicionais.'),
+  exerciciosDisponiveis: z.string().describe('Uma lista em formato JSON de todos os exercícios disponíveis que podem ser incluídos na rotina.')
+});
+export type GenerateRoutineInput = z.infer<typeof GenerateRoutineInputSchema>;
+
+const ExercicioDeRotinaSchema = z.object({
+    exercicioId: z.string(),
+    nomeExercicio: z.string(),
+    seriesAlvo: z.number(),
+    repeticoesAlvo: z.number(),
+});
+
+export const GenerateRoutineOutputSchema = z.object({
+  nome: z.string().describe('Um nome criativo e apropriado para a rotina de treino gerada.'),
+  exercicios: z.array(ExercicioDeRotinaSchema).describe('A lista de exercícios que compõem a rotina.'),
+});
+export type GenerateRoutineOutput = z.infer<typeof GenerateRoutineOutputSchema>;

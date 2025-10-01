@@ -8,6 +8,7 @@ export type Exercicio = {
 
 export type ExercicioDeRotina = {
   exercicioId: string;
+  nomeExercicio: string;
   seriesAlvo: number;
   repeticoesAlvo: number;
   pesoAlvo?: number;

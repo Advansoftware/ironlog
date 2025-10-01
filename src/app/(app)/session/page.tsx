@@ -151,7 +151,7 @@ function SessionContent() {
             <div className="text-center text-muted-foreground">
                 <p>Parece que você não tem nenhuma rotina de treino ainda.</p>
                 <Button asChild className="mt-4">
-                    <a href="/routines">Criar Rotina</a>
+                    <Link href="/routines/create">Criar Rotina com IA</Link>
                 </Button>
             </div>
         </>

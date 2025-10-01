@@ -52,30 +52,21 @@ const initialExercises: Exercicio[] = [
 const initialRoutines: RotinaDeTreino[] = [
   {
     id: 'rt1',
-    nome: 'Dia de Empurrar',
+    nome: 'Dia de Empurrar (Exemplo)',
     exercicios: [
-      { exercicioId: 'ex1', seriesAlvo: 3, repeticoesAlvo: 5, pesoAlvo: 100 },
-      { exercicioId: 'ex2', seriesAlvo: 3, repeticoesAlvo: 8, pesoAlvo: 30 },
-      { exercicioId: 'ex10', seriesAlvo: 3, repeticoesAlvo: 8, pesoAlvo: 60 },
-      { exercicioId: 'ex13', seriesAlvo: 3, repeticoesAlvo: 12, pesoAlvo: 20 },
+      { exercicioId: 'ex1', nomeExercicio: "Supino Reto", seriesAlvo: 3, repeticoesAlvo: 5, pesoAlvo: 100 },
+      { exercicioId: 'ex2', nomeExercicio: "Supino Inclinado com Halteres", seriesAlvo: 3, repeticoesAlvo: 8, pesoAlvo: 30 },
+      { exercicioId: 'ex10', nomeExercicio: "Desenvolvimento com Barra", seriesAlvo: 3, repeticoesAlvo: 8, pesoAlvo: 60 },
+      { exercicioId: 'ex13', nomeExercicio: "Tríceps Pulley", seriesAlvo: 3, repeticoesAlvo: 12, pesoAlvo: 20 },
     ],
   },
   {
     id: 'rt2',
-    nome: 'Dia de Puxar',
+    nome: 'Dia de Puxar (Exemplo)',
     exercicios: [
-      { exercicioId: 'ex4', seriesAlvo: 3, repeticoesAlvo: 8 },
-      { exercicioId: 'ex5', seriesAlvo: 3, repeticoesAlvo: 8 },
-      { exercicioId: 'ex12', seriesAlvo: 3, repeticoesAlvo: 12 },
-    ],
-  },
-  {
-    id: 'rt3',
-    nome: 'Dia de Pernas',
-    exercicios: [
-      { exercicioId: 'ex7', seriesAlvo: 3, repeticoesAlvo: 5 },
-      { exercicioId: 'ex8', seriesAlvo: 3, repeticoesAlvo: 10 },
-      { exercicioId: 'ex9', seriesAlvo: 3, repeticoesAlvo: 12 },
+      { exercicioId: 'ex4', nomeExercicio: "Barra Fixa", seriesAlvo: 3, repeticoesAlvo: 8 },
+      { exercicioId: 'ex5', nomeExercicio: "Remada Curvada", seriesAlvo: 3, repeticoesAlvo: 8 },
+      { exercicioId: 'ex12', nomeExercicio: "Rosca Direta", seriesAlvo: 3, repeticoesAlvo: 12 },
     ],
   },
 ];
@@ -102,6 +93,11 @@ export const getHistorico = () => getFromStorage<SessaoDeTreino[]>('historico', 
 export const getRecordesPessoais = () => getFromStorage<RecordePessoal[]>('recordesPessoais', []);
 
 export const salvarRotinas = (rotinas: RotinaDeTreino[]) => saveToStorage('rotinas', rotinas);
+export const salvarRotina = (rotina: RotinaDeTreino) => {
+    const rotinas = getRotinas();
+    saveToStorage('rotinas', [rotina, ...rotinas]);
+};
+
 
 export const salvarSessao = (sessao: SessaoDeTreino, novosRecordes: RecordePessoal[]) => {
     const historico = getHistorico();
@@ -131,5 +127,5 @@ export const gruposMusculares: GrupoMuscular[] = ['Peito', 'Costas', 'Pernas', '
 
 export function getNomeExercicio(exercicioId: string) {
     const biblioteca = getBibliotecaDeExercicios();
-    return biblioteca.find(ex => ex.id === exercicioId)?.nome ?? 'Exercício';
+    return biblioteca.find(ex => ex.id === exercicioId)?.nome ?? 'Exercício Desconhecido';
 }
