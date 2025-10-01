@@ -25,7 +25,7 @@ import { Badge } from '@/components/ui/badge';
 
 const navItems = [
   { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
-  { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
+  { href: '/routinas', icon: Icons.Routines, label: 'Rotinas' },
   { href: '/history', icon: Icons.History, label: 'Histórico' },
   { href: '/progress', icon: Icons.Progress, label: 'Progresso' },
   { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
@@ -34,7 +34,7 @@ const navItems = [
 
 const mobileNavItems = [
     { href: '/dashboard', icon: Icons.Dashboard, label: 'Painel' },
-    { href: '/routines', icon: Icons.Routines, label: 'Rotinas' },
+    { href: '/routinas', icon: Icons.Routines, label: 'Rotinas' },
     { href: '/session', icon: Icons.Add, label: 'Iniciar' }, // Ação Central
     { href: '/history', icon: Icons.History, label: 'Histórico' },
     { href: '/levels', icon: Icons.Trophy, label: 'Níveis' },
