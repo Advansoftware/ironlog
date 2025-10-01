@@ -12,6 +12,7 @@ import { StatCard } from '@/app/(app)/dashboard/stat-card';
 import { DailyTip } from '@/app/(app)/dashboard/daily-tip';
 import { RecentHistory } from '@/app/(app)/dashboard/recent-history';
 import { EvolutionCard } from '@/app/(app)/dashboard/evolution-card';
+import { RecentAchievements } from './recent-achievements';
 
 export default function DashboardPage() {
   const {
@@ -24,6 +25,7 @@ export default function DashboardPage() {
     isLoadingTip,
     showEvolutionCard,
     recentHistory,
+    recentAchievements,
   } = useDashboard();
 
   if (isLoading) {
@@ -74,12 +76,9 @@ export default function DashboardPage() {
             iconClassName="text-yellow-400"
         />
 
-        <StatCard
-          title="Conquistas"
-          value={stats.totalAchievements}
-          description="medalhas desbloqueadas"
-          Icon={Icons.Award}
-          iconClassName="text-orange-400"
+        <RecentAchievements
+          achievements={recentAchievements}
+          totalCount={stats.totalAchievements}
         />
       </div>
 

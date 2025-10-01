@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo } from 'react';
 import type { SessaoDeTreino, RecordePessoal, Gamification, UnlockedAchievement } from '@/lib/types';
 import { getHistorico, getRecordesPessoais, getGamification, getUnlockedAchievements } from '@/lib/storage';
 import { generateDailyTip } from '@/ai/flows/generate-daily-tip';
-import { levelData as allLevelData, getLevelProgress } from '@/lib/gamification';
+import { levelData as allLevelData, getLevelProgress, allAchievements } from '@/lib/gamification';
 import { isThisMonth, parseISO } from 'date-fns';
 
 export function useDashboard() {
@@ -23,12 +23,12 @@ export function useDashboard() {
       const allHistorico = getHistorico();
       const allRecordes = getRecordesPessoais();
       const currentGamification = getGamification();
-      const allAchievements = getUnlockedAchievements();
+      const allUnlocked = getUnlockedAchievements();
 
       setHistorico(allHistorico);
       setRecordes(allRecordes);
       setGamification(currentGamification);
-      setUnlockedAchievements(allAchievements);
+      setUnlockedAchievements(allUnlocked.sort((a, b) => parseISO(b.date).getTime() - parseISO(a.date).getTime()));
       setIsLoading(false);
 
       const justLeveledUp = sessionStorage.getItem('justLeveledUp');
@@ -101,6 +101,14 @@ export function useDashboard() {
   const levelData = allLevelData[currentLevel] || allLevelData[1];
   
   const recentHistory = useMemo(() => historico.slice(0, 3), [historico]);
+  
+  const recentAchievements = useMemo(() => {
+    return unlockedAchievements.slice(0, 3).map(unlocked => {
+      const achievementData = allAchievements.find(a => a.id === unlocked.id);
+      return achievementData || null;
+    }).filter(Boolean);
+  }, [unlockedAchievements]);
+
 
   return {
     isLoading,
@@ -111,6 +119,7 @@ export function useDashboard() {
     dailyTip,
     isLoadingTip,
     showEvolutionCard,
-    recentHistory
+    recentHistory,
+    recentAchievements,
   };
 }

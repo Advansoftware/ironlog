@@ -55,8 +55,15 @@ export function DashboardSkeleton() {
              <Skeleton className="h-6 w-3/4" />
           </CardHeader>
           <CardContent>
-             <Skeleton className="h-10 w-16 mb-2" />
-             <Skeleton className="h-4 w-28" />
+             <div className="flex items-end gap-4">
+                <Skeleton className="h-10 w-16 mb-2" />
+                <div className="flex-1 flex justify-start -space-x-2">
+                    <Skeleton className="size-8 rounded-full" />
+                    <Skeleton className="size-8 rounded-full" />
+                    <Skeleton className="size-8 rounded-full" />
+                </div>
+            </div>
+             <Skeleton className="h-4 w-28 mt-1" />
           </CardContent>
         </Card>
       </div>
