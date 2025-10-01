@@ -52,3 +52,11 @@ export type Gamification = {
   xp: number;
   level: number;
 };
+
+export type DbConnectionConfig = {
+  id: string;
+  name: string;
+  url: string;
+  email: string;
+  password?: string; // Optional for display
+}

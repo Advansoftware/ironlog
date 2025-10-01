@@ -149,11 +149,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                             isActive
                                 ? "text-primary"
                                 : "text-muted-foreground",
-                             item.href === '/session' && 'relative flex items-center justify-center'
+                             item.href === '/session' && 'relative -top-3 flex-col'
                         )}
                     >
                          {item.href === '/session' ? (
-                            <div className="aspect-square flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                            <div className="aspect-square flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg">
                                  <item.icon className="size-6" />
                             </div>
                         ) : (
@@ -180,7 +180,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                         <SheetHeader>
                             <SheetTitle className="sr-only">Mais Opções</SheetTitle>
                         </SheetHeader>
-                        <div className="grid grid-cols-2 gap-4 py-4">
+                        <div className="grid grid-cols-3 gap-4 py-4">
                             {moreMenuItems.map(item => (
                                 <Link
                                     key={item.href}
@@ -189,7 +189,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                                     className="flex flex-col items-center gap-2 rounded-lg p-3 bg-secondary/50 active:bg-secondary"
                                 >
                                     <item.icon className="size-6 text-primary" />
-                                    <span className="text-sm font-medium">{item.label}</span>
+                                    <span className="text-sm font-medium text-center">{item.label}</span>
                                 </Link>
                             ))}
                         </div>

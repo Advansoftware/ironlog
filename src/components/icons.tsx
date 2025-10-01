@@ -27,6 +27,8 @@ import {
   Ghost,
   Pencil,
   Menu,
+  Database,
+  Trash,
 } from 'lucide-react';
 
 // Nivel 1: Frango em Crescimento
@@ -89,6 +91,8 @@ export const Icons = {
   Trophy,
   Pencil,
   Menu,
+  Database,
+  Trash,
   Level1: Level1Icon,
   Level2: Level2Icon,
   Level3: Swords,

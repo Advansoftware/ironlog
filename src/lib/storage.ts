@@ -1,7 +1,7 @@
 
 'use client';
 
-import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular, Gamification } from '@/lib/types';
+import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular, Gamification, DbConnectionConfig } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 import { calculateXP, checkForLevelUp } from './gamification';
 
@@ -85,6 +85,7 @@ function initializeStorage() {
     saveToStorage('historico', []);
     saveToStorage('recordesPessoais', []);
     saveToStorage('gamification', initialGamification);
+    saveToStorage('dbConnections', []);
     localStorage.setItem('appDataInitialized', 'true');
 }
 
@@ -96,6 +97,9 @@ export const getRotinas = () => getFromStorage<RotinaDeTreino[]>('rotinas', []);
 export const getHistorico = () => getFromStorage<SessaoDeTreino[]>('historico', []);
 export const getRecordesPessoais = () => getFromStorage<RecordePessoal[]>('recordesPessoais', []);
 export const getGamification = () => getFromStorage<Gamification>('gamification', initialGamification);
+export const getDbConnections = () => getFromStorage<DbConnectionConfig[]>('dbConnections', []);
+
+export const saveDbConnections = (connections: DbConnectionConfig[]) => saveToStorage('dbConnections', connections);
 
 export const salvarRotinas = (rotinas: RotinaDeTreino[]) => saveToStorage('rotinas', rotinas);
 
@@ -178,6 +182,7 @@ export function resetAllData() {
     localStorage.removeItem('historico');
     localStorage.removeItem('recordesPessoais');
     localStorage.removeItem('gamification');
+    localStorage.removeItem('dbConnections');
     localStorage.removeItem('appDataInitialized');
 
     initializeStorage();
