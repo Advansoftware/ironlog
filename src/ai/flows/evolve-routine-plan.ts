@@ -1,11 +1,20 @@
+
 'use server';
 /**
  * @fileOverview Um agente de IA conversacional que ajuda os usuários a evoluir seu plano de treino.
+ * Este fluxo recebe o contexto do usuário (nível, rotinas, histórico) e o histórico da conversa
+ * para conduzir um diálogo e, ao final, propor um plano de ação para criar, modificar ou remover
+ * rotinas de treino.
  */
 
 import { ai } from '@/ai/genkit';
 import { EvolveRoutinePlanInputSchema, EvolveRoutinePlanOutputSchema, type EvolveRoutinePlanInput, type EvolveRoutinePlanOutput } from './types';
 
+/**
+ * Função de wrapper exportada que invoca o fluxo Genkit para evoluir o plano de treino.
+ * @param input Os dados de entrada, incluindo o contexto do usuário e o histórico da conversa.
+ * @returns Uma promessa que resolve para a resposta da IA, contendo a próxima mensagem e um plano de ação (se aplicável).
+ */
 export async function evolveRoutinePlan(input: EvolveRoutinePlanInput): Promise<EvolveRoutinePlanOutput> {
   return evolveRoutinePlanFlow(input);
 }
@@ -52,3 +61,5 @@ const evolveRoutinePlanFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

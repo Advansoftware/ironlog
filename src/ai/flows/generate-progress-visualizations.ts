@@ -1,12 +1,18 @@
+
 'use server';
 /**
- * @fileOverview Generates visual representations of workout data to show progress over time and suggest incremental load increases.
+ * @fileOverview Gera representações visuais de dados de treino para mostrar o progresso ao longo do tempo e sugerir aumentos incrementais de carga.
+ * Este fluxo utiliza o histórico de treinos e recordes pessoais para fornecer uma análise textual do progresso do usuário.
  */
 
 import {ai} from '@/ai/genkit';
 import { GenerateProgressVisualizationsInputSchema, GenerateProgressVisualizationsOutputSchema, type GenerateProgressVisualizationsInput, type GenerateProgressVisualizationsOutput } from './types';
 
-
+/**
+ * Função de wrapper exportada que invoca o fluxo Genkit para gerar a análise de progresso.
+ * @param input Os dados de entrada, incluindo dados de treino, recordes e histórico.
+ * @returns Uma promessa que resolve para a análise textual gerada pela IA.
+ */
 export async function generateProgressVisualizations(
   input: GenerateProgressVisualizationsInput
 ): Promise<GenerateProgressVisualizationsOutput> {
@@ -35,3 +41,5 @@ const generateProgressVisualizationsFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

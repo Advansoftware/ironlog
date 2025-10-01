@@ -1,12 +1,19 @@
+
 'use server';
 /**
- * @fileOverview Generates a daily, helpful tip for a gym user based on their recent workout history.
+ * @fileOverview Gera uma dica diária e útil para um usuário de academia com base em seu histórico recente de treinos.
+ * Este fluxo analisa o histórico de treinos fornecido para gerar uma dica curta, impactante e personalizada.
  */
 
 import {ai} from '@/ai/genkit';
 import { GenerateDailyTipInputSchema, GenerateDailyTipOutputSchema, type GenerateDailyTipInput, type GenerateDailyTipOutput } from './types';
 
-
+/**
+.
+ * Função de wrapper exportada que invoca o fluxo Genkit para gerar a dica do dia.
+ * @param input Os dados de entrada, contendo o histórico de treino do usuário.
+ * @returns Uma promessa que resolve para a dica gerada pela IA.
+ */
 export async function generateDailyTip(input: GenerateDailyTipInput): Promise<GenerateDailyTipOutput> {
   return generateDailyTipFlow(input);
 }
@@ -38,3 +45,5 @@ const generateDailyTipFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

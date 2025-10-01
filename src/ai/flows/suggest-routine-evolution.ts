@@ -1,12 +1,21 @@
+
 'use server';
 /**
  * @fileOverview Sugere uma evolução na rotina de treino quando o usuário sobe de nível.
+ * Este fluxo analisa o progresso recente do usuário para gerar uma sugestão motivacional
+ * e inteligente para a próxima fase do treinamento, incentivando o usuário a iniciar uma conversa
+ * com o personal trainer de IA.
  */
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { SuggestRoutineEvolutionInputSchema, SuggestRoutineEvolutionOutputSchema, type SuggestRoutineEvolutionInput, type SuggestRoutineEvolutionOutput } from './types';
 
+/**
+ * Função de wrapper exportada que invoca o fluxo Genkit para sugerir uma evolução de rotina.
+ * @param input Os dados de entrada, incluindo o novo nível do usuário e seu histórico.
+ * @returns Uma promessa que resolve para a sugestão de texto gerada pela IA.
+ */
 export async function suggestRoutineEvolution(input: SuggestRoutineEvolutionInput): Promise<SuggestRoutineEvolutionOutput> {
   return suggestRoutineEvolutionFlow(input);
 }
@@ -45,3 +54,5 @@ const suggestRoutineEvolutionFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

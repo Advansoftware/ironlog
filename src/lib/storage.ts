@@ -1,5 +1,11 @@
 
 'use client';
+/**
+ * @fileOverview Módulo de gerenciamento de armazenamento local.
+ * Este arquivo abstrai as interações com o `localStorage` do navegador para fornecer uma API
+ * síncrona e segura para ler e escrever dados da aplicação, como rotinas, histórico, etc.
+ * Também inclui a lógica para inicializar o app com dados padrão na primeira execução.
+ */
 
 import type { Exercicio, RotinaDeTreino, SessaoDeTreino, RecordePessoal, GrupoMuscular, Gamification, DbConnectionConfig } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
@@ -7,6 +13,12 @@ import { calculateXP, checkForLevelUp } from './gamification';
 
 const isBrowser = typeof window !== 'undefined';
 
+/**
+ * Lê um valor do localStorage de forma segura.
+ * @param key A chave a ser lida.
+ * @param defaultValue O valor padrão a ser retornado se a chave não existir ou ocorrer um erro.
+ * @returns O valor parseado do localStorage ou o valor padrão.
+ */
 function getFromStorage<T>(key: string, defaultValue: T): T {
   if (!isBrowser) {
     return defaultValue;
@@ -20,6 +32,11 @@ function getFromStorage<T>(key: string, defaultValue: T): T {
   }
 }
 
+/**
+ * Salva um valor no localStorage de forma segura e dispara um evento de 'storage'.
+ * @param key A chave onde o valor será salvo.
+ * @param value O valor a ser salvo (será convertido para JSON).
+ */
 function saveToStorage<T>(key: string, value: T) {
   if (!isBrowser) {
     return;
@@ -27,13 +44,15 @@ function saveToStorage<T>(key: string, value: T) {
   try {
     const item = JSON.stringify(value);
     window.localStorage.setItem(key, item);
-    // Dispara um evento para notificar outras abas/componentes
+    // Dispara um evento para notificar outras abas/componentes sobre a mudança.
     window.dispatchEvent(new Event('storage'));
-  } catch (error) {
+  } catch (error)
+ {
     console.error(`Erro ao salvar no localStorage [${key}]:`, error);
   }
 }
 
+// Dados iniciais para popular o aplicativo na primeira vez que é aberto.
 const initialExercises: Exercicio[] = [
     // Peito
     { id: 'ex1', nome: 'Supino Reto com Barra', grupoMuscular: 'Peito', equipamento: 'Barra' },
@@ -93,7 +112,6 @@ const initialExercises: Exercicio[] = [
     { id: 'ex45', nome: 'Prancha Lateral', grupoMuscular: 'Core', equipamento: 'Peso do Corpo' }
 ];
 
-
 const initialRoutines: RotinaDeTreino[] = [
   {
     id: 'rt1',
@@ -121,13 +139,17 @@ const initialRoutines: RotinaDeTreino[] = [
       { exercicioId: 'ex7', nomeExercicio: "Agachamento Livre com Barra", seriesAlvo: 4, repeticoesAlvo: 6 },
       { exercicioId: 'ex8', nomeExercicio: "Leg Press 45", seriesAlvo: 3, repeticoesAlvo: 10 },
       { exercicioId: 'ex26', nomeExercicio: "Mesa Flexora", seriesAlvo: 3, repeticoesAlvo: 12 },
-      { exercicioId: 'ex31', nomeExercicio: "Elevação de Panturrilha em Pé", seriesAlvo: 4, repeticoesAlvo: 15 },
+      { id: 'ex31', nomeExercicio: "Elevação de Panturrilha em Pé", seriesAlvo: 4, repeticoesAlvo: 15 },
     ],
   },
 ];
 
 const initialGamification: Gamification = { xp: 0, level: 1 };
 
+/**
+ * Popula o localStorage com dados iniciais se for a primeira vez que o usuário abre o aplicativo.
+ * Utiliza uma chave de versionamento para permitir futuras migrações ou reset de dados.
+ */
 function initializeStorage() {
     if (!isBrowser) return;
     if (localStorage.getItem('appDataInitialized_v2')) return; // Chave de versão para forçar reinicialização
@@ -141,38 +163,44 @@ function initializeStorage() {
     localStorage.setItem('appDataInitialized_v2', 'true');
 }
 
+// Executa a inicialização na primeira carga do script.
 initializeStorage();
 
 
+// Funções de Leitura (Getters)
 export const getBibliotecaDeExercicios = () => getFromStorage<Exercicio[]>('bibliotecaDeExercicios', []);
-
-export const salvarExercicio = (exercicio: Omit<Exercicio, 'id'>) => {
-    const biblioteca = getBibliotecaDeExercicios();
-    const novoExercicio: Exercicio = { ...exercicio, id: uuidv4() };
-    saveToStorage('bibliotecaDeExercicios', [...biblioteca, novoExercicio]);
-};
-
 export const getRotinas = () => getFromStorage<RotinaDeTreino[]>('rotinas', []);
 export const getHistorico = () => getFromStorage<SessaoDeTreino[]>('historico', []);
 export const getRecordesPessoais = () => getFromStorage<RecordePessoal[]>('recordesPessoais', []);
 export const getGamification = () => getFromStorage<Gamification>('gamification', initialGamification);
 export const getDbConnections = () => getFromStorage<DbConnectionConfig[]>('dbConnections', []);
 
-export const saveDbConnections = (connections: DbConnectionConfig[]) => saveToStorage('dbConnections', connections);
 
-export const salvarRotinas = (rotinas: RotinaDeTreino[]) => saveToStorage('rotinas', rotinas);
+// Funções de Escrita (Setters)
 
-export const deletarRotina = (id: string) => {
-  const rotinas = getRotinas();
-  const novasRotinas = rotinas.filter(r => r.id !== id);
-  saveToStorage('rotinas', novasRotinas);
-}
+/**
+ * Salva um novo exercício na biblioteca de exercícios.
+ * @param exercicio O objeto do exercício a ser salvo (sem o id).
+ */
+export const salvarExercicio = (exercicio: Omit<Exercicio, 'id'>) => {
+    const biblioteca = getBibliotecaDeExercicios();
+    const novoExercicio: Exercicio = { ...exercicio, id: uuidv4() };
+    saveToStorage('bibliotecaDeExercicios', [...biblioteca, novoExercicio]);
+};
 
+/**
+ * Salva uma nova rotina na lista de rotinas.
+ * @param rotina O objeto da rotina a ser salvo.
+ */
 export const salvarRotina = (rotina: RotinaDeTreino) => {
     const rotinas = getRotinas();
     saveToStorage('rotinas', [rotina, ...rotinas]);
 };
 
+/**
+ * Atualiza uma rotina existente.
+ * @param rotinaAtualizada O objeto da rotina com as informações atualizadas.
+ */
 export const atualizarRotina = (rotinaAtualizada: RotinaDeTreino) => {
     const rotinas = getRotinas();
     const index = rotinas.findIndex(r => r.id === rotinaAtualizada.id);
@@ -182,7 +210,29 @@ export const atualizarRotina = (rotinaAtualizada: RotinaDeTreino) => {
     }
 };
 
+/**
+ * Remove uma rotina da lista.
+ * @param id O ID da rotina a ser deletada.
+ */
+export const deletarRotina = (id: string) => {
+  const rotinas = getRotinas();
+  const novasRotinas = rotinas.filter(r => r.id !== id);
+  saveToStorage('rotinas', novasRotinas);
+}
 
+/**
+ * Salva a lista completa de conexões de banco de dados.
+ * @param connections A lista de configurações de conexão.
+ */
+export const saveDbConnections = (connections: DbConnectionConfig[]) => saveToStorage('dbConnections', connections);
+
+/**
+ * Salva uma sessão de treino completa, calcula o XP ganho, verifica se houve level up
+ * e atualiza os recordes pessoais.
+ * @param sessao O objeto da sessão de treino a ser salvo.
+ * @param novosRecordes Uma lista de novos recordes pessoais batidos nesta sessão.
+ * @returns Um objeto com informações sobre o level up e o XP ganho.
+ */
 export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, novosRecordes: RecordePessoal[]) => {
     const historico = getHistorico();
     const gamification = getGamification();
@@ -201,10 +251,13 @@ export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, nov
     const levelUpInfo = checkForLevelUp(gamification.xp, newTotalXp);
     saveToStorage('gamification', { xp: newTotalXp, level: levelUpInfo.newLevel });
     
+    // Armazena um flag na sessionStorage para notificar o app que o usuário acabou de subir de nível.
+    // A sessionStorage é usada aqui porque este é um estado temporário que não precisa persistir.
     if (levelUpInfo.didLevelUp && isBrowser) {
         sessionStorage.setItem('justLeveledUp', 'true');
     }
 
+    // Atualiza os recordes pessoais se houver novos.
     if (novosRecordes.length > 0) {
         const recordesAtuais = getRecordesPessoais();
         const recordesAtualizados = [...recordesAtuais];
@@ -223,16 +276,28 @@ export const salvarSessao = (sessao: Omit<SessaoDeTreino, 'id' | 'xpGanho'>, nov
     return { levelUpInfo, xpGanho };
 };
 
-export const salvarRecordesPessoais = (recordes: RecordePessoal[]) => saveToStorage('recordesPessoais', recordes);
 
+// Funções Utilitárias
 
+/**
+ * Lista de todos os grupos musculares disponíveis no app.
+ */
 export const gruposMusculares: GrupoMuscular[] = ['Peito', 'Costas', 'Pernas', 'Ombros', 'Braços', 'Core'];
 
+/**
+ * Busca o nome de um exercício na biblioteca pelo seu ID.
+ * @param exercicioId O ID do exercício.
+ * @returns O nome do exercício ou 'Exercício Desconhecido' se não for encontrado.
+ */
 export function getNomeExercicio(exercicioId: string) {
     const biblioteca = getBibliotecaDeExercicios();
     return biblioteca.find(ex => ex.id === exercicioId)?.nome ?? 'Exercício Desconhecido';
 }
 
+/**
+ * Apaga todos os dados do usuário do localStorage e reinicializa o app com os dados padrão.
+ * Ação destrutiva e irreversível.
+ */
 export function resetAllData() {
     if (!isBrowser) return;
     
@@ -247,3 +312,5 @@ export function resetAllData() {
     initializeStorage();
     window.dispatchEvent(new Event('storage'));
 }
+
+    

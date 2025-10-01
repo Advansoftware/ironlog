@@ -1,5 +1,9 @@
+
 /**
  * @fileOverview Tipos e esquemas compartilhados para os fluxos de IA.
+ * Este arquivo centraliza as definições de schemas Zod e tipos TypeScript
+ * para garantir consistência e segurança de tipo entre os diferentes fluxos de IA
+ * e os componentes que os consomem.
  */
 import {z} from 'genkit';
 
@@ -100,3 +104,5 @@ export type EvolveRoutinePlanInput = z.infer<typeof EvolveRoutinePlanInputSchema
 
 export const EvolveRoutinePlanOutputSchema = PlanoDeAcaoSchema;
 export type EvolveRoutinePlanOutput = z.infer<typeof EvolveRoutinePlanOutputSchema>;
+
+    

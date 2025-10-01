@@ -1,5 +1,8 @@
+
 /**
  * @fileOverview Lógica de gamificação, incluindo sistema de níveis e cálculo de XP.
+ * Este arquivo define as regras para a progressão do usuário, como os pontos de experiência (XP)
+ * são calculados com base no volume de treino e como os níveis são atribuídos.
  */
 
 import type { ExercicioRegistrado } from './types';
@@ -7,9 +10,13 @@ import { Icons } from '@/components/icons';
 import type { LucideProps } from 'lucide-react';
 import type { FunctionComponent } from 'react';
 
-// Cada 10kg de volume = 1 XP
+// Cada 10kg de volume total levantado em uma sessão equivale a 1 ponto de XP.
+// Volume é calculado como: (peso * repetições) para cada série.
 const XP_PER_VOLUME = 0.1;
 
+/**
+ * Define a quantidade de XP necessário para alcançar cada nível.
+ */
 export const levelThresholds: Record<number, number> = {
   1: 0,
   2: 1000,
@@ -23,7 +30,10 @@ export const levelThresholds: Record<number, number> = {
   10: 300000,
 };
 
-// As cores são em formato HSL (Hue, Saturation, Lightness) para serem usadas como variáveis CSS
+/**
+ * Define os metadados para cada nível, incluindo nome, ícone e cor do tema.
+ * As cores são em formato HSL (Hue, Saturation, Lightness) para serem usadas como variáveis CSS.
+ */
 export const levelData: Record<number, { name: string; Icon: FunctionComponent<LucideProps>, color: string }> = {
   1: { name: 'Frango em Crescimento', Icon: Icons.Level1, color: '48 96% 58%' }, // Amarelo
   2: { name: 'Tá Saindo da Jaula', Icon: Icons.Level2, color: '24 96% 58%' }, // Laranja
@@ -38,26 +48,9 @@ export const levelData: Record<number, { name: string; Icon: FunctionComponent<L
 };
 
 /**
- * @deprecated Use levelData[level].name instead.
- */
-export const levelNames: Record<number, string> = {
-  1: 'Frango em Crescimento',
-  2: 'Tá Saindo da Jaula',
-  3: 'Muleque Zica',
-  4: 'Corpo em Construção',
-  5: 'Vem Monstro!',
-  6: 'Fábrica de Monstros',
-  7: 'Monstrão',
-  8: 'BIIIRL!',
-  9: 'Aberração da Maromba',
-  10: 'Lenda da Maromba',
-};
-
-
-/**
- * Calcula o XP ganho em uma sessão de treino com base no volume.
+ * Calcula o XP ganho em uma sessão de treino com base no volume total.
  * @param exercicios - A lista de exercícios registrados na sessão.
- * @returns O total de XP ganho.
+ * @returns O total de XP ganho, arredondado para o número inteiro mais próximo.
  */
 export function calculateXP(exercicios: ExercicioRegistrado[]): number {
   const totalVolume = exercicios.reduce((sessionVolume, exercicio) => {
@@ -71,10 +64,10 @@ export function calculateXP(exercicios: ExercicioRegistrado[]): number {
 }
 
 /**
- * Verifica se o usuário subiu de nível.
+ * Compara o XP antigo e o novo para determinar se o usuário subiu de nível.
  * @param oldXp - XP total antes da sessão.
  * @param newXp - XP total após a sessão.
- * @returns Um objeto contendo se houve level up e qual o novo nível.
+ * @returns Um objeto indicando se houve level up e qual o novo nível alcançado.
  */
 export function checkForLevelUp(oldXp: number, newXp: number): { didLevelUp: boolean; newLevel: number } {
   let oldLevel = 1;
@@ -96,9 +89,10 @@ export function checkForLevelUp(oldXp: number, newXp: number): { didLevelUp: boo
 }
 
 /**
- * Calcula o progresso de XP para o nível atual.
+ * Calcula o progresso de XP do usuário em relação ao seu nível atual e o próximo.
  * @param totalXp - O XP total do usuário.
- * @returns Progresso em porcentagem, XP para o próximo nível e XP do nível atual.
+ * @returns Um objeto com o progresso em porcentagem, XP restante para o próximo nível,
+ * o XP acumulado desde o início do nível atual, e o número do nível atual.
  */
 export function getLevelProgress(totalXp: number): { progressPercentage: number; xpToNextLevel: number; currentLevelXp: number, currentLevel: number } {
   let currentLevel = 1;
@@ -139,3 +133,5 @@ export function getLevelProgress(totalXp: number): { progressPercentage: number;
     currentLevel,
   };
 }
+
+    

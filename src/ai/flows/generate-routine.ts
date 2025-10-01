@@ -1,12 +1,19 @@
+
 'use server';
 /**
- * @fileOverview Genera uma rotina de treino personalizada com base nas especificações do usuário.
+ * @fileOverview Gera uma rotina de treino personalizada com base nas especificações do usuário.
+ * Este fluxo recebe os objetivos do usuário, nível de experiência, dias disponíveis e local de treino
+ * para criar uma rotina de exercícios estruturada, utilizando uma lista de exercícios disponíveis.
  */
 
 import { ai } from '@/ai/genkit';
 import { GenerateRoutineInputSchema, GenerateRoutineOutputSchema, type GenerateRoutineInput, type GenerateRoutineOutput } from './types';
 
-
+/**
+ * Função de wrapper exportada que invoca o fluxo Genkit para gerar uma nova rotina.
+ * @param input As especificações do usuário para a criação da rotina.
+ * @returns Uma promessa que resolve para a rotina de treino gerada pela IA.
+ */
 export async function generateRoutine(input: GenerateRoutineInput): Promise<GenerateRoutineOutput> {
   return generateRoutineFlow(input);
 }
@@ -51,3 +58,5 @@ const generateRoutineFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

@@ -271,7 +271,7 @@ export default function DashboardPage() {
                  <p className="text-4xl font-bold">{workoutsThisMonth}</p>
                  <p className="text-xs text-muted-foreground">no mês atual</p>
               </CardContent>
-            </Card>
+            </card>
 
             <Card>
               <CardHeader>
