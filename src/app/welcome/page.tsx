@@ -257,17 +257,36 @@ export default function WelcomePage() {
                           if (msg.plan.xpInicial) {
                             return getLevelByXp(msg.plan.xpInicial);
                           }
-                          
+
                           // Fallback: estima baseado no conteúdo da conversa
-                          const conversaCompleta = messages.map(m => m.content.toLowerCase()).join(' ');
-                          if (conversaCompleta.includes('intermediário') || conversaCompleta.includes('intermediate')) {
-                            return { level: 2, levelName: levelData[2]?.name || 'Tá Saindo da Jaula' };
+                          const conversaCompleta = messages
+                            .map((m) => m.content.toLowerCase())
+                            .join(" ");
+                          if (
+                            conversaCompleta.includes("intermediário") ||
+                            conversaCompleta.includes("intermediate")
+                          ) {
+                            return {
+                              level: 2,
+                              levelName:
+                                levelData[2]?.name || "Tá Saindo da Jaula",
+                            };
                           }
-                          if (conversaCompleta.includes('avançado') || conversaCompleta.includes('advanced')) {
-                            return { level: 3, levelName: levelData[3]?.name || 'Muleque Zica' };
+                          if (
+                            conversaCompleta.includes("avançado") ||
+                            conversaCompleta.includes("advanced")
+                          ) {
+                            return {
+                              level: 3,
+                              levelName: levelData[3]?.name || "Muleque Zica",
+                            };
                           }
                           // Padrão: iniciante
-                          return { level: 1, levelName: levelData[1]?.name || 'Frango em Crescimento' };
+                          return {
+                            level: 1,
+                            levelName:
+                              levelData[1]?.name || "Frango em Crescimento",
+                          };
                         };
 
                         const { level, levelName } = calcularNivelInicial();
