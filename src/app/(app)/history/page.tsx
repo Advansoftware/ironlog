@@ -10,10 +10,12 @@ import { PageHeader } from '@/components/page-header';
 import { getHistorico, getNomeExercicio } from '@/lib/storage';
 import { format, parseISO, startOfDay, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, Clock, Dumbbell, Repeat, Weight } from 'lucide-react';
+import { Calendar, Clock, Dumbbell, Repeat, Weight, BarChart3 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { SessaoDeTreino } from '@/lib/types';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function HistoryPage() {
   const [historico, setHistorico] = useState<SessaoDeTreino[]>([]);
@@ -42,7 +44,14 @@ export default function HistoryPage() {
       <PageHeader
         title="Histórico de Treinos"
         description="Reveja suas sessões passadas e acompanhe a consistência."
-      />
+      >
+        <Button asChild variant="outline">
+          <Link href="/progress">
+            <BarChart3 className="mr-2" />
+            Ver Gráficos de Progresso
+          </Link>
+        </Button>
+      </PageHeader>
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-1">
           <Card>
